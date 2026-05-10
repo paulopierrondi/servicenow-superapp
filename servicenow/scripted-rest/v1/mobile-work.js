@@ -3,7 +3,7 @@
 // Endpoint: GET /api/x_bank/v1/mobile-work
 //
 // Retorna a visão operacional ServiceNow para o app mobile multi-marca:
-// ITSM, SPM e sinais preparados para Now Assist.
+// ITSM, SPM, CSM, CRM e sinais preparados para Now Assist.
 //
 // PII em log: PROIBIDO.
 
@@ -15,6 +15,10 @@
     var schemaHeader   = request.getHeader('X-Client-Schema-Version') || 'unknown';
     var clientPlatform = request.getHeader('X-Client-Platform')       || 'unknown';
     var brand          = request.getQueryParameter('brand')           || 'bradesco';
+    var normalizedBrand = String(brand).toLowerCase();
+    var isItau = normalizedBrand === 'itau';
+    var segment = isItau ? 'Personnalité' : 'Prime';
+    var manager = isItau ? 'Marina Costa' : 'Camila Andrade';
 
     gs.info('[mobile-v1][work] req received platform=' + clientPlatform +
             ' clientVersion=' + clientVersion +
@@ -82,6 +86,49 @@
                 riskLevel: 'Alto'
             }
         ],
+        customerExperience: {
+            csm: [
+                {
+                    id: 'csm-pix-case',
+                    title: 'Caso Pix contestado',
+                    metric: 'SLA 18 min',
+                    owner: 'CSM',
+                    signal: 'Case CSM com histórico omnicanal, SLA e evidências do journey twin'
+                },
+                {
+                    id: 'csm-manager-handoff',
+                    title: 'Handoff para gerente',
+                    metric: '1 thread',
+                    owner: segment,
+                    signal: 'Now Assist preserva contexto, consentimento e próximos passos para ' + manager
+                },
+                {
+                    id: 'csm-voice-of-customer',
+                    title: 'Voz do cliente',
+                    metric: 'NPS +12',
+                    owner: 'CX',
+                    signal: 'Reclamação, NPS, causa raiz e incidente conectados antes da resposta final'
+                }
+            ],
+            crm: [
+                {
+                    id: 'crm-next-best-action',
+                    title: isItau ? 'Next best action Personnalité' : 'Next best action Prime',
+                    metric: 'NBA',
+                    owner: 'CRM',
+                    signal: 'Oferta explicável com consentimento, propensão, elegibilidade e limite operacional'
+                },
+                {
+                    id: 'crm-relationship-360',
+                    title: isItau ? 'Relacionamento Itaú 360' : 'Relacionamento Bradesco 360',
+                    metric: '360',
+                    owner: brand,
+                    signal: isItau
+                        ? 'Perfil, momento de vida, cartões, íon e atendimento priorizados em uma visão CRM'
+                        : 'Carteira, cartões, seguros, investimentos e atendimento priorizados em uma visão CRM'
+                }
+            ]
+        },
         synthesizedAnswer: {
             question: 'Como revisar consentimento Open Finance?',
             citation: 'KB001928',

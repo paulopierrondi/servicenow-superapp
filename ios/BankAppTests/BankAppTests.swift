@@ -53,11 +53,32 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(NowWorkItem.demoSPM.contains { $0.category == "Projeto" })
   }
 
+  func testBrandSelectionOverridesEnvironmentDefault() throws {
+    let suiteName = "BrandSelectionTests-\(UUID().uuidString)"
+    let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+    defer { defaults.removePersistentDomain(forName: suiteName) }
+
+    defaults.set(AppBrand.itau.rawValue, forKey: AppBrand.selectionDefaultsKey)
+
+    let brand = AppBrand.resolve(userDefaults: defaults, environment: ["APP_BRAND": "bradesco"])
+
+    XCTAssertEqual(brand, .itau)
+  }
+
   func testNowMobileEvolutionIncludesCrossDepartmentLauncherAndActions() {
     XCTAssertTrue(NowLauncherItem.demo.contains { $0.department == "TI" })
     XCTAssertTrue(NowLauncherItem.demo.contains { $0.department == "RH" })
     XCTAssertTrue(NowActionItem.demo.contains { $0.actionLabel == "Aprovar" })
     XCTAssertEqual(NowKnowledgeAnswer.demo.citation, "KB001928 • Política digital")
+  }
+
+  func testCustomerExperienceIncludesCSMAndCRMForBanking() {
+    let bradescoItems = CustomerExperienceItem.bankingDemo(for: .bradesco)
+    let itauItems = CustomerExperienceItem.bankingDemo(for: .itau)
+
+    XCTAssertTrue(bradescoItems.contains { $0.domain == .csm && $0.title == "Caso Pix contestado" })
+    XCTAssertTrue(bradescoItems.contains { $0.domain == .crm && $0.title.contains("Prime") })
+    XCTAssertTrue(itauItems.contains { $0.domain == .crm && $0.title.contains("Personnalité") })
   }
 
   func testJourneyTwinConnectsBankingIntentToOperationalControls() {

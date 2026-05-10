@@ -22,6 +22,8 @@ private enum NowWorkspace: String, CaseIterable, Identifiable {
 }
 
 struct NowOperationsView: View {
+  @EnvironmentObject private var brandStore: BrandStore
+
   @Binding var selectedTab: AppTab
 
   @State private var workspace: NowWorkspace = .itsm
@@ -37,6 +39,10 @@ struct NowOperationsView: View {
     }
   }
 
+  private var customerExperienceItems: [CustomerExperienceItem] {
+    CustomerExperienceItem.bankingDemo()
+  }
+
   var body: some View {
     NavigationView {
       AppBackground {
@@ -49,6 +55,7 @@ struct NowOperationsView: View {
             launcher
             actionInbox
             knowledgeAnswer
+            customerExperienceCenter
             workspaceSelector
             commandCenter
             workstream
@@ -63,25 +70,45 @@ struct NowOperationsView: View {
   }
 
   private var header: some View {
-    VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
-      Text(
-        String(
-          format: NSLocalizedString(
-            "now.eyebrow.format", comment: "REVISÃO PT-BR HUMANA OBRIGATÓRIA"),
-          AppBrand.current.displayName.uppercased())
-      )
-      .font(BankTheme.Typography.caption)
-      .foregroundColor(BankTheme.Palette.brandRed)
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+        Text(
+          String(
+            format: NSLocalizedString(
+              "now.eyebrow.format", comment: "REVISÃO PT-BR HUMANA OBRIGATÓRIA"),
+            AppBrand.current.displayName.uppercased())
+        )
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(BankTheme.Palette.brandRed)
 
-      Text("now.title")
-        .font(BankTheme.Typography.title)
-        .foregroundColor(BankTheme.Palette.ink)
-        .fixedSize(horizontal: false, vertical: true)
+        Text("now.title")
+          .font(BankTheme.Typography.title)
+          .foregroundColor(BankTheme.Palette.ink)
+          .fixedSize(horizontal: false, vertical: true)
 
-      Text("now.subtitle")
-        .font(BankTheme.Typography.body)
-        .foregroundColor(BankTheme.Palette.secondaryInk)
-        .fixedSize(horizontal: false, vertical: true)
+        Text("now.subtitle")
+          .font(BankTheme.Typography.body)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+
+      Spacer(minLength: BankTheme.Spacing.sm)
+
+      Button {
+        withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+          brandStore.resetSelection()
+        }
+      } label: {
+        Image(systemName: "arrow.triangle.2.circlepath")
+          .font(BankTheme.Typography.headline)
+          .foregroundColor(BankTheme.Palette.brandRed)
+          .frame(width: BankTheme.Size.iconButton, height: BankTheme.Size.iconButton)
+          .background(
+            Circle()
+              .fill(BankTheme.Palette.surface)
+          )
+      }
+      .accessibilityLabel(Text("brand.switch"))
     }
     .frame(maxWidth: .infinity, alignment: .leading)
   }
@@ -245,6 +272,24 @@ struct NowOperationsView: View {
           Text(NowKnowledgeAnswer.demo.citation)
             .font(BankTheme.Typography.caption)
             .foregroundColor(BankTheme.Palette.mutedInk)
+        }
+      }
+    }
+  }
+
+  private var customerExperienceCenter: some View {
+    VStack(spacing: BankTheme.Spacing.md) {
+      SectionHeader("now.customer.title")
+
+      VisualCard {
+        VStack(spacing: BankTheme.Spacing.md) {
+          ForEach(Array(customerExperienceItems.enumerated()), id: \.element.id) { index, item in
+            CustomerExperienceRow(item: item)
+
+            if index < customerExperienceItems.count - 1 {
+              Divider()
+            }
+          }
         }
       }
     }
@@ -679,6 +724,57 @@ private struct ActionItemCard: View {
         }
       }
     }
+  }
+}
+
+private struct CustomerExperienceRow: View {
+  let item: CustomerExperienceItem
+
+  private var color: Color {
+    switch item.domain {
+    case .csm: return BankTheme.Palette.attention
+    case .crm: return BankTheme.Palette.brandRed
+    }
+  }
+
+  private var domainLabel: String {
+    item.domain.rawValue.uppercased()
+  }
+
+  var body: some View {
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      IconBubble(
+        symbolName: item.symbolName,
+        color: color,
+        size: BankTheme.Size.compactIconBubble
+      )
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+        HStack(alignment: .firstTextBaseline, spacing: BankTheme.Spacing.sm) {
+          Text(item.title)
+            .font(BankTheme.Typography.headline)
+            .foregroundColor(BankTheme.Palette.ink)
+            .fixedSize(horizontal: false, vertical: true)
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          StatusBadge(title: domainLabel, color: color, symbolName: "circle.fill")
+        }
+
+        Text(item.detail)
+          .font(BankTheme.Typography.body)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
+
+        HStack(spacing: BankTheme.Spacing.md) {
+          Label(item.metric, systemImage: "speedometer")
+          Label(item.owner, systemImage: "person.2.fill")
+        }
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(BankTheme.Palette.mutedInk)
+      }
+    }
+    .accessibilityElement(children: .combine)
   }
 }
 

@@ -9,6 +9,14 @@
 "common.review" = "Revisar";
 "common.see.all" = "Ver tudo";
 
+"brand.selection.eyebrow" = "SUPER APP";
+"brand.selection.title" = "Escolha sua experiência";
+"brand.selection.subtitle" = "Bradesco ou Itaú, com a mesma base ServiceNow e jornada bancária personalizada.";
+"brand.selection.bradesco.detail" = "Vermelho Bradesco, Prime, cartões, seguros, Pix e atendimento.";
+"brand.selection.itau.detail" = "Laranja Itaú, Personnalité, investimentos, cartões e relacionamento.";
+"brand.selection.continue.format" = "Entrar no %@";
+"brand.switch" = "Trocar banco";
+
 "home.eyebrow.format" = "SUPER APP %@";
 "home.greeting.format" = "Bom dia, %@";
 "home.segment.prime" = "Prime";
@@ -87,7 +95,7 @@
 
 "now.eyebrow.format" = "SERVICENOW EM %@";
 "now.title" = "ITSM e SPM no mobile";
-"now.subtitle" = "Uma evolução bancária do Now Mobile: respostas, catálogo, aprovações, reservas, ITSM, SPM e Now Assist em uma só jornada.";
+"now.subtitle" = "Uma evolução bancária do Now Mobile: respostas, catálogo, aprovações, reservas, ITSM, SPM, CSM, CRM e Now Assist em uma só jornada.";
 "now.search.placeholder" = "Buscar respostas, serviços e tarefas";
 "now.search.voice" = "Usar voz no Now Assist";
 "now.offline.queue" = "Fila offline ativa para anexos e ações críticas";
@@ -106,6 +114,7 @@
 "now.launcher.title" = "Catálogo por departamento";
 "now.actions.title" = "Aprovações e tarefas";
 "now.answer.title" = "RESPOSTA COM CITAÇÃO";
+"now.customer.title" = "CSM e CRM bancário";
 "now.twin.eyebrow" = "GÊMEO OPERACIONAL DA JORNADA";
 "now.twin.metric.time" = "economia estimada";
 "now.twin.metric.risk" = "risco residual";

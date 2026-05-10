@@ -17,7 +17,7 @@ struct NowAssistMessage: Identifiable, Equatable {
       id: UUID(uuidString: "BDE8CDB2-52BE-4DDE-9F9E-5F75F8CC4001")!,
       role: .assistant,
       text:
-        "Oi, sou o NowAssist do \(AppBrand.current.displayName). Posso analisar cobranças, Pix, cartões, consentimentos, ITSM, SPM e acionar atendimento humano com contexto.",
+        "Oi, sou o NowAssist do \(AppBrand.current.displayName). Posso analisar cobranças, Pix, cartões, consentimentos, ITSM, SPM, CSM, CRM e acionar atendimento humano com contexto.",
       timestamp: Date()
     )
   }
@@ -52,7 +52,7 @@ final class NowAssistClient {
       || text.localizedCaseInsensitiveContains("jornada")
     {
       reply =
-        "Montei o gêmeo operacional: intenção do cliente, consentimento, risco, ITSM, SPM e auditoria ficam conectados antes da execução."
+        "Montei o gêmeo operacional: intenção do cliente, consentimento, risco, CSM, CRM, ITSM, SPM e auditoria ficam conectados antes da execução."
     } else if text.localizedCaseInsensitiveContains("notebook")
       || text.localizedCaseInsensitiveContains("sala")
     {

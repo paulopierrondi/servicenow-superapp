@@ -400,6 +400,82 @@ struct NowKnowledgeAnswer: Identifiable, Equatable {
   )
 }
 
+enum CustomerExperienceDomain: String, Equatable {
+  case csm
+  case crm
+}
+
+struct CustomerExperienceItem: Identifiable, Equatable {
+  let id: String
+  let domain: CustomerExperienceDomain
+  let title: String
+  let detail: String
+  let metric: String
+  let owner: String
+  let symbolName: String
+
+  static func bankingDemo(for brand: AppBrand = .current) -> [CustomerExperienceItem] {
+    let segment = brand.customerSegment
+    let manager = brand.relationshipManager
+    let crmTitle = brand == .itau ? "Next best action Personnalité" : "Next best action Prime"
+    let relationshipTitle =
+      brand == .itau ? "Relacionamento Itaú 360" : "Relacionamento Bradesco 360"
+    let relationshipDetail =
+      brand == .itau
+      ? "Perfil, momento de vida, cartões, íon e atendimento priorizados em uma visão CRM."
+      : "Carteira, cartões, seguros, investimentos e atendimento priorizados em uma visão CRM."
+
+    return [
+      CustomerExperienceItem(
+        id: "csm-pix-case",
+        domain: .csm,
+        title: "Caso Pix contestado",
+        detail: "Case CSM com SLA, histórico omnicanal e evidências do gêmeo operacional.",
+        metric: "SLA 18 min",
+        owner: "CSM",
+        symbolName: "person.crop.circle.badge.exclamationmark.fill"
+      ),
+      CustomerExperienceItem(
+        id: "csm-manager-handoff",
+        domain: .csm,
+        title: "Handoff para gerente",
+        detail: "Now Assist preserva contexto, consentimento e próximos passos para \(manager).",
+        metric: "1 thread",
+        owner: segment,
+        symbolName: "person.text.rectangle.fill"
+      ),
+      CustomerExperienceItem(
+        id: "csm-voice-of-customer",
+        domain: .csm,
+        title: "Voz do cliente",
+        detail: "Reclamação, NPS, causa raiz e incidente conectados antes da resposta final.",
+        metric: "NPS +12",
+        owner: "CX",
+        symbolName: "waveform"
+      ),
+      CustomerExperienceItem(
+        id: "crm-next-best-action",
+        domain: .crm,
+        title: crmTitle,
+        detail:
+          "Oferta explicável com consentimento, propensão, elegibilidade e limite operacional.",
+        metric: "NBA",
+        owner: "CRM",
+        symbolName: "sparkles"
+      ),
+      CustomerExperienceItem(
+        id: "crm-relationship-360",
+        domain: .crm,
+        title: relationshipTitle,
+        detail: relationshipDetail,
+        metric: "360",
+        owner: brand.displayName,
+        symbolName: "circle.grid.cross.fill"
+      ),
+    ]
+  }
+}
+
 struct NowJourneyTwin: Equatable {
   let title: String
   let hypothesis: String

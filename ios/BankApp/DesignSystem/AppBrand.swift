@@ -1,17 +1,33 @@
 import SwiftUI
 
-enum AppBrand: String, Equatable {
+enum AppBrand: String, CaseIterable, Equatable {
   case bradesco
   case itau
 
+  static let selectionDefaultsKey = "selected_app_brand"
+
   static var current: AppBrand {
-    if let rawValue = ProcessInfo.processInfo.environment["APP_BRAND"]?.lowercased(),
+    resolve()
+  }
+
+  static func resolve(
+    userDefaults: UserDefaults = .standard,
+    environment: [String: String] = ProcessInfo.processInfo.environment,
+    bundle: Bundle = .main
+  ) -> AppBrand {
+    if let rawValue = userDefaults.string(forKey: selectionDefaultsKey)?.lowercased(),
       let brand = AppBrand(rawValue: rawValue)
     {
       return brand
     }
 
-    if let rawValue = Bundle.main.object(forInfoDictionaryKey: "APP_BRAND") as? String,
+    if let rawValue = environment["APP_BRAND"]?.lowercased(),
+      let brand = AppBrand(rawValue: rawValue)
+    {
+      return brand
+    }
+
+    if let rawValue = bundle.object(forInfoDictionaryKey: "APP_BRAND") as? String,
       let brand = AppBrand(rawValue: rawValue.lowercased())
     {
       return brand
