@@ -72,9 +72,13 @@ Cliente → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 | Prod | `BankApp-Prod` | `com.bradesco.mobile.app` | bradesco.service-now.com | `*.up.railway.app` |
 | Demo | `BankApp-Demo` | `com.bradesco.mobile.app.demo` | demo-bradesco.service-now.com | `*-demo.up.railway.app` |
 
+## Evolução Now Mobile
+
+A aba `Now` segue a lógica operacional do Now Mobile, mas adaptada para banco e multi-marca: busca universal com voz, catálogo por departamento, aprovações, fila offline, respostas com citação, ITSM, SPM e Now Assist no mesmo fluxo.
+
 ## ServiceNow e Railway
 
-O endpoint `mobile-work` expõe o contrato v1 para ITSM e SPM, usado pela aba `Now`. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
+O endpoint `mobile-work` expõe o contrato v1 para ITSM, SPM, launcher, action items e respostas sintetizadas, usado pela aba `Now`. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
 
 ## Compliance
 

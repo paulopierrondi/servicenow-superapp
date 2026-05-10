@@ -87,7 +87,10 @@
 
 "now.eyebrow.format" = "SERVICENOW EM %@";
 "now.title" = "ITSM e SPM no mobile";
-"now.subtitle" = "Uma operação executiva para incidentes, requisições, mudanças, demandas, projetos e riscos, com Now Assist embarcado.";
+"now.subtitle" = "Uma evolução bancária do Now Mobile: respostas, catálogo, aprovações, reservas, ITSM, SPM e Now Assist em uma só jornada.";
+"now.search.placeholder" = "Buscar respostas, serviços e tarefas";
+"now.search.voice" = "Usar voz no Now Assist";
+"now.offline.queue" = "Fila offline ativa para anexos e ações críticas";
 "now.assist.title" = "Now Assist embarcado";
 "now.assist.detail" = "Resumos, causa provável, próximos passos e handoff para humano usando contexto da jornada e controles de auditoria.";
 "now.assist.open" = "Abrir conversa";
@@ -100,6 +103,9 @@
 "now.metric.queue" = "itens ativos";
 "now.metric.health" = "saúde projeto";
 "now.metric.value" = "valor portfólio";
+"now.launcher.title" = "Catálogo por departamento";
+"now.actions.title" = "Aprovações e tarefas";
+"now.answer.title" = "RESPOSTA COM CITAÇÃO";
 "now.itsm.title" = "Operação ITSM";
 "now.spm.title" = "Portfólio SPM";
 

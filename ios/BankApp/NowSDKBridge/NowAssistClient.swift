@@ -44,6 +44,14 @@ final class NowAssistClient {
     } else if text.localizedCaseInsensitiveContains("spm") {
       reply =
         "No SPM, a demanda de Open Finance está priorizada. Posso resumir valor, riscos regulatórios e dependências para o comitê."
+    } else if text.localizedCaseInsensitiveContains("aprovar") {
+      reply =
+        "Encontrei aprovações pendentes. Posso resumir impacto, risco, SLA e evidências antes da decisão."
+    } else if text.localizedCaseInsensitiveContains("notebook")
+      || text.localizedCaseInsensitiveContains("sala")
+    {
+      reply =
+        "Posso abrir o item de catálogo correto, preencher dados conhecidos e manter a solicitação rastreável na plataforma."
     } else if text.localizedCaseInsensitiveContains("cart") {
       reply =
         "Seu cartão virtual está pronto para compra online. Para limites maiores, posso iniciar uma análise com Open Finance."

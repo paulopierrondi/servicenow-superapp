@@ -53,6 +53,13 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(NowWorkItem.demoSPM.contains { $0.category == "Projeto" })
   }
 
+  func testNowMobileEvolutionIncludesCrossDepartmentLauncherAndActions() {
+    XCTAssertTrue(NowLauncherItem.demo.contains { $0.department == "TI" })
+    XCTAssertTrue(NowLauncherItem.demo.contains { $0.department == "RH" })
+    XCTAssertTrue(NowActionItem.demo.contains { $0.actionLabel == "Aprovar" })
+    XCTAssertEqual(NowKnowledgeAnswer.demo.citation, "KB001928 • Política digital")
+  }
+
   @MainActor
   func testHomeViewModelFallsBackToDemoOnClientFailure() async {
     let viewModel = HomeViewModel(serviceNowClient: FailingHomeClient())

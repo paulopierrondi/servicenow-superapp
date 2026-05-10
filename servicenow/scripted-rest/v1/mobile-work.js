@@ -27,11 +27,65 @@
         nowAssist: {
             enabled: true,
             capabilities: [
+                'answer_with_citations',
+                'voice_search',
+                'offline_action_queue',
                 'summarize_incident',
                 'draft_customer_update',
                 'prioritize_demand',
                 'explain_project_risk'
             ]
+        },
+        launcher: [
+            {
+                id: 'it-laptop',
+                title: 'Solicitar notebook',
+                department: 'TI',
+                action: 'open_catalog_item'
+            },
+            {
+                id: 'facilities-room',
+                title: 'Reservar sala segura',
+                department: 'Facilities',
+                action: 'open_workspace_reservation'
+            },
+            {
+                id: 'finance-card',
+                title: 'Cartão corporativo',
+                department: 'Financeiro',
+                action: 'open_request'
+            },
+            {
+                id: 'legal-nda',
+                title: 'NDA fornecedor',
+                department: 'Jurídico',
+                action: 'open_legal_flow'
+            },
+            {
+                id: 'hr-profile',
+                title: 'Atualizar perfil',
+                department: 'RH',
+                action: 'open_profile_update'
+            }
+        ],
+        actionItems: [
+            {
+                id: 'APR000812',
+                title: 'Aprovar mudança mobile',
+                due: 'Hoje 17:00',
+                riskLevel: 'Médio'
+            },
+            {
+                id: 'TASK004219',
+                title: 'Revisar evidência LGPD',
+                due: 'Amanhã',
+                riskLevel: 'Alto'
+            }
+        ],
+        synthesizedAnswer: {
+            question: 'Como revisar consentimento Open Finance?',
+            citation: 'KB001928',
+            requiresHumanReview: true
         },
         workspaces: {
             itsm: [

@@ -12,3 +12,6 @@ railway/services/*/.pid
 
 # Local bootstrap archive extracted from mobile.zip
 bradesco-mobile-repo-bootstrap.tar.gz
+
+# Research scratch files
+.firecrawl/

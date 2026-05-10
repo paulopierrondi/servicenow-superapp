@@ -302,6 +302,104 @@ struct NowWorkItem: Identifiable, Codable, Equatable {
   ]
 }
 
+struct NowLauncherItem: Identifiable, Equatable {
+  let id: String
+  let title: String
+  let subtitle: String
+  let department: String
+  let symbolName: String
+  let tint: NowWorkDomain?
+
+  static let demo = [
+    NowLauncherItem(
+      id: "it-laptop",
+      title: "Solicitar notebook",
+      subtitle: "TI • Catálogo com aprovação",
+      department: "TI",
+      symbolName: "laptopcomputer",
+      tint: .itsm
+    ),
+    NowLauncherItem(
+      id: "facilities-room",
+      title: "Reservar sala segura",
+      subtitle: "Facilities • Reserva com QR",
+      department: "Facilities",
+      symbolName: "building.2.crop.circle.fill",
+      tint: .itsm
+    ),
+    NowLauncherItem(
+      id: "finance-card",
+      title: "Cartão corporativo",
+      subtitle: "Financeiro • Solicitação",
+      department: "Financeiro",
+      symbolName: "creditcard.fill",
+      tint: .spm
+    ),
+    NowLauncherItem(
+      id: "legal-nda",
+      title: "NDA fornecedor",
+      subtitle: "Jurídico • Fluxo assinado",
+      department: "Jurídico",
+      symbolName: "doc.text.fill",
+      tint: .spm
+    ),
+    NowLauncherItem(
+      id: "hr-profile",
+      title: "Atualizar perfil",
+      subtitle: "RH • Dados e férias",
+      department: "RH",
+      symbolName: "person.text.rectangle.fill",
+      tint: nil
+    ),
+  ]
+}
+
+struct NowActionItem: Identifiable, Equatable {
+  let id: String
+  let title: String
+  let requester: String
+  let detail: String
+  let due: String
+  let actionLabel: String
+  let riskLevel: String
+
+  static let demo = [
+    NowActionItem(
+      id: "APR000812",
+      title: "Aprovar mudança mobile",
+      requester: "CAB Digital",
+      detail: "Janela para novo backend de feature flags com rollback por cohort.",
+      due: "Hoje 17:00",
+      actionLabel: "Aprovar",
+      riskLevel: "Médio"
+    ),
+    NowActionItem(
+      id: "TASK004219",
+      title: "Revisar evidência LGPD",
+      requester: "GRC",
+      detail: "Confirmação de base legal antes de habilitar analytics opt-in.",
+      due: "Amanhã",
+      actionLabel: "Revisar",
+      riskLevel: "Alto"
+    ),
+  ]
+}
+
+struct NowKnowledgeAnswer: Identifiable, Equatable {
+  let id: String
+  let question: String
+  let answer: String
+  let citation: String
+
+  static let demo = NowKnowledgeAnswer(
+    id: "kb-open-finance",
+    question: "Como revisar consentimento Open Finance?",
+    answer:
+      "Abra Segurança, confira compartilhamentos ativos e registre qualquer alteração como caso auditável no ServiceNow.",
+    citation: "KB001928 • Política digital"
+  )
+}
+
 struct ScheduledPayment: Identifiable, Equatable {
   let id: UUID
   let title: String
