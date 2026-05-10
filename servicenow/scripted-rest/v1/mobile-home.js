@@ -62,10 +62,17 @@
             },
             {
                 id: 'assist',
-                title: 'Now Assist',
-                subtitle: 'AI operacional com contexto',
+                title: 'Otto / Now Assist',
+                subtitle: 'AI agentic com contexto',
                 action: 'open_support',
                 requires_flag: 'enable_now_assist_chat'
+            },
+            {
+                id: 'autonomous',
+                title: 'Autonomous Workforce',
+                subtitle: 'AI specialists com governança',
+                action: 'open_agentic_workflow',
+                requires_flag: 'enable_autonomous_workforce'
             }
         ],
         compatibility: {
@@ -88,7 +95,8 @@
             enable_pix_shortcut: true,
             enable_consent_center: false,
             enable_now_assist_chat: false,
-            show_balance_by_default: false
+            show_balance_by_default: false,
+            enable_autonomous_workforce: true
         };
         try {
             var gr = new GlideRecord('x_bank_feature_flag');

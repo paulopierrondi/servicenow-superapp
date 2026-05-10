@@ -74,11 +74,13 @@ Usuário → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 
 ## Evolução Now Mobile
 
-A entrada do app deixa o usuário escolher Bradesco ou Itaú e aplica tema, segmento e relacionamento em runtime. Depois disso, a primeira tela é um `NowOS Command Center`: ServiceNow é a experiência principal, com grafo operacional, catálogo por intenção, aprovações, fila offline, respostas com citação, ITSM, SPM, CSM, CRM, trust e Now Assist no mesmo fluxo.
+A entrada do app deixa o usuário escolher Bradesco ou Itaú e aplica tema, segmento e relacionamento em runtime. Depois disso, a primeira tela é um `NowOS Command Center`: ServiceNow é a experiência principal, com grafo operacional, catálogo por intenção, aprovações, fila offline, respostas com citação, ITSM, SPM, CSM, CRM, trust, Otto / Now Assist e workflows agentic no mesmo fluxo.
 
 ## Feature Assinatura
 
-O `Gêmeo Operacional da Jornada` transforma uma intenção bancária em um mapa vivo antes da execução: cliente, consentimento, risco, Now Assist, ITSM, SPM e auditoria aparecem conectados em uma trilha interativa. A ideia é mostrar o impacto operacional de um Pix contestado, aprovação ou mudança antes de abrir chamados manuais.
+O `Gêmeo Operacional da Jornada` transforma uma intenção bancária em um mapa vivo antes da execução: cliente, consentimento, risco, Otto / Now Assist, ITSM, SPM e auditoria aparecem conectados em uma trilha interativa. A ideia é mostrar o impacto operacional de um Pix contestado, aprovação ou mudança antes de abrir chamados manuais.
+
+O `Autonomous Workforce Run` leva isso para execução governada: AIOps AI Specialist detecta e correlaciona sinais, L1 Service Desk AI Specialist faz triagem, CRM Case Management AI Specialist prepara case/comunicação, e AI Control Tower segura a ação sensível até aprovação humana, com least privilege, prompt-shield, citações KB/CMDB/CAB e trilha de auditoria.
 
 ## Cores e UI
 
@@ -86,7 +88,21 @@ O app usa uma base visual nativa iOS, com fundo grouped `#F2F2F7`, superfícies 
 
 ## ServiceNow e Railway
 
-O endpoint `mobile-work` expõe o contrato v1 para ITSM, SPM, CSM, CRM, launcher, action items, respostas sintetizadas e o `journeyTwin`, usado pela aba `Now`. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
+Os endpoints `mobile-work` e `mobile-agentic-workflow` expõem os contratos v1 para ITSM, SPM, CSM, CRM, launcher, action items, respostas sintetizadas, `journeyTwin`, AI specialists, guardrails e execução agentic governada, usados pela aba `Now` e pelo mordomo Otto / Now Assist. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
+
+Para expor o demo em uma instância sem gravar credenciais no repo:
+
+```bash
+SN_INSTANCE_URL=https://sua-instancia.service-now.com \
+SN_USERNAME=admin \
+SN_PASSWORD='...' \
+node servicenow/deploy/deploy-agentic-rest.mjs
+
+SN_INSTANCE_URL=https://sua-instancia.service-now.com \
+SN_USERNAME=admin \
+SN_PASSWORD='...' \
+node servicenow/seed/seed-agentic-workflow.mjs
+```
 
 ## Compliance
 

@@ -7,6 +7,8 @@ struct SupportView: View {
   @State private var draft = ""
   @State private var isSending = false
   @State private var managerHandoffPrepared = false
+  @State private var workflowPublished = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
 
   private let nowAssistClient = NowAssistClient()
 
@@ -23,8 +25,10 @@ struct SupportView: View {
             if isDemoConversation {
               chat
               assistantStatus
+              agenticExposure
             } else {
               assistantStatus
+              agenticExposure
               chat
             }
             managerHandoff
@@ -90,6 +94,68 @@ struct SupportView: View {
             symbolName: "lock.doc.fill"
           )
         }
+      }
+    }
+  }
+
+  private var agenticExposure: some View {
+    let workflow = AutonomousWorkflowResponse.demo
+
+    return VisualCard {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+          IconBubble(
+            symbolName: "point.3.connected.trianglepath.dotted",
+            color: BankTheme.Palette.brandAction,
+            size: BankTheme.Size.compactIconBubble
+          )
+
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            Text("Agentic workflow exposto")
+              .font(BankTheme.Typography.headline)
+              .foregroundColor(BankTheme.Palette.ink)
+
+            Text(workflow.run.title)
+              .font(BankTheme.Typography.body)
+              .foregroundColor(BankTheme.Palette.secondaryInk)
+              .fixedSize(horizontal: false, vertical: true)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          StatusBadge(
+            title: workflowPublished ? "na instância" : "rascunho",
+            color: workflowPublished ? BankTheme.Palette.success : BankTheme.Palette.warning,
+            symbolName: workflowPublished ? "checkmark.seal.fill" : "doc.badge.gearshape.fill"
+          )
+        }
+
+        HStack(spacing: BankTheme.Spacing.sm) {
+          AgenticMiniMetric(value: workflow.run.severity, title: "Severidade")
+          AgenticMiniMetric(value: "\(workflow.agents.count)", title: "AI specialists")
+          AgenticMiniMetric(value: workflow.run.businessImpact, title: "Impacto")
+        }
+
+        Button {
+          workflowPublished.toggle()
+          if workflowPublished {
+            messages.append(
+              NowAssistMessage(
+                id: UUID(),
+                role: .assistant,
+                text:
+                  "Run \(workflow.run.id) exposto como trilha demo: incidente/change/case, CMDB, citações e guardrails prontos para revisão na instância.",
+                timestamp: Date()
+              )
+            )
+          }
+        } label: {
+          Label(
+            workflowPublished ? "Workflow publicado" : "Publicar plano na instância",
+            systemImage: workflowPublished ? "checkmark.seal.fill" : "arrow.up.doc.fill"
+          )
+        }
+        .buttonStyle(.bankPrimary)
       }
     }
   }
@@ -220,5 +286,32 @@ private struct MessageBubble: View {
         .foregroundColor(BankTheme.Palette.mutedInk)
     }
     .accessibilityElement(children: .combine)
+  }
+}
+
+private struct AgenticMiniMetric: View {
+  let value: String
+  let title: String
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+      Text(value)
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(BankTheme.Palette.ink)
+        .lineLimit(1)
+        .minimumScaleFactor(0.74)
+
+      Text(title)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(BankTheme.Palette.secondaryInk)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.sm, style: .continuous)
+        .fill(BankTheme.Palette.subtleSurface)
+    )
   }
 }

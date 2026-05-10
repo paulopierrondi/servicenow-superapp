@@ -37,6 +37,10 @@ struct NowOperationsView: View {
     "-BankAppDemoApproved")
   @State private var executiveRequestReleased = ProcessInfo.processInfo.arguments.contains(
     "-BankAppDemoApproved")
+  @State private var autonomousRunStarted = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
+  @State private var autonomousHumanApproved = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
 
   private var workItems: [NowWorkItem] {
     switch workspace {
@@ -61,6 +65,10 @@ struct NowOperationsView: View {
     isItau ? "Core Pix Personnalité" : "Pix Prime mobile"
   }
 
+  private var autonomousWorkflow: AutonomousWorkflowResponse {
+    .demo
+  }
+
   var body: some View {
     NavigationView {
       AppBackground {
@@ -68,6 +76,7 @@ struct NowOperationsView: View {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
             executiveDecisionCenter
+            autonomousWorkforcePanel
             journeyTwin
             CMDBHealthPanel(
               title: "CMDB Health do dia",
@@ -236,6 +245,109 @@ struct NowOperationsView: View {
     ) {
       searchText = NowJourneyTwin.demo.title
       selectedTab = .support
+    }
+  }
+
+  private var autonomousWorkforcePanel: some View {
+    let workflow = autonomousWorkflow
+
+    return VStack(spacing: BankTheme.Spacing.md) {
+      SectionHeader("Autonomous Workforce", actionKey: "Expor na instância") {
+        selectedTab = .support
+      }
+
+      VisualCard(fill: BankTheme.Palette.graphite) {
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+          HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+              Text(workflow.controlPlane.experience.uppercased())
+                .font(BankTheme.Typography.caption)
+                .foregroundColor(BankTheme.Palette.brandAction)
+
+              Text(workflow.run.title)
+                .font(BankTheme.Typography.section)
+                .foregroundColor(.white)
+                .fixedSize(horizontal: false, vertical: true)
+
+              Text(workflow.controlPlane.valueChain)
+                .font(BankTheme.Typography.callout)
+                .foregroundColor(.white.opacity(0.74))
+            }
+
+            Spacer(minLength: BankTheme.Spacing.sm)
+
+            StatusBadge(
+              title: autonomousHumanApproved ? "governado" : workflow.run.severity,
+              color: autonomousHumanApproved
+                ? BankTheme.Palette.success : BankTheme.Palette.warning,
+              symbolName: autonomousHumanApproved
+                ? "checkmark.shield.fill" : "exclamationmark.triangle.fill"
+            )
+          }
+
+          VStack(spacing: BankTheme.Spacing.sm) {
+            ForEach(workflow.run.steps) { step in
+              AutonomousStepRow(
+                step: step,
+                isActive: autonomousRunStarted && step.id != "govern",
+                isApproved: autonomousHumanApproved
+              )
+            }
+          }
+
+          HStack(spacing: BankTheme.Spacing.sm) {
+            ForEach(workflow.agents) { agent in
+              AutonomousAgentChip(agent: agent)
+            }
+          }
+
+          HStack(spacing: BankTheme.Spacing.sm) {
+            GovernancePill(title: "Human in the loop", isOn: workflow.governance.humanInTheLoop)
+            GovernancePill(title: "Least privilege", isOn: workflow.governance.leastPrivilege)
+          }
+
+          HStack(spacing: BankTheme.Spacing.sm) {
+            Button {
+              withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+                autonomousRunStarted.toggle()
+              }
+            } label: {
+              Label(
+                autonomousRunStarted ? "Workflow em execução" : "Iniciar execução agentic",
+                systemImage: autonomousRunStarted
+                  ? "dot.radiowaves.left.and.right" : "play.circle.fill"
+              )
+            }
+            .buttonStyle(.bankSecondary)
+
+            Button {
+              withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+                autonomousHumanApproved.toggle()
+                emergencyChangeApproved = true
+                incidentBridgeOpened = true
+              }
+            } label: {
+              Label(
+                autonomousHumanApproved ? "Aprovado" : "Aprovar guardrail",
+                systemImage: autonomousHumanApproved
+                  ? "checkmark.seal.fill" : "person.badge.shield.checkmark.fill"
+              )
+            }
+            .buttonStyle(.bankPrimary)
+          }
+
+          Text("Decisão humana: \(workflow.run.nextHumanDecision)")
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(.white.opacity(0.72))
+            .fixedSize(horizontal: false, vertical: true)
+
+          HStack(spacing: BankTheme.Spacing.sm) {
+            ForEach(workflow.citations) { citation in
+              CitationPill(citation: citation)
+            }
+          }
+        }
+      }
     }
   }
 
@@ -575,6 +687,142 @@ private struct WarRoomSignalBoard: View {
         }
       }
     }
+  }
+}
+
+private struct AutonomousStepRow: View {
+  let step: AutonomousWorkflowStep
+  let isActive: Bool
+  let isApproved: Bool
+
+  private var accent: Color {
+    if step.requiresHumanApproval && !isApproved { return BankTheme.Palette.warning }
+    return isActive || isApproved ? BankTheme.Palette.success : BankTheme.Palette.brandAction
+  }
+
+  private var displayedState: String {
+    if step.requiresHumanApproval && isApproved { return "aprovado" }
+    if isActive && step.state == "pronto" { return "executando" }
+    return step.state
+  }
+
+  var body: some View {
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      VStack(spacing: BankTheme.Spacing.xs) {
+        Circle()
+          .fill(accent)
+          .frame(width: 11, height: 11)
+
+        Rectangle()
+          .fill(Color.white.opacity(0.16))
+          .frame(width: 2, height: 42)
+      }
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+        HStack(alignment: .firstTextBaseline, spacing: BankTheme.Spacing.sm) {
+          Text(step.phase.uppercased())
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(accent)
+
+          Text(displayedState)
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(.white.opacity(0.68))
+
+          Spacer(minLength: 0)
+        }
+
+        Text(step.action)
+          .font(BankTheme.Typography.headline)
+          .foregroundColor(.white)
+          .fixedSize(horizontal: false, vertical: true)
+
+        Text(step.ownerAgent)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(.white.opacity(0.72))
+
+        Text(step.evidence)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(.white.opacity(0.62))
+          .fixedSize(horizontal: false, vertical: true)
+      }
+    }
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(Color.white.opacity(0.07))
+    )
+  }
+}
+
+private struct AutonomousAgentChip: View {
+  let agent: AutonomousAgent
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+      Text(agent.domain)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(BankTheme.Palette.brandAction)
+        .lineLimit(1)
+        .minimumScaleFactor(0.84)
+
+      Text(agent.name)
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(.white)
+        .lineLimit(2)
+        .minimumScaleFactor(0.8)
+    }
+    .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.sm, style: .continuous)
+        .fill(Color.white.opacity(0.08))
+    )
+    .accessibilityHint(Text(agent.currentWork))
+  }
+}
+
+private struct GovernancePill: View {
+  let title: String
+  let isOn: Bool
+
+  var body: some View {
+    Label(title, systemImage: isOn ? "checkmark.shield.fill" : "xmark.shield.fill")
+      .font(BankTheme.Typography.caption)
+      .foregroundColor(isOn ? BankTheme.Palette.success : BankTheme.Palette.warning)
+      .lineLimit(1)
+      .minimumScaleFactor(0.84)
+      .frame(maxWidth: .infinity)
+      .padding(.vertical, BankTheme.Spacing.sm)
+      .background(
+        Capsule(style: .continuous)
+          .fill(Color.white.opacity(0.08))
+      )
+  }
+}
+
+private struct CitationPill: View {
+  let citation: AutonomousCitation
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+      Text(citation.label)
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(.white)
+        .lineLimit(1)
+        .minimumScaleFactor(0.86)
+
+      Text(citation.source)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(.white.opacity(0.64))
+        .lineLimit(2)
+        .minimumScaleFactor(0.82)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.sm, style: .continuous)
+        .fill(Color.white.opacity(0.07))
+    )
   }
 }
 

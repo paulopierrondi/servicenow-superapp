@@ -11,7 +11,8 @@ final class BankAppTests: XCTestCase {
         "enable_pix_shortcut": true,
         "enable_consent_center": false,
         "enable_now_assist_chat": true,
-        "show_balance_by_default": false
+        "show_balance_by_default": false,
+        "enable_autonomous_workforce": true
       }
       """.utf8
     )
@@ -22,6 +23,7 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(flags.enablePixShortcut)
     XCTAssertFalse(flags.enableConsentCenter)
     XCTAssertTrue(flags.isEnabled("enable_now_assist_chat"))
+    XCTAssertTrue(flags.isEnabled("enable_autonomous_workforce"))
     XCTAssertFalse(flags.isEnabled("unknown_flag"))
   }
 
@@ -117,6 +119,7 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(message.contains("ITSM"))
     XCTAssertTrue(message.contains("CSM"))
     XCTAssertTrue(message.contains("CRM"))
+    XCTAssertTrue(message.contains("workflow agentic"))
     XCTAssertFalse(message.contains("Saldo"))
   }
 
@@ -137,6 +140,18 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(twin.nodes.contains { $0.id == "itsm" && $0.isCritical })
     XCTAssertTrue(twin.nodes.contains { $0.id == "spm" })
     XCTAssertTrue(twin.pulses.contains { $0.id == "audit" })
+  }
+
+  func testAutonomousWorkflowIncludesGovernedAISpecialists() {
+    let workflow = AutonomousWorkflowResponse.demo
+
+    XCTAssertEqual(workflow.schemaVersion, "2026-05-agentic-v1")
+    XCTAssertTrue(workflow.controlPlane.controlTower.contains("AI Control Tower"))
+    XCTAssertTrue(workflow.agents.contains { $0.name.contains("AIOps") })
+    XCTAssertTrue(workflow.agents.contains { $0.name.contains("CRM Case Management") })
+    XCTAssertTrue(workflow.run.steps.contains { $0.requiresHumanApproval })
+    XCTAssertFalse(workflow.governance.piiLoggingAllowed)
+    XCTAssertTrue(workflow.citations.contains { $0.label == "Service Graph" })
   }
 
   @MainActor

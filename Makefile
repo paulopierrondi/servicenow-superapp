@@ -104,6 +104,12 @@ contract-test: mock-harness-run
 		-H "X-Client-Platform: ios" \
 		http://localhost:8080/api/x_bank/v1/mobile-work > /dev/null && \
 		echo "✓ mobile-work v1" || (echo "✗ mobile-work v1"; exit 1)
+	@curl -fsS \
+		-H "X-Client-Version: 0.1.0" \
+		-H "X-Client-Schema-Version: 2026-05-agentic-v1" \
+		-H "X-Client-Platform: ios" \
+		http://localhost:8080/api/x_bank/v1/mobile-agentic-workflow?brand=itau > /dev/null && \
+		echo "✓ mobile-agentic-workflow v1" || (echo "✗ mobile-agentic-workflow v1"; exit 1)
 	@$(MAKE) mock-harness-stop
 
 diagrams:

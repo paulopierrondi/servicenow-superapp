@@ -25,13 +25,15 @@ struct FeatureFlags: Codable, Equatable {
   var enableConsentCenter: Bool
   var enableNowAssistChat: Bool
   var showBalanceByDefault: Bool
+  var enableAutonomousWorkforce: Bool
 
   static let demo = FeatureFlags(
     showCardVirtual: true,
     enablePixShortcut: true,
     enableConsentCenter: true,
     enableNowAssistChat: true,
-    showBalanceByDefault: false
+    showBalanceByDefault: false,
+    enableAutonomousWorkforce: true
   )
 
   enum CodingKeys: String, CodingKey {
@@ -40,6 +42,39 @@ struct FeatureFlags: Codable, Equatable {
     case enableConsentCenter = "enable_consent_center"
     case enableNowAssistChat = "enable_now_assist_chat"
     case showBalanceByDefault = "show_balance_by_default"
+    case enableAutonomousWorkforce = "enable_autonomous_workforce"
+  }
+
+  init(
+    showCardVirtual: Bool,
+    enablePixShortcut: Bool,
+    enableConsentCenter: Bool,
+    enableNowAssistChat: Bool,
+    showBalanceByDefault: Bool,
+    enableAutonomousWorkforce: Bool
+  ) {
+    self.showCardVirtual = showCardVirtual
+    self.enablePixShortcut = enablePixShortcut
+    self.enableConsentCenter = enableConsentCenter
+    self.enableNowAssistChat = enableNowAssistChat
+    self.showBalanceByDefault = showBalanceByDefault
+    self.enableAutonomousWorkforce = enableAutonomousWorkforce
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    showCardVirtual =
+      try container.decodeIfPresent(Bool.self, forKey: .showCardVirtual) ?? false
+    enablePixShortcut =
+      try container.decodeIfPresent(Bool.self, forKey: .enablePixShortcut) ?? false
+    enableConsentCenter =
+      try container.decodeIfPresent(Bool.self, forKey: .enableConsentCenter) ?? false
+    enableNowAssistChat =
+      try container.decodeIfPresent(Bool.self, forKey: .enableNowAssistChat) ?? false
+    showBalanceByDefault =
+      try container.decodeIfPresent(Bool.self, forKey: .showBalanceByDefault) ?? false
+    enableAutonomousWorkforce =
+      try container.decodeIfPresent(Bool.self, forKey: .enableAutonomousWorkforce) ?? false
   }
 
   func isEnabled(_ key: String?) -> Bool {
@@ -49,6 +84,7 @@ struct FeatureFlags: Codable, Equatable {
     case "enable_consent_center": return enableConsentCenter
     case "enable_now_assist_chat": return enableNowAssistChat
     case "show_balance_by_default": return showBalanceByDefault
+    case "enable_autonomous_workforce": return enableAutonomousWorkforce
     case .none: return true
     default: return false
     }
@@ -99,11 +135,19 @@ struct HomeCardDTO: Codable, Equatable, Identifiable {
     ),
     HomeCardDTO(
       id: "assist",
-      title: "Now Assist",
-      subtitle: "AI operacional com contexto",
+      title: "Otto / Now Assist",
+      subtitle: "AI agentic com contexto",
       action: "open_support",
       masked: nil,
       requiresFlag: "enable_now_assist_chat"
+    ),
+    HomeCardDTO(
+      id: "autonomous",
+      title: "Autonomous Workforce",
+      subtitle: "AI specialists com governança",
+      action: "open_agentic_workflow",
+      masked: nil,
+      requiresFlag: "enable_autonomous_workforce"
     ),
   ]
 }
@@ -609,6 +653,217 @@ struct NowJourneyPulse: Identifiable, Equatable {
   let metric: String
   let detail: String
   let symbolName: String
+}
+
+struct AutonomousWorkflowResponse: Codable, Equatable {
+  let schemaVersion: String
+  let brand: String
+  let controlPlane: AutonomousControlPlane
+  let run: AutonomousWorkflowRun
+  let agents: [AutonomousAgent]
+  let governance: AutonomousGovernance
+  let citations: [AutonomousCitation]
+  let compatibility: CompatibilityDTO
+
+  static var demo: AutonomousWorkflowResponse {
+    let brand = AppBrand.current
+    return AutonomousWorkflowResponse(
+      schemaVersion: "2026-05-agentic-v1",
+      brand: brand.rawValue,
+      controlPlane: .demo(for: brand),
+      run: .demo(for: brand),
+      agents: AutonomousAgent.demo(for: brand),
+      governance: .demo,
+      citations: AutonomousCitation.demo,
+      compatibility: CompatibilityDTO(
+        minClientVersion: "0.1.0",
+        receivedClientVersion: "0.1.0",
+        receivedSchemaHeader: "2026-05-agentic-v1",
+        receivedPlatform: "ios"
+      )
+    )
+  }
+}
+
+struct AutonomousControlPlane: Codable, Equatable {
+  let experience: String
+  let valueChain: String
+  let systemOfAction: String
+  let controlTower: String
+
+  static func demo(for brand: AppBrand) -> AutonomousControlPlane {
+    AutonomousControlPlane(
+      experience: "ServiceNow Otto / Now Assist",
+      valueChain: "data -> decision -> action -> trust",
+      systemOfAction: "\(brand.displayName) ServiceNow Super App",
+      controlTower: "AI Control Tower + CMDB + audit trail"
+    )
+  }
+}
+
+struct AutonomousWorkflowRun: Codable, Equatable {
+  let id: String
+  let title: String
+  let severity: String
+  let service: String
+  let businessImpact: String
+  let status: String
+  let nextHumanDecision: String
+  let steps: [AutonomousWorkflowStep]
+
+  static func demo(for brand: AppBrand) -> AutonomousWorkflowRun {
+    let isItau = brand == .itau
+    return AutonomousWorkflowRun(
+      id: isItau ? "AWR-ITAU-P0-20260510" : "AWR-BRAD-P1-20260510",
+      title: isItau
+        ? "P0 Core Pix Personnalité com execução agentic governada"
+        : "P1 Pix Prime com contenção agentic governada",
+      severity: isItau ? "P0" : "P1",
+      service: isItau ? "Core Pix Personnalité" : "Pix Prime Mobile",
+      businessImpact: isItau ? "R$ 8,4 mi em valor protegido" : "42 cases Prime protegidos",
+      status: "Aguardando aprovação humana",
+      nextHumanDecision: isItau
+        ? "Aprovar change emergencial e comunicação executiva"
+        : "Aprovar contenção no gateway e playbook Prime",
+      steps: AutonomousWorkflowStep.demo(for: brand)
+    )
+  }
+}
+
+struct AutonomousWorkflowStep: Codable, Equatable, Identifiable {
+  let id: String
+  let phase: String
+  let ownerAgent: String
+  let action: String
+  let evidence: String
+  let state: String
+  let requiresHumanApproval: Bool
+
+  static func demo(for brand: AppBrand) -> [AutonomousWorkflowStep] {
+    let isItau = brand == .itau
+    return [
+      AutonomousWorkflowStep(
+        id: "sense",
+        phase: "Sense",
+        ownerAgent: "AIOps AI Specialist",
+        action: isItau
+          ? "Agrupar alertas do app, Pix, antifraude e mensageria"
+          : "Agrupar latência do mobile gateway, Pix e antifraude",
+        evidence: "CMDB Health 91, 7 relações órfãs, 18 CIs stale",
+        state: "concluído",
+        requiresHumanApproval: false
+      ),
+      AutonomousWorkflowStep(
+        id: "decide",
+        phase: "Decide",
+        ownerAgent: "L1 Service Desk AI Specialist",
+        action: "Classificar severidade, impacto, fila responsável e SLA",
+        evidence: isItau ? "P0, cohort Personnalité, impacto executivo" : "P1, Prime, SLA 18 min",
+        state: "concluído",
+        requiresHumanApproval: false
+      ),
+      AutonomousWorkflowStep(
+        id: "act",
+        phase: "Act",
+        ownerAgent: "CRM Case Management AI Specialist",
+        action: "Criar case CSM, rascunhar comunicação e preparar handoff",
+        evidence: "Citações KB, histórico omnicanal e next best action",
+        state: "pronto",
+        requiresHumanApproval: true
+      ),
+      AutonomousWorkflowStep(
+        id: "govern",
+        phase: "Govern",
+        ownerAgent: "AI Control Tower",
+        action: "Aplicar least privilege, prompt-shield, trilha auditável e rollback",
+        evidence: "Política x_bank_ai_guardrail + CAB + LGPD",
+        state: "aguardando humano",
+        requiresHumanApproval: true
+      ),
+    ]
+  }
+}
+
+struct AutonomousAgent: Codable, Equatable, Identifiable {
+  let id: String
+  let name: String
+  let domain: String
+  let permissionScope: String
+  let currentWork: String
+
+  static func demo(for brand: AppBrand) -> [AutonomousAgent] {
+    let segment = brand.customerSegment
+    return [
+      AutonomousAgent(
+        id: "aiops",
+        name: "AIOps AI Specialist",
+        domain: "IT Operations",
+        permissionScope: "Observability read + incident draft",
+        currentWork: "RCA contra CMDB, logs e eventos correlacionados"
+      ),
+      AutonomousAgent(
+        id: "service-desk",
+        name: "L1 Service Desk AI Specialist",
+        domain: "ITSM",
+        permissionScope: "Incident triage + knowledge retrieval",
+        currentWork: "Triagem inicial, categorização, SLA e resumo"
+      ),
+      AutonomousAgent(
+        id: "crm-case",
+        name: "CRM Case Management AI Specialist",
+        domain: "CRM / CSM",
+        permissionScope: "Case draft + customer update draft",
+        currentWork: "Comunicação \(segment), case CSM e handoff"
+      ),
+      AutonomousAgent(
+        id: "risk",
+        name: "Vulnerability Resolution AI Specialist",
+        domain: "Security & Risk",
+        permissionScope: "Risk evidence + change draft",
+        currentWork: "Guardrail, exceção, change e evidências"
+      ),
+    ]
+  }
+}
+
+struct AutonomousGovernance: Codable, Equatable {
+  let humanInTheLoop: Bool
+  let leastPrivilege: Bool
+  let piiLoggingAllowed: Bool
+  let promptInjectionShield: Bool
+  let auditTrail: String
+
+  static let demo = AutonomousGovernance(
+    humanInTheLoop: true,
+    leastPrivilege: true,
+    piiLoggingAllowed: false,
+    promptInjectionShield: true,
+    auditTrail: "x_bank_ai_audit_event"
+  )
+}
+
+struct AutonomousCitation: Codable, Equatable, Identifiable {
+  let id: String
+  let label: String
+  let source: String
+
+  static let demo = [
+    AutonomousCitation(
+      id: "kb",
+      label: "KB001928",
+      source: "Política de consentimento e comunicação digital"
+    ),
+    AutonomousCitation(
+      id: "cmdb",
+      label: "Service Graph",
+      source: "CIs e relações críticas do fluxo Pix"
+    ),
+    AutonomousCitation(
+      id: "cab",
+      label: "CHG004102",
+      source: "Plano de rollback e aprovação CAB"
+    ),
+  ]
 }
 
 struct ScheduledPayment: Identifiable, Equatable {
