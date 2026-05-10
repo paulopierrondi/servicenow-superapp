@@ -1,12 +1,12 @@
 # Integration with Now Mobile — peça central
 
-> Este documento explica **como o app nativo Bradesco vive dentro do ecossistema oficial ServiceNow Mobile**, e não como produto isolado. Leitura obrigatória para qualquer agente, desenvolvedor ou stakeholder.
+> Este documento explica **como os apps nativos Bradesco/Itaú vivem dentro do ecossistema oficial ServiceNow Mobile**, e não como produtos isolados. Leitura obrigatória para qualquer agente, desenvolvedor ou stakeholder.
 
 ---
 
 ## TL;DR
 
-O app Bradesco (binário próprio, App Store própria) é uma **extensão nativa do ecossistema ServiceNow Mobile**, conectada por 5 pontos:
+Os apps Bradesco/Itaú (binários próprios, App Store própria) são uma **extensão nativa do ecossistema ServiceNow Mobile**, conectada por 5 pontos:
 
 1. **NowSDK embarcado** — telemetria, NowAssist chat, theming, services-of-platform.
 2. **Backend único na instância** — Scripted REST versionado em `x_bank` scoped app, ACLs, consent model.
@@ -15,6 +15,24 @@ O app Bradesco (binário próprio, App Store própria) é uma **extensão nativa
 5. **IdP + NowAssist compartilhados** — continuidade de sessão e de contexto conversacional entre canais.
 
 A separação dos dois apps existe por motivos de UX (banco de varejo) e governança (binário do banco passa em App Review do banco). A integração ao ecossistema oficial vem por embed e por contrato, não por share-binário.
+
+---
+
+## 0. Estratégia de app: padrão configurado vs binário próprio
+
+A informação operacional sobre baixar o Now Mobile ou ServiceNow Agent e configurar a experiência via Mobile App Builder é correta e muda a arquitetura de entrega: existem dois trilhos, não um único app tentando resolver tudo.
+
+| Trilha | Use quando | Como customiza | Limites |
+|---|---|---|---|
+| **App padrão ServiceNow** (`Now Mobile` / `ServiceNow Agent`) | Colaboradores, gerente, atendente, field service, ITSM/SPM interno, aprovações, catálogo, reservas, anexos e tarefas | Mobile App Builder dentro da instância, tema/cores/ícones via plataforma e Next Experience | Não é a jornada de cliente bancário massivo; depende da UX e política do app base |
+| **Binário nativo bancário** (`BankApp` Bradesco/Itaú) | Cliente final, Pix, cartão, Open Finance, biometria custom, Keychain, pinning, marca App Store e microinterações críticas | SwiftUI + design system local + contratos Scripted REST + Now Assist/NowSDK encapsulados | Exige engenharia iOS, App Review próprio e governança de release do banco |
+
+Decisão prática: manter o app nativo como super app bancário de cliente, e usar o app padrão/customizado da ServiceNow como canal operacional ou companion interno. Os dois consomem a mesma instância, a mesma base Now Assist e contratos de integração compatíveis.
+
+Referências:
+
+- Now Mobile na App Store: https://apps.apple.com/br/app/now-mobile/id1469616608
+- Visão oficial ServiceNow Mobile: https://downloads.docs.servicenow.com/resource/enus/infocard/statcard_infographic_mobile-orl.pdf
 
 ---
 
