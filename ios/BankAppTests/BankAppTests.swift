@@ -33,6 +33,15 @@ final class BankAppTests: XCTestCase {
     XCTAssertEqual(decoded.schemaVersion, "2026-05-home-v1")
   }
 
+  func testMobileHomeDemoIsServiceNowFirst() {
+    let actions = Set(MobileHomeResponse.demo.cards.map(\.action))
+
+    XCTAssertTrue(actions.contains("open_workspaces"))
+    XCTAssertTrue(actions.contains("open_catalog"))
+    XCTAssertFalse(actions.contains("open_payments"))
+    XCTAssertFalse(MobileHomeResponse.demo.cards.contains { $0.title == "Conta principal" })
+  }
+
   func testDeepLinkRoutesCustomSchemeAndUniversalLink() throws {
     let router = DeepLinkRouter(telemetry: NoopTelemetry())
 
@@ -79,6 +88,15 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(bradescoItems.contains { $0.domain == .csm && $0.title == "Caso Pix contestado" })
     XCTAssertTrue(bradescoItems.contains { $0.domain == .crm && $0.title.contains("Prime") })
     XCTAssertTrue(itauItems.contains { $0.domain == .crm && $0.title.contains("Personnalité") })
+  }
+
+  func testNowAssistWelcomeIsOperationalNotTransactional() {
+    let message = NowAssistMessage.welcome.text
+
+    XCTAssertTrue(message.contains("ITSM"))
+    XCTAssertTrue(message.contains("CSM"))
+    XCTAssertTrue(message.contains("CRM"))
+    XCTAssertFalse(message.contains("Saldo"))
   }
 
   func testJourneyTwinConnectsBankingIntentToOperationalControls() {

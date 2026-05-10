@@ -17,7 +17,7 @@ struct NowAssistMessage: Identifiable, Equatable {
       id: UUID(uuidString: "BDE8CDB2-52BE-4DDE-9F9E-5F75F8CC4001")!,
       role: .assistant,
       text:
-        "Oi, sou o NowAssist do \(AppBrand.current.displayName). Posso analisar cobranças, Pix, cartões, consentimentos, ITSM, SPM, CSM, CRM e acionar atendimento humano com contexto.",
+        "Oi, sou o NowAssist do tenant \(AppBrand.current.displayName). Posso analisar incidentes, cases, demandas, consentimentos, ITSM, SPM, CSM, CRM e acionar especialistas com contexto.",
       timestamp: Date()
     )
   }
@@ -37,7 +37,7 @@ final class NowAssistClient {
     let reply: String
     if text.localizedCaseInsensitiveContains("pix") {
       reply =
-        "Encontrei seus Pix recentes. Posso preparar contestação, comprovante ou falar com sua gerente mantendo o contexto da jornada."
+        "Vou tratar Pix como jornada operacional: CSM para impacto ao cliente, ITSM para degradação, CRM para comunicação e SPM se virar demanda."
     } else if text.localizedCaseInsensitiveContains("itsm") {
       reply =
         "No ITSM, o incidente de latência Pix está em contenção. Já gerei resumo de causa provável, SLA e plano de comunicação."
@@ -60,7 +60,7 @@ final class NowAssistClient {
         "Posso abrir o item de catálogo correto, preencher dados conhecidos e manter a solicitação rastreável na plataforma."
     } else if text.localizedCaseInsensitiveContains("cart") {
       reply =
-        "Seu cartão virtual está pronto para compra online. Para limites maiores, posso iniciar uma análise com Open Finance."
+        "Se envolver cartão, eu separo experiência do cliente, risco, evidência e fluxo operacional antes de qualquer ação transacional."
     } else {
       reply =
         "Vou cruzar os dados da sua conta com os fluxos ServiceNow e trazer uma resposta acionável. Nenhum dado sensível será exposto no chat."

@@ -2,7 +2,7 @@
 //
 // Endpoint: GET /api/x_bank/v1/mobile-home
 //
-// Retorna o payload de home do app nativo Bradesco.
+// Retorna o payload do command center ServiceNow-first do app nativo multi-tenant.
 // Versionado por path; futura v2 convive com v1 (ADR-004).
 //
 // Headers obrigatórios (lidos):
@@ -14,7 +14,7 @@
 //   schemaVersion             → versão do schema retornado
 //   featureFlags              → flags server-side
 //   compatibility             → minClientVersion, headers ecoados
-//   cards                     → cards de home (saldo, pagamentos, segurança, suporte)
+//   cards                     → cards do super app (workspaces, catálogo, trust, assist)
 //
 // Princípios:
 //   - Nunca quebrar v1 em produção (ADR-004).
@@ -43,28 +43,27 @@
         featureFlags: featureFlags,
         cards: [
             {
-                id: 'balance',
-                title: 'Conta principal',
-                subtitle: 'Saldo protegido',
-                action: 'open_balance',
-                masked: true
+                id: 'workspaces',
+                title: 'Workspaces',
+                subtitle: 'ITSM, SPM, CSM e CRM',
+                action: 'open_workspaces'
             },
             {
-                id: 'payments',
-                title: 'Pagamentos',
-                subtitle: 'Pix, boleto e cartão',
-                action: 'open_payments'
+                id: 'catalog',
+                title: 'Catálogo vivo',
+                subtitle: 'Orquestração por intenção',
+                action: 'open_catalog'
             },
             {
-                id: 'security',
-                title: 'Centro de segurança',
-                subtitle: 'Alertas e dispositivos',
+                id: 'trust',
+                title: 'Trust center',
+                subtitle: 'Consentimento, LGPD e auditoria',
                 action: 'open_security'
             },
             {
-                id: 'support',
-                title: 'Atendimento',
-                subtitle: 'Chat com NowAssist',
+                id: 'assist',
+                title: 'Now Assist',
+                subtitle: 'AI operacional com contexto',
                 action: 'open_support',
                 requires_flag: 'enable_now_assist_chat'
             }

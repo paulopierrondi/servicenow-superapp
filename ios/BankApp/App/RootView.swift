@@ -19,11 +19,11 @@ enum AppTab: Hashable {
 
   var symbolName: String {
     switch self {
-    case .home: return "house.fill"
-    case .payments: return "qrcode.viewfinder"
-    case .security: return "shield.lefthalf.filled"
-    case .support: return "bubble.left.and.bubble.right.fill"
-    case .now: return "rectangle.3.group.bubble.left.fill"
+    case .home: return "rectangle.3.group.bubble.left.fill"
+    case .payments: return "square.grid.2x2.fill"
+    case .security: return "shield.checkered"
+    case .support: return "sparkles"
+    case .now: return "tray.full.fill"
     }
   }
 

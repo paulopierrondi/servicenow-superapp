@@ -74,33 +74,33 @@ struct HomeCardDTO: Codable, Equatable, Identifiable {
 
   static let demo = [
     HomeCardDTO(
-      id: "balance",
-      title: "Conta principal",
-      subtitle: "Saldo protegido",
-      action: "open_balance",
-      masked: true,
+      id: "workspaces",
+      title: "Workspaces",
+      subtitle: "ITSM, SPM, CSM e CRM",
+      action: "open_workspaces",
+      masked: nil,
       requiresFlag: nil
     ),
     HomeCardDTO(
-      id: "payments",
-      title: "Pagamentos",
-      subtitle: "Pix, boleto e cartão",
-      action: "open_payments",
+      id: "catalog",
+      title: "Catálogo vivo",
+      subtitle: "Orquestração por intenção",
+      action: "open_catalog",
       masked: nil,
       requiresFlag: nil
     ),
     HomeCardDTO(
       id: "investments",
-      title: "Investimentos",
-      subtitle: "Carteira e objetivos",
-      action: "open_investments",
+      title: "Trust",
+      subtitle: "Consentimento e auditoria",
+      action: "open_security",
       masked: nil,
       requiresFlag: nil
     ),
     HomeCardDTO(
-      id: "support",
-      title: "Atendimento",
-      subtitle: "NowAssist com contexto",
+      id: "assist",
+      title: "Now Assist",
+      subtitle: "AI operacional com contexto",
       action: "open_support",
       masked: nil,
       requiresFlag: "enable_now_assist_chat"
@@ -194,13 +194,13 @@ struct SmartInsight: Identifiable, Equatable {
     SmartInsight(
       id: UUID(uuidString: "F5760E6C-B5C7-4B27-A604-A6E5C225B001")!,
       title: "Pix recorrente pronto",
-      detail: "O aluguel vence amanhã. Agende com biometria e recibo automático.",
+      detail: "Now Assist detectou intenção repetida e recomenda catálogo com aprovação auditável.",
       symbolName: "bolt.horizontal.circle.fill"
     ),
     SmartInsight(
       id: UUID(uuidString: "F5760E6C-B5C7-4B27-A604-A6E5C225B002")!,
-      title: "Open Finance ativo",
-      detail: "Seu limite foi recalculado com dados compartilhados até junho.",
+      title: "Consentimento com impacto",
+      detail: "Mudança de compartilhamento deve gerar evidência LGPD e atualização no case.",
       symbolName: "link.circle.fill"
     ),
   ]
@@ -489,7 +489,7 @@ struct NowJourneyTwin: Equatable {
     NowJourneyTwin(
       title: "Pix contestado sem abrir chamado manual",
       hypothesis:
-        "O app calcula o impacto antes de executar: cliente, consentimento, antifraude, ITSM, SPM e auditoria ficam no mesmo mapa.",
+        "O app calcula o impacto antes de executar: cliente, consentimento, risco, CSM, CRM, ITSM, SPM e auditoria ficam no mesmo mapa.",
       minutesSaved: "42 min",
       riskDelta: "-31%",
       auditId: "JTW-2026-0510",

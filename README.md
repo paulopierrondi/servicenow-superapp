@@ -1,6 +1,6 @@
-# Super App Mobile Bradesco + Itaú — ServiceNow-powered banking app
+# ServiceNow Super App Mobile — Bradesco + Itaú tenants
 
-> Repositório do super app móvel multi-marca. Shell iOS nativo SwiftUI com variantes Bradesco e Itaú, ServiceNow como backend de workflow ITSM/SPM, Now Assist embarcado, Railway para serviços auxiliares e companion branded via Mobile Publishing.
+> Repositório do super app móvel multi-tenant. O foco do produto é ServiceNow: command center, catálogo, workspaces, ITSM, SPM, CSM, CRM, trust e Now Assist. Bradesco e Itaú entram como skins/contextos corporativos, não como apps transacionais bancários.
 
 ---
 
@@ -32,7 +32,7 @@ make verify
 ## Arquitetura em 1 minuto
 
 ```
-Cliente → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
+Usuário → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
               ↕ Universal Links         │
          Branded App (Mobile Publishing)│
                                         ↓
@@ -74,7 +74,7 @@ Cliente → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 
 ## Evolução Now Mobile
 
-A entrada do app deixa o usuário escolher Bradesco ou Itaú e aplica tema, segmento e relacionamento em runtime. A aba `Now` segue a lógica operacional do Now Mobile, mas adaptada para banco e multi-marca: busca universal com voz, catálogo por departamento, aprovações, fila offline, respostas com citação, ITSM, SPM, CSM, CRM e Now Assist no mesmo fluxo.
+A entrada do app deixa o usuário escolher Bradesco ou Itaú e aplica tema, segmento e relacionamento em runtime. Depois disso, a primeira tela é um `NowOS Command Center`: ServiceNow é a experiência principal, com grafo operacional, catálogo por intenção, aprovações, fila offline, respostas com citação, ITSM, SPM, CSM, CRM, trust e Now Assist no mesmo fluxo.
 
 ## Feature Assinatura
 

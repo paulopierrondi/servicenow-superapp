@@ -1,5 +1,52 @@
 import SwiftUI
 
+private struct ServiceNowModule: Identifiable {
+  let id: String
+  let title: String
+  let subtitle: String
+  let symbolName: String
+  let color: Color
+  let targetTab: AppTab
+}
+
+private struct CommandSignal: Identifiable {
+  let id: String
+  let title: String
+  let detail: String
+  let metric: String
+  let symbolName: String
+  let color: Color
+
+  static var demo: [CommandSignal] {
+    [
+      CommandSignal(
+        id: "ai",
+        title: "Now Assist",
+        detail: "Resumos, próximos passos, respostas com citação e handoff humano.",
+        metric: "8 skills",
+        symbolName: "sparkles",
+        color: BankTheme.Palette.brandRed
+      ),
+      CommandSignal(
+        id: "work",
+        title: "Workflows vivos",
+        detail: "ITSM, SPM, CSM e CRM conectados por contexto e auditoria.",
+        metric: "4 domínios",
+        symbolName: "point.3.connected.trianglepath.dotted",
+        color: BankTheme.Palette.attention
+      ),
+      CommandSignal(
+        id: "risk",
+        title: "Controle operacional",
+        detail: "Consentimento, LGPD, ZTA e evidências antes de qualquer execução.",
+        metric: "94 score",
+        symbolName: "shield.checkered",
+        color: BankTheme.Palette.success
+      ),
+    ]
+  }
+}
+
 struct HomeView: View {
   @EnvironmentObject private var authSession: AuthSession
   @EnvironmentObject private var viewModel: HomeViewModel
@@ -11,17 +58,53 @@ struct HomeView: View {
     GridItem(.flexible(), spacing: BankTheme.Spacing.md),
   ]
 
+  private var modules: [ServiceNowModule] {
+    [
+      ServiceNowModule(
+        id: "work",
+        title: "Workspaces",
+        subtitle: "ITSM, SPM, CSM e CRM",
+        symbolName: "tray.full.fill",
+        color: BankTheme.Palette.brandRed,
+        targetTab: .now
+      ),
+      ServiceNowModule(
+        id: "catalog",
+        title: "Catálogo",
+        subtitle: "Serviços e fluxos por área",
+        symbolName: "square.grid.2x2.fill",
+        color: BankTheme.Palette.attention,
+        targetTab: .payments
+      ),
+      ServiceNowModule(
+        id: "assist",
+        title: "Now Assist",
+        subtitle: "AI, chat e ações guiadas",
+        symbolName: "sparkles",
+        color: BankTheme.Palette.brandSecondary,
+        targetTab: .support
+      ),
+      ServiceNowModule(
+        id: "risk",
+        title: "Trust",
+        subtitle: "Consentimento e auditoria",
+        symbolName: "shield.checkered",
+        color: BankTheme.Palette.success,
+        targetTab: .security
+      ),
+    ]
+  }
+
   var body: some View {
     NavigationView {
       AppBackground {
         ScrollView(showsIndicators: false) {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
-            balanceHero
-            metrics
-            quickActions
-            insights
-            recentTransactions
+            commandHero
+            commandMetrics
+            moduleGrid
+            signals
           }
           .padding(.horizontal, BankTheme.Spacing.lg)
           .padding(.vertical, BankTheme.Spacing.xl)
@@ -38,20 +121,20 @@ struct HomeView: View {
         Text(
           String(
             format: NSLocalizedString(
-              "home.eyebrow.format", comment: "REVISÃO PT-BR HUMANA OBRIGATÓRIA"),
+              "command.eyebrow.format", comment: "REVISÃO PT-BR HUMANA OBRIGATÓRIA"),
             AppBrand.current.displayName.uppercased())
         )
         .font(BankTheme.Typography.caption)
         .foregroundColor(BankTheme.Palette.brandRed)
 
-        Text(
-          String(
-            format: NSLocalizedString(
-              "home.greeting.format", comment: "REVISÃO PT-BR HUMANA OBRIGATÓRIA"),
-            authSession.user.firstName)
-        )
-        .font(BankTheme.Typography.title)
-        .foregroundColor(BankTheme.Palette.ink)
+        Text("command.title")
+          .font(BankTheme.Typography.title)
+          .foregroundColor(BankTheme.Palette.ink)
+
+        Text("command.subtitle")
+          .font(BankTheme.Typography.body)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
       }
 
       Spacer(minLength: BankTheme.Spacing.sm)
@@ -59,130 +142,133 @@ struct HomeView: View {
       StatusBadge(
         title: authSession.user.segment,
         color: BankTheme.Palette.brandSecondary,
-        symbolName: "star.fill"
+        symbolName: "building.2.fill"
       )
     }
   }
 
-  private var balanceHero: some View {
+  private var commandHero: some View {
     VisualCard(fill: BankTheme.Palette.graphite) {
       VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
-        HStack(alignment: .top) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
           VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
-            Text("home.balance.title")
-              .font(BankTheme.Typography.callout)
-              .foregroundColor(.white.opacity(0.72))
+            Text("command.hero.eyebrow")
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(BankTheme.Palette.brandRed)
 
-            Text(
-              authSession.isBalanceVisible
-                ? MoneyFormatter.string(from: viewModel.snapshot.availableBalance) : "R$ ----"
-            )
-            .font(BankTheme.Typography.amount)
-            .foregroundColor(.white)
-            .lineLimit(1)
-            .minimumScaleFactor(0.64)
+            Text("command.hero.title")
+              .font(BankTheme.Typography.title)
+              .foregroundColor(.white)
+              .fixedSize(horizontal: false, vertical: true)
           }
 
-          Spacer(minLength: BankTheme.Spacing.md)
+          Spacer(minLength: BankTheme.Spacing.sm)
 
-          Button {
-            Task { await authSession.toggleBalanceVisibility() }
-          } label: {
-            Image(systemName: authSession.isBalanceVisible ? "eye.slash.fill" : "eye.fill")
-              .frame(width: BankTheme.Size.iconButton, height: BankTheme.Size.iconButton)
-              .background(
-                Circle()
-                  .fill(Color.white.opacity(0.12))
-              )
-          }
-          .foregroundColor(.white)
-          .accessibilityLabel(Text("home.balance.visibility"))
-          .accessibilityHint(Text("home.balance.visibility.hint"))
+          IconBubble(
+            symbolName: "dot.radiowaves.left.and.right",
+            color: BankTheme.Palette.brandRed,
+            size: BankTheme.Size.iconBubble
+          )
         }
+
+        Text("command.hero.detail")
+          .font(BankTheme.Typography.body)
+          .foregroundColor(.white.opacity(0.74))
+          .fixedSize(horizontal: false, vertical: true)
+
+        ProcessGraph()
+          .frame(height: 138)
 
         HStack(spacing: BankTheme.Spacing.sm) {
           StatusBadge(
-            titleKey: "home.security.badge",
+            titleKey: "command.badge.platform",
             color: BankTheme.Palette.success,
             symbolName: "checkmark.seal.fill"
           )
 
           StatusBadge(
-            titleKey: "home.now.badge",
+            titleKey: "command.badge.ai",
             color: BankTheme.Palette.attention,
             symbolName: "sparkles"
           )
         }
 
         Button {
-          selectedTab = .payments
+          selectedTab = .now
         } label: {
-          Label("home.primary.action", systemImage: "qrcode.viewfinder")
+          Label("command.hero.open", systemImage: "arrow.up.right.circle.fill")
         }
         .buttonStyle(.bankPrimary)
       }
     }
-    .accessibilityElement(children: .contain)
   }
 
-  private var metrics: some View {
+  private var commandMetrics: some View {
     HStack(spacing: BankTheme.Spacing.md) {
       MetricPill(
-        value: MoneyFormatter.compactString(from: viewModel.snapshot.investmentBalance),
-        titleKey: "home.metric.investments",
-        symbolName: "chart.line.uptrend.xyaxis",
-        color: BankTheme.Palette.secure
+        value: "4",
+        titleKey: "command.metric.domains",
+        symbolName: "rectangle.connected.to.line.below",
+        color: BankTheme.Palette.brandRed
       )
 
       MetricPill(
-        value: "\(viewModel.snapshot.safetyScore)",
-        titleKey: "home.metric.security",
-        symbolName: "shield.checkered",
-        color: BankTheme.Palette.attention
+        value: viewModel.isLoading ? "..." : "42 min",
+        titleKey: "command.metric.time",
+        symbolName: "bolt.fill",
+        color: BankTheme.Palette.warning
       )
     }
   }
 
-  private var quickActions: some View {
+  private var moduleGrid: some View {
     VStack(spacing: BankTheme.Spacing.md) {
-      SectionHeader("home.actions.title")
+      SectionHeader("command.modules.title")
 
       LazyVGrid(columns: columns, spacing: BankTheme.Spacing.md) {
-        ForEach(viewModel.visibleHomeCards) { card in
+        ForEach(modules) { module in
           ActionTile(
-            title: card.title,
-            subtitle: card.subtitle,
-            symbolName: symbol(for: card.action),
-            color: color(for: card.action)
+            title: module.title,
+            subtitle: module.subtitle,
+            symbolName: module.symbolName,
+            color: module.color
           ) {
-            selectedTab = tab(for: card.action)
+            selectedTab = module.targetTab
           }
         }
       }
     }
   }
 
-  private var insights: some View {
+  private var signals: some View {
     VStack(spacing: BankTheme.Spacing.md) {
-      SectionHeader("home.insights.title", actionKey: "common.review") {
+      SectionHeader("command.signals.title", actionKey: "common.review") {
         selectedTab = .support
       }
 
-      ForEach(viewModel.insights) { insight in
+      ForEach(CommandSignal.demo) { signal in
         VisualCard {
           HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
             IconBubble(
-              symbolName: insight.symbolName,
-              color: BankTheme.Palette.brandRed,
+              symbolName: signal.symbolName,
+              color: signal.color,
               size: BankTheme.Size.compactIconBubble
             )
 
             VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
-              Text(insight.title)
-                .font(BankTheme.Typography.headline)
-                .foregroundColor(BankTheme.Palette.ink)
+              HStack(alignment: .firstTextBaseline) {
+                Text(signal.title)
+                  .font(BankTheme.Typography.headline)
+                  .foregroundColor(BankTheme.Palette.ink)
 
-              Text(insight.detail)
+                Spacer(minLength: BankTheme.Spacing.sm)
+
+                Text(signal.metric)
+                  .font(BankTheme.Typography.caption)
+                  .foregroundColor(signal.color)
+              }
+
+              Text(signal.detail)
                 .font(BankTheme.Typography.body)
                 .foregroundColor(BankTheme.Palette.secondaryInk)
                 .fixedSize(horizontal: false, vertical: true)
@@ -192,80 +278,62 @@ struct HomeView: View {
       }
     }
   }
+}
 
-  private var recentTransactions: some View {
-    VStack(spacing: BankTheme.Spacing.md) {
-      SectionHeader("home.transactions.title", actionKey: "common.see.all") {
-        selectedTab = .now
-      }
+private struct ProcessGraph: View {
+  private let nodes: [(id: String, title: String, symbol: String, color: Color)] = [
+    ("intent", "Intenção", "person.crop.circle.fill", BankTheme.Palette.brandRed),
+    ("assist", "Now Assist", "sparkles", BankTheme.Palette.warning),
+    ("csm", "CSM", "person.2.fill", BankTheme.Palette.attention),
+    ("crm", "CRM", "scope", BankTheme.Palette.brandSecondary),
+    ("work", "Work", "wrench.and.screwdriver.fill", BankTheme.Palette.success),
+  ]
 
-      VisualCard {
-        VStack(spacing: BankTheme.Spacing.md) {
-          ForEach(viewModel.transactions) { transaction in
-            HStack(spacing: BankTheme.Spacing.md) {
-              IconBubble(
-                symbolName: transaction.symbolName,
-                color: transaction.isIncoming
-                  ? BankTheme.Palette.success : BankTheme.Palette.brandRed,
-                size: BankTheme.Size.compactIconBubble
-              )
+  var body: some View {
+    GeometryReader { proxy in
+      let horizontalInset: CGFloat = 32
+      let width = max(proxy.size.width - horizontalInset * 2, 1)
+      let step = width / CGFloat(max(nodes.count - 1, 1))
+      let y = proxy.size.height * 0.42
 
-              VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
-                Text(transaction.merchant)
-                  .font(BankTheme.Typography.headline)
-                  .foregroundColor(BankTheme.Palette.ink)
+      ZStack(alignment: .topLeading) {
+        Path { path in
+          path.move(to: CGPoint(x: horizontalInset, y: y))
+          path.addLine(to: CGPoint(x: horizontalInset + width, y: y))
+        }
+        .stroke(Color.white.opacity(0.16), style: StrokeStyle(lineWidth: 3, lineCap: .round))
 
-                Text(transaction.category)
-                  .font(BankTheme.Typography.caption)
-                  .foregroundColor(BankTheme.Palette.secondaryInk)
-              }
+        Path { path in
+          path.move(to: CGPoint(x: horizontalInset, y: y))
+          path.addLine(to: CGPoint(x: horizontalInset + width * 0.76, y: y))
+        }
+        .stroke(
+          BankTheme.Palette.brandRed,
+          style: StrokeStyle(lineWidth: 3, lineCap: .round)
+        )
 
-              Spacer(minLength: BankTheme.Spacing.sm)
+        ForEach(Array(nodes.enumerated()), id: \.offset) { index, node in
+          VStack(spacing: BankTheme.Spacing.xs) {
+            ZStack {
+              Circle()
+                .fill(node.color.opacity(0.18))
+                .frame(width: 46, height: 46)
 
-              Text(transactionAmount(transaction))
-                .font(BankTheme.Typography.callout)
-                .foregroundColor(
-                  transaction.isIncoming ? BankTheme.Palette.success : BankTheme.Palette.ink)
+              Image(systemName: node.symbol)
+                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                .foregroundColor(node.color)
             }
+
+            Text(node.title)
+              .font(.system(size: 10, weight: .semibold, design: .rounded))
+              .foregroundColor(.white.opacity(0.72))
+              .lineLimit(1)
+              .minimumScaleFactor(0.68)
+              .frame(width: 62)
           }
+          .position(x: horizontalInset + step * CGFloat(index), y: y + 24)
         }
       }
     }
-  }
-
-  private func symbol(for action: String) -> String {
-    switch action {
-    case "open_balance": return "wallet.pass.fill"
-    case "open_payments": return "qrcode.viewfinder"
-    case "open_investments": return "chart.line.uptrend.xyaxis.circle.fill"
-    case "open_security": return "shield.lefthalf.filled"
-    case "open_support": return "bubble.left.and.bubble.right.fill"
-    default: return "square.grid.2x2.fill"
-    }
-  }
-
-  private func color(for action: String) -> Color {
-    switch action {
-    case "open_balance": return BankTheme.Palette.graphite
-    case "open_payments": return BankTheme.Palette.brandRed
-    case "open_investments": return BankTheme.Palette.secure
-    case "open_security": return BankTheme.Palette.attention
-    case "open_support": return BankTheme.Palette.brandSecondary
-    default: return BankTheme.Palette.brandRed
-    }
-  }
-
-  private func tab(for action: String) -> AppTab {
-    switch action {
-    case "open_payments": return .payments
-    case "open_security": return .security
-    case "open_support": return .support
-    default: return .home
-    }
-  }
-
-  private func transactionAmount(_ transaction: TransactionItem) -> String {
-    let prefix = transaction.isIncoming ? "+" : "-"
-    return "\(prefix) \(MoneyFormatter.string(from: transaction.amount))"
   }
 }
