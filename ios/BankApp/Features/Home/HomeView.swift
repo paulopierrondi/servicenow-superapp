@@ -58,7 +58,7 @@ struct HomeView: View {
 
       StatusBadge(
         title: authSession.user.segment,
-        color: BankTheme.Palette.gold,
+        color: BankTheme.Palette.brandSecondary,
         symbolName: "star.fill"
       )
     }
@@ -250,7 +250,7 @@ struct HomeView: View {
     case "open_payments": return BankTheme.Palette.brandRed
     case "open_investments": return BankTheme.Palette.secure
     case "open_security": return BankTheme.Palette.attention
-    case "open_support": return BankTheme.Palette.gold
+    case "open_support": return BankTheme.Palette.brandSecondary
     default: return BankTheme.Palette.brandRed
     }
   }

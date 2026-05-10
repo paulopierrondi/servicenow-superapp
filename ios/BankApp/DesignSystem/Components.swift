@@ -32,7 +32,7 @@ struct VisualCard<Content: View>: View {
           .fill(fill)
           .overlay(
             RoundedRectangle(cornerRadius: BankTheme.Radius.lg, style: .continuous)
-              .stroke(BankTheme.Palette.divider, lineWidth: BankTheme.Stroke.hairline)
+              .stroke(BankTheme.Palette.divider.opacity(0.72), lineWidth: BankTheme.Stroke.hairline)
           )
       )
   }
@@ -167,6 +167,7 @@ struct MetricPill: View {
     .background(
       RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
         .fill(BankTheme.Palette.elevatedSurface)
+        .shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 4)
     )
   }
 }
@@ -209,8 +210,9 @@ struct ActionTile: View {
           .fill(BankTheme.Palette.surface)
           .overlay(
             RoundedRectangle(cornerRadius: BankTheme.Radius.lg, style: .continuous)
-              .stroke(BankTheme.Palette.divider, lineWidth: BankTheme.Stroke.hairline)
+              .stroke(BankTheme.Palette.divider.opacity(0.72), lineWidth: BankTheme.Stroke.hairline)
           )
+          .shadow(color: Color.black.opacity(0.04), radius: 14, x: 0, y: 6)
       )
     }
     .buttonStyle(.plain)

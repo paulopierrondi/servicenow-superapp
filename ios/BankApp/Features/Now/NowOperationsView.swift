@@ -138,7 +138,7 @@ struct NowOperationsView: View {
         HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
           IconBubble(
             symbolName: "sparkles",
-            color: BankTheme.Palette.gold,
+            color: BankTheme.Palette.brandRed,
             size: BankTheme.Size.iconBubble
           )
 
@@ -223,7 +223,7 @@ struct NowOperationsView: View {
       HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
         IconBubble(
           symbolName: "quote.bubble.fill",
-          color: BankTheme.Palette.gold,
+          color: BankTheme.Palette.brandSecondary,
           size: BankTheme.Size.compactIconBubble
         )
 
@@ -339,7 +339,7 @@ private struct JourneyTwinCard: View {
             value: twin.minutesSaved,
             titleKey: "now.twin.metric.time",
             symbolName: "bolt.fill",
-            color: BankTheme.Palette.gold
+            color: BankTheme.Palette.brandRed
           )
 
           JourneyMetric(
@@ -497,7 +497,7 @@ private struct ActiveNodePanel: View {
     HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
       IconBubble(
         symbolName: node.symbolName,
-        color: node.isCritical ? BankTheme.Palette.warning : BankTheme.Palette.gold,
+        color: node.isCritical ? BankTheme.Palette.warning : BankTheme.Palette.brandRed,
         size: BankTheme.Size.compactIconBubble
       )
 
@@ -511,7 +511,7 @@ private struct ActiveNodePanel: View {
 
           Text(confidenceText)
             .font(BankTheme.Typography.caption)
-            .foregroundColor(BankTheme.Palette.gold)
+            .foregroundColor(BankTheme.Palette.brandRed)
         }
 
         Text(node.subtitle)
@@ -758,7 +758,7 @@ private struct WorkItemCard: View {
         HStack(alignment: .top, spacing: BankTheme.Spacing.sm) {
           Image(systemName: "sparkles")
             .font(BankTheme.Typography.callout)
-            .foregroundColor(BankTheme.Palette.gold)
+            .foregroundColor(BankTheme.Palette.brandSecondary)
 
           Text(item.signal)
             .font(BankTheme.Typography.caption)
@@ -768,7 +768,7 @@ private struct WorkItemCard: View {
         .padding(BankTheme.Spacing.sm)
         .background(
           RoundedRectangle(cornerRadius: BankTheme.Radius.sm, style: .continuous)
-            .fill(BankTheme.Palette.gold.opacity(0.10))
+            .fill(BankTheme.Palette.subtleSurface)
         )
       }
     }

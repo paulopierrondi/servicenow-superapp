@@ -52,7 +52,7 @@ struct SupportView: View {
         HStack(spacing: BankTheme.Spacing.md) {
           IconBubble(
             symbolName: "sparkles",
-            color: BankTheme.Palette.gold,
+            color: BankTheme.Palette.brandRed,
             size: BankTheme.Size.iconBubble
           )
 

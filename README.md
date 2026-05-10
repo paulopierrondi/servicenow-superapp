@@ -80,6 +80,10 @@ A aba `Now` segue a lógica operacional do Now Mobile, mas adaptada para banco e
 
 O `Gêmeo Operacional da Jornada` transforma uma intenção bancária em um mapa vivo antes da execução: cliente, consentimento, risco, Now Assist, ITSM, SPM e auditoria aparecem conectados em uma trilha interativa. A ideia é mostrar o impacto operacional de um Pix contestado, aprovação ou mudança antes de abrir chamados manuais.
 
+## Cores e UI
+
+O app usa uma base visual nativa iOS, com fundo grouped `#F2F2F7`, superfícies brancas e sem preenchimentos pesados de marca. As cores oficiais entram como acento: Bradesco `#CC092F` e `#900F15`; Itaú `#EC7000` e `#003399`.
+
 ## ServiceNow e Railway
 
 O endpoint `mobile-work` expõe o contrato v1 para ITSM, SPM, launcher, action items, respostas sintetizadas e o `journeyTwin`, usado pela aba `Now`. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.

@@ -4,21 +4,23 @@ enum BankTheme {
   enum Palette {
     static var appBackground: Color { AppBrand.current.appBackground }
     static var surface: Color { AppBrand.current.surfaceColor }
+    static var subtleSurface: Color { AppBrand.current.subtleSurfaceColor }
     static let elevatedSurface = Color(bankHex: 0xFFFFFF)
     static var brandPrimary: Color { AppBrand.current.primaryColor }
     static var brandPrimaryDark: Color { AppBrand.current.primaryDarkColor }
     static var brandRed: Color { brandPrimary }
     static var brandRedDark: Color { brandPrimaryDark }
-    static let ink = Color(bankHex: 0x1C1A18)
-    static let secondaryInk = Color(bankHex: 0x5D5751)
-    static let mutedInk = Color(bankHex: 0x8C8378)
-    static let divider = Color(bankHex: 0xE5DED4)
-    static let success = Color(bankHex: 0x177A4D)
-    static let warning = Color(bankHex: 0xC56B14)
-    static let attention = Color(bankHex: 0x245B8F)
-    static let secure = Color(bankHex: 0x2F6E5D)
-    static var gold: Color { AppBrand.current.accentColor }
-    static let graphite = Color(bankHex: 0x2B2A28)
+    static var brandSecondary: Color { AppBrand.current.accentColor }
+    static var brandAccent: Color { brandSecondary }
+    static let ink = Color(bankHex: 0x1C1C1E)
+    static let secondaryInk = Color(bankHex: 0x636366)
+    static let mutedInk = Color(bankHex: 0x8E8E93)
+    static let divider = Color(bankHex: 0xD1D1D6)
+    static let success = Color(bankHex: 0x34C759)
+    static let warning = Color(bankHex: 0xFF9500)
+    static let attention = Color(bankHex: 0x007AFF)
+    static let secure = Color(bankHex: 0x30D158)
+    static let graphite = Color(bankHex: 0x1C1C1E)
   }
 
   enum Spacing {

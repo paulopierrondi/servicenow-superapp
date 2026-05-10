@@ -207,7 +207,7 @@ struct PaymentsView: View {
           value: "R$ 32,5k",
           titleKey: "payments.metric.limit",
           symbolName: "creditcard.fill",
-          color: BankTheme.Palette.gold
+          color: BankTheme.Palette.brandSecondary
         )
       }
     }

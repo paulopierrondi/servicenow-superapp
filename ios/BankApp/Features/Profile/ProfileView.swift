@@ -21,7 +21,7 @@ struct ProfileView: View {
       titleKey: "profile.menu.cards",
       detailKey: "profile.menu.cards.detail",
       symbolName: "creditcard.fill",
-      color: BankTheme.Palette.gold
+      color: BankTheme.Palette.brandSecondary
     ),
     ProfileMenuItem(
       titleKey: "profile.menu.investments",
@@ -105,7 +105,7 @@ struct ProfileView: View {
           value: MoneyFormatter.compactString(from: homeViewModel.snapshot.creditLimit),
           titleKey: "profile.metric.limit",
           symbolName: "creditcard.fill",
-          color: BankTheme.Palette.gold
+          color: BankTheme.Palette.brandSecondary
         )
 
         MetricPill(

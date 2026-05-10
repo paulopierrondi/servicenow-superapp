@@ -50,29 +50,30 @@ enum AppBrand: String, Equatable {
 
   var primaryDarkColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0x8F061F)
-    case .itau: return Color(bankHex: 0xA94F00)
+    case .bradesco: return Color(bankHex: 0x900F15)
+    case .itau: return Color(bankHex: 0xB55400)
     }
   }
 
   var accentColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0xB9872E)
+    case .bradesco: return Color(bankHex: 0x900F15)
     case .itau: return Color(bankHex: 0x003399)
     }
   }
 
   var appBackground: Color {
-    switch self {
-    case .bradesco: return Color(bankHex: 0xF6F3EE)
-    case .itau: return Color(bankHex: 0xF7F0E6)
-    }
+    Color(bankHex: 0xF2F2F7)
   }
 
   var surfaceColor: Color {
+    Color(bankHex: 0xFFFFFF)
+  }
+
+  var subtleSurfaceColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0xFFFDF8)
-    case .itau: return Color(bankHex: 0xFFF9F0)
+    case .bradesco: return Color(bankHex: 0xFFF1F4)
+    case .itau: return Color(bankHex: 0xFFF4E9)
     }
   }
 
