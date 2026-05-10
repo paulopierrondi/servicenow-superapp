@@ -1,0 +1,14 @@
+.DS_Store
+
+# Xcode generated artifacts
+ios/BankApp.xcodeproj/
+ios/build/
+*.xcresult
+
+# Node generated artifacts
+railway/services/*/node_modules/
+railway/services/*/dist/
+railway/services/*/.pid
+
+# Local bootstrap archive extracted from mobile.zip
+bradesco-mobile-repo-bootstrap.tar.gz

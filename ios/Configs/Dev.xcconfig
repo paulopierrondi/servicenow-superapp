@@ -1,0 +1,24 @@
+// Dev.xcconfig
+// Ambiente de desenvolvimento local — aponta para Railway mock harness e instância dev SN
+
+PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app.dev
+BUNDLE_DISPLAY_NAME = Bradesco Dev
+URL_SCHEME = bradesco-app-dev
+
+APS_ENVIRONMENT = development
+
+// ServiceNow dev
+SERVICENOW_INSTANCE_URL = https:/$()/dev-bradesco.service-now.com
+SERVICENOW_PINNED_HOST = dev-bradesco.service-now.com
+SERVICENOW_OIDC_CLIENT_ID = REPLACE_DEV_CLIENT_ID
+
+// Railway aux services (dev environment)
+RAILWAY_BFF_FLAGS_URL = https:/$()/bff-flags-dev.up.railway.app
+RAILWAY_OTEL_COLLECTOR_URL = https:/$()/otel-dev.up.railway.app
+
+// IdP dev / staging compartilhado
+IDP_AUTHORIZATION_ENDPOINT = https:/$()/idp-dev.bradesco.com.br/oauth/authorize
+IDP_TOKEN_ENDPOINT = https:/$()/idp-dev.bradesco.com.br/oauth/token
+IDP_END_SESSION_ENDPOINT = https:/$()/idp-dev.bradesco.com.br/oauth/logout
+
+PROVISIONING_PROFILE_SPECIFIER = match Development com.bradesco.mobile.app.dev

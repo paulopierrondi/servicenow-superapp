@@ -1,0 +1,42 @@
+{
+  "project": {
+    "id": "9bc15f45-aeac-4aff-a1fa-a380dec1ee2f",
+    "name": "servicenow-superapp",
+    "createdAt": "2026-05-10",
+    "createdBy": "railway-cli"
+  },
+  "environment": {
+    "name": "production"
+  },
+  "services": [
+    {
+      "id": "bd12b1e8-2bc6-48bd-9a75-a3c7b2af4268",
+      "name": "mock-harness",
+      "localPath": "railway/services/mock-harness",
+      "status": "created-not-deployed"
+    },
+    {
+      "id": "38b1aaae-118a-419a-a77a-e22e3271d40a",
+      "name": "bff-feature-flags",
+      "localPath": "railway/services/bff-feature-flags",
+      "status": "created-not-deployed"
+    },
+    {
+      "id": "4f0860e3-8e38-4c66-9cb9-df805939f32c",
+      "name": "otel-collector",
+      "localPath": "railway/services/otel-collector",
+      "status": "created-not-deployed"
+    },
+    {
+      "id": "8fe5239f-2172-447d-ac34-01d923a180d3",
+      "name": "agent-orchestrator",
+      "localPath": "railway/services/agent-orchestrator",
+      "status": "created-not-deployed"
+    }
+  ],
+  "notes": [
+    "Services criados na conta Railway logada via CLI.",
+    "Deploy e domínio público dependem de source link e secrets produtivos.",
+    "Payload bancário produtivo não deve trafegar pelos services auxiliares sem revisão CMN 4.893/LGPD."
+  ]
+}

@@ -1,0 +1,66 @@
+// Base.xcconfig
+// Settings comuns a todos os ambientes. Não comitar secrets aqui.
+
+// --- Versionamento ---
+MARKETING_VERSION = 0.1.0
+CURRENT_PROJECT_VERSION = 1
+
+// --- Bundle / display ---
+BUNDLE_DISPLAY_NAME = Bradesco
+PRODUCT_NAME = $(TARGET_NAME)
+
+// --- Compilador ---
+SWIFT_VERSION = 5.9
+IPHONEOS_DEPLOYMENT_TARGET = 15.0
+TARGETED_DEVICE_FAMILY = 1
+
+// --- Otimização ---
+SWIFT_COMPILATION_MODE = wholemodule
+GCC_OPTIMIZATION_LEVEL = s
+
+// --- Strict ---
+SWIFT_TREAT_WARNINGS_AS_ERRORS = YES
+GCC_TREAT_WARNINGS_AS_ERRORS = YES
+ENABLE_MODULE_VERIFIER = YES
+DEAD_CODE_STRIPPING = YES
+CLANG_WARN_OBJC_INTERFACE_IVARS = YES
+CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES
+
+// --- Code signing (default; override por env) ---
+CODE_SIGN_STYLE = Manual
+DEVELOPMENT_TEAM = REPLACE_WITH_TEAM_ID
+
+// --- Privacidade ---
+ENABLE_USER_SCRIPT_SANDBOXING = YES
+
+// --- Simulator ---
+// Apple Silicon local e CI precisam compilar arm64 para executar testes em simuladores reais.
+EXCLUDED_ARCHS[sdk=iphonesimulator*] =
+
+// --- Identificação genérica (override por env) ---
+PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app
+URL_SCHEME = bradesco-app
+APS_ENVIRONMENT = development
+PROVISIONING_PROFILE_SPECIFIER =
+
+// --- ServiceNow integration ---
+// Override por env: Dev/Staging/Prod/Demo
+SERVICENOW_INSTANCE_URL =
+SERVICENOW_PINNED_HOST =
+SERVICENOW_OIDC_CLIENT_ID =
+SERVICENOW_OIDC_REDIRECT_URI = $(URL_SCHEME):/oauth/callback
+
+// --- Railway aux services ---
+RAILWAY_BFF_FLAGS_URL =
+RAILWAY_OTEL_COLLECTOR_URL =
+
+// --- IdP banco ---
+IDP_AUTHORIZATION_ENDPOINT =
+IDP_TOKEN_ENDPOINT =
+IDP_END_SESSION_ENDPOINT =
+
+// --- Feature flags compile-time (use sparingly; preferir server-side) ---
+// SWIFT_ACTIVE_COMPILATION_CONDITIONS é override por env
+
+// --- Linker ---
+OTHER_LDFLAGS = $(inherited) -ObjC

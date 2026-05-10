@@ -1,0 +1,15 @@
+// Release.xcconfig
+#include "Base.xcconfig"
+
+SWIFT_OPTIMIZATION_LEVEL = -O
+SWIFT_COMPILATION_MODE = wholemodule
+GCC_OPTIMIZATION_LEVEL = s
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+ENABLE_TESTABILITY = NO
+VALIDATE_PRODUCT = YES
+
+// Release default → prod
+// Schemes Staging/Demo override este include
+#include "Prod.xcconfig"
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = ENV_PROD

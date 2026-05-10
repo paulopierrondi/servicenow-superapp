@@ -1,0 +1,22 @@
+// Demo.xcconfig
+// Ambiente de demos comerciais — instância demo SN com dados seed
+
+PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app.demo
+BUNDLE_DISPLAY_NAME = Bradesco Demo
+URL_SCHEME = bradesco-app-demo
+
+APS_ENVIRONMENT = production
+
+SERVICENOW_INSTANCE_URL = https:/$()/demo-bradesco.service-now.com
+SERVICENOW_PINNED_HOST = demo-bradesco.service-now.com
+SERVICENOW_OIDC_CLIENT_ID = REPLACE_DEMO_CLIENT_ID
+
+RAILWAY_BFF_FLAGS_URL = https:/$()/bff-flags-demo.up.railway.app
+RAILWAY_OTEL_COLLECTOR_URL = https:/$()/otel-demo.up.railway.app
+
+// Demo usa IdP mock para evitar dependência de prod
+IDP_AUTHORIZATION_ENDPOINT = https:/$()/idp-demo.up.railway.app/oauth/authorize
+IDP_TOKEN_ENDPOINT = https:/$()/idp-demo.up.railway.app/oauth/token
+IDP_END_SESSION_ENDPOINT = https:/$()/idp-demo.up.railway.app/oauth/logout
+
+PROVISIONING_PROFILE_SPECIFIER = match AppStore com.bradesco.mobile.app.demo

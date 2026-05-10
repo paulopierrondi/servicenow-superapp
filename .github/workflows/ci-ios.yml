@@ -1,0 +1,148 @@
+name: CI iOS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ci-ios.yml'
+      - 'Makefile'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ci-ios.yml'
+      - 'Makefile'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    name: Build & Test (iOS)
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Cache SPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('ios/project.yml', 'ios/**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen --version
+
+      - name: Install SwiftLint
+        run: |
+          if ! command -v swiftlint >/dev/null 2>&1; then
+            brew install swiftlint
+          fi
+          swiftlint --version
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      - name: SwiftLint (strict)
+        working-directory: ios
+        run: swiftlint --strict
+
+      - name: Build (Debug, iOS Simulator)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project BankApp.xcodeproj \
+            -scheme BankApp-Dev \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -derivedDataPath build \
+            -resultBundlePath build/Build.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            build | xcpretty
+
+      - name: Test (unit + snapshot + integration)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project BankApp.xcodeproj \
+            -scheme BankApp-Dev \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -derivedDataPath build \
+            -resultBundlePath build/Test.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            test | xcpretty
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: ios/build/Test.xcresult
+          retention-days: 7
+
+  contract-tests:
+    name: Contract tests (Mock Harness ↔ Scripted REST)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install mock harness deps
+        working-directory: railway/services/mock-harness
+        run: npm install
+
+      - name: Start mock harness
+        working-directory: railway/services/mock-harness
+        run: |
+          node server.js &
+          for i in {1..30}; do
+            if curl -sf http://localhost:8080/health; then
+              echo "harness up"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run contract tests
+        run: |
+          # Substitua por suite real quando criada em servicenow/tests/contract/
+          curl -fsS -H "X-Client-Version: 0.1.0" \
+            -H "X-Client-Schema-Version: 2026-05-home-v1" \
+            -H "X-Client-Platform: ios" \
+            http://localhost:8080/api/x_bank/v1/mobile-home
+
+  # macos-14 runners têm custo. Em projeto bancário, considerar self-hosted Mac mini.
+  # ADR pendente para self-hosted runner com hardening.

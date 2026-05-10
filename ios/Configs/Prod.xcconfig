@@ -1,0 +1,21 @@
+// Prod.xcconfig
+// Produção — instância e IdP de produção, App Store distribution
+
+PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app
+BUNDLE_DISPLAY_NAME = Bradesco
+URL_SCHEME = bradesco-app
+
+APS_ENVIRONMENT = production
+
+SERVICENOW_INSTANCE_URL = https:/$()/bradesco.service-now.com
+SERVICENOW_PINNED_HOST = bradesco.service-now.com
+SERVICENOW_OIDC_CLIENT_ID = REPLACE_PROD_CLIENT_ID
+
+RAILWAY_BFF_FLAGS_URL = https:/$()/bff-flags.up.railway.app
+RAILWAY_OTEL_COLLECTOR_URL = https:/$()/otel.up.railway.app
+
+IDP_AUTHORIZATION_ENDPOINT = https:/$()/idp.bradesco.com.br/oauth/authorize
+IDP_TOKEN_ENDPOINT = https:/$()/idp.bradesco.com.br/oauth/token
+IDP_END_SESSION_ENDPOINT = https:/$()/idp.bradesco.com.br/oauth/logout
+
+PROVISIONING_PROFILE_SPECIFIER = match AppStore com.bradesco.mobile.app

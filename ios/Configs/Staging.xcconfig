@@ -1,0 +1,21 @@
+// Staging.xcconfig
+// Sandbox SN + IdP staging + TestFlight beta
+
+PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app.staging
+BUNDLE_DISPLAY_NAME = Bradesco Stg
+URL_SCHEME = bradesco-app-staging
+
+APS_ENVIRONMENT = production
+
+SERVICENOW_INSTANCE_URL = https:/$()/staging-bradesco.service-now.com
+SERVICENOW_PINNED_HOST = staging-bradesco.service-now.com
+SERVICENOW_OIDC_CLIENT_ID = REPLACE_STAGING_CLIENT_ID
+
+RAILWAY_BFF_FLAGS_URL = https:/$()/bff-flags-staging.up.railway.app
+RAILWAY_OTEL_COLLECTOR_URL = https:/$()/otel-staging.up.railway.app
+
+IDP_AUTHORIZATION_ENDPOINT = https:/$()/idp-staging.bradesco.com.br/oauth/authorize
+IDP_TOKEN_ENDPOINT = https:/$()/idp-staging.bradesco.com.br/oauth/token
+IDP_END_SESSION_ENDPOINT = https:/$()/idp-staging.bradesco.com.br/oauth/logout
+
+PROVISIONING_PROFILE_SPECIFIER = match AppStore com.bradesco.mobile.app.staging

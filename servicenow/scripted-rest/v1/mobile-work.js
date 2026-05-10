@@ -1,0 +1,115 @@
+// servicenow/scripted-rest/v1/mobile-work.js
+//
+// Endpoint: GET /api/x_bank/v1/mobile-work
+//
+// Retorna a visão operacional ServiceNow para o app mobile multi-marca:
+// ITSM, SPM e sinais preparados para Now Assist.
+//
+// PII em log: PROIBIDO.
+
+(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+    var SCRIPT_VERSION = '2026-05-work-v1';
+    var MIN_CLIENT_VERSION = '0.1.0';
+
+    var clientVersion  = request.getHeader('X-Client-Version')        || '0.0.0';
+    var schemaHeader   = request.getHeader('X-Client-Schema-Version') || 'unknown';
+    var clientPlatform = request.getHeader('X-Client-Platform')       || 'unknown';
+    var brand          = request.getQueryParameter('brand')           || 'bradesco';
+
+    gs.info('[mobile-v1][work] req received platform=' + clientPlatform +
+            ' clientVersion=' + clientVersion +
+            ' schemaHeader=' + schemaHeader +
+            ' brand=' + brand);
+
+    var body = {
+        schemaVersion: SCRIPT_VERSION,
+        brand: brand,
+        nowAssist: {
+            enabled: true,
+            capabilities: [
+                'summarize_incident',
+                'draft_customer_update',
+                'prioritize_demand',
+                'explain_project_risk'
+            ]
+        },
+        workspaces: {
+            itsm: [
+                {
+                    id: 'INC0012487',
+                    category: 'Incidente',
+                    title: 'Alta latência no Pix',
+                    status: 'Em contenção',
+                    priority: 'P1',
+                    owner: 'SRE Mobile',
+                    due: 'SLA 18 min',
+                    signal: 'Now Assist preparou causa provável e próximos passos'
+                },
+                {
+                    id: 'RITM009812',
+                    category: 'Requisição',
+                    title: 'Cartão virtual corporativo',
+                    status: 'Aguardando automação',
+                    priority: 'P3',
+                    owner: 'Operações cartões',
+                    due: 'Hoje',
+                    signal: 'Pronto para fulfill via Flow Designer'
+                },
+                {
+                    id: 'CHG004102',
+                    category: 'Mudança',
+                    title: 'Janela mobile backend',
+                    status: 'Aprovada',
+                    priority: 'P2',
+                    owner: 'CAB Digital',
+                    due: '12 mai',
+                    signal: 'Risco baixo, plano de reversão validado'
+                }
+            ],
+            spm: [
+                {
+                    id: 'DMND000731',
+                    category: 'Demanda',
+                    title: 'Consent hub Open Finance',
+                    status: 'Priorizada',
+                    priority: 'Valor alto',
+                    owner: 'Portfólio digital',
+                    due: 'Q2',
+                    signal: 'Now Assist resumiu dependências e benefícios esperados'
+                },
+                {
+                    id: 'PRJ001927',
+                    category: 'Projeto',
+                    title: 'ZTA Mobile',
+                    status: 'Verde',
+                    priority: 'Estratégico',
+                    owner: 'Cyber + Canais',
+                    due: '72%',
+                    signal: 'Desvio de prazo dentro da tolerância'
+                },
+                {
+                    id: 'RISK000442',
+                    category: 'Risco',
+                    title: 'Residência de dados Railway',
+                    status: 'Mitigando',
+                    priority: 'Regulatório',
+                    owner: 'GRC',
+                    due: '16 mai',
+                    signal: 'Controle exige revisão jurídica antes de produção'
+                }
+            ]
+        },
+        compatibility: {
+            minClientVersion: MIN_CLIENT_VERSION,
+            receivedClientVersion: clientVersion,
+            receivedSchemaHeader: schemaHeader,
+            receivedPlatform: clientPlatform
+        }
+    };
+
+    response.setStatus(200);
+    response.setHeader('Content-Type', 'application/json');
+    response.setHeader('X-Schema-Version', SCRIPT_VERSION);
+    response.setHeader('Cache-Control', 'private, max-age=10');
+    response.getStreamWriter().writeString(JSON.stringify(body));
+})(request, response);

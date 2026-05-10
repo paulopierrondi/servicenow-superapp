@@ -1,0 +1,354 @@
+# XcodeGen project specification
+# Source of truth for ios/BankApp.xcodeproj
+# Regenerate with: cd ios && xcodegen generate
+
+name: BankApp
+options:
+  bundleIdPrefix: com.bradesco.mobile
+  deploymentTarget:
+    iOS: "15.0"
+  developmentLanguage: pt-BR
+  xcodeVersion: "15.4"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    GCC_TREAT_WARNINGS_AS_ERRORS: YES
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+    ENABLE_MODULE_VERIFIER: YES
+    DEAD_CODE_STRIPPING: YES
+    OTHER_SWIFT_FLAGS: "-warnings-as-errors"
+
+configFiles:
+  Debug: Configs/Debug.xcconfig
+  Release: Configs/Release.xcconfig
+
+# Dependências externas
+packages:
+  SwiftSnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    from: 1.15.0
+  AppAuth:
+    url: https://github.com/openid/AppAuth-iOS
+    from: 1.7.0
+  # NowSDK — placeholder. SPM público da ServiceNow Mobile SDK não é distribuído via GitHub público.
+  # Em Fase 3, substituir por XCFramework local em ios/Vendor/NowSDK.xcframework e
+  # mover de packages: para frameworks: nesta seção. Mantido aqui como TODO documentado.
+  # NowSDK:
+  #   path: ../Vendor/NowSDK
+
+targets:
+  BankApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: BankApp
+        excludes:
+          - "**/.DS_Store"
+          - "**/*.md"
+          - "Info.plist"
+          - "Info-Itau.plist"
+    resources:
+      - path: BankApp/Resources
+        optional: true
+    info:
+      path: BankApp/Info.plist
+      properties:
+        CFBundleDisplayName: $(BUNDLE_DISPLAY_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIRequiresFullScreen: true
+        ITSAppUsesNonExemptEncryption: false
+        NSFaceIDUsageDescription: "Usamos Face ID para liberar acesso seguro à sua conta e autorizar operações sensíveis."
+        NSCameraUsageDescription: "Usamos a câmera para leitura de QR Code Pix e validação de documentos."
+        APP_BRAND: bradesco
+        SERVICENOW_INSTANCE_URL: $(SERVICENOW_INSTANCE_URL)
+        RAILWAY_BFF_FLAGS_URL: $(RAILWAY_BFF_FLAGS_URL)
+        RAILWAY_OTEL_COLLECTOR_URL: $(RAILWAY_OTEL_COLLECTOR_URL)
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+          NSPinnedDomains:
+            # Lista preenchida em sessão de hardening — ADR-007
+            $(SERVICENOW_PINNED_HOST):
+              NSIncludeSubdomains: true
+              NSPinnedCAIdentities:
+                - SPKI-SHA256-BASE64: "REPLACE_WITH_REAL_PIN_BEFORE_PROD"
+        CFBundleURLTypes:
+          - CFBundleURLName: com.bradesco.mobile.scheme
+            CFBundleURLSchemes:
+              - $(URL_SCHEME)
+        LSApplicationQueriesSchemes:
+          - bradesco-atendimento
+          - now-mobile
+        UIBackgroundModes:
+          - remote-notification
+    entitlements:
+      path: BankApp/BankApp.entitlements
+      properties:
+        com.apple.developer.associated-domains:
+          - applinks:m.bradesco.com.br
+          - applinks:m-staging.bradesco.com.br
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.bradesco.mobile.shared
+        com.apple.security.application-groups:
+          - group.com.bradesco.mobile.shared
+        aps-environment: $(APS_ENVIRONMENT)
+    dependencies:
+      - package: AppAuth
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1"
+        ENABLE_BITCODE: NO
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: $(DEVELOPMENT_TEAM)
+        CODE_SIGN_IDENTITY: "Apple Development"
+        PROVISIONING_PROFILE_SPECIFIER: $(PROVISIONING_PROFILE_SPECIFIER)
+    scheme:
+      testTargets:
+        - BankAppTests
+        - BankAppUITests
+      gatherCoverageData: true
+      coverageTargets:
+        - BankApp
+      environmentVariables:
+        - variable: OS_ACTIVITY_MODE
+          value: disable
+          isEnabled: true
+      commandLineArguments:
+        "-FIRDebugDisabled YES": true
+      preActions:
+        - script: |
+            # Garantir que xcconfig por env foi exportado para a build
+            echo "Building env: $(SERVICENOW_ENV)"
+          name: "Print env"
+          settingsTarget: BankApp
+
+  BankAppItau:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: BankApp
+        excludes:
+          - "**/.DS_Store"
+          - "**/*.md"
+          - "Info.plist"
+          - "Info-Itau.plist"
+    resources:
+      - path: BankApp/Resources
+        optional: true
+    info:
+      path: BankApp/Info-Itau.plist
+      properties:
+        CFBundleDisplayName: Itaú
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIRequiresFullScreen: true
+        ITSAppUsesNonExemptEncryption: false
+        NSFaceIDUsageDescription: "Usamos Face ID para liberar acesso seguro à sua conta e autorizar operações sensíveis."
+        NSCameraUsageDescription: "Usamos a câmera para leitura de QR Code Pix e validação de documentos."
+        APP_BRAND: itau
+        SERVICENOW_INSTANCE_URL: $(SERVICENOW_INSTANCE_URL)
+        RAILWAY_BFF_FLAGS_URL: $(RAILWAY_BFF_FLAGS_URL)
+        RAILWAY_OTEL_COLLECTOR_URL: $(RAILWAY_OTEL_COLLECTOR_URL)
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: false
+          NSPinnedDomains:
+            $(SERVICENOW_PINNED_HOST):
+              NSIncludeSubdomains: true
+              NSPinnedCAIdentities:
+                - SPKI-SHA256-BASE64: "REPLACE_WITH_REAL_PIN_BEFORE_PROD"
+        CFBundleURLTypes:
+          - CFBundleURLName: com.itau.mobile.scheme
+            CFBundleURLSchemes:
+              - itau-app
+        LSApplicationQueriesSchemes:
+          - itau-atendimento
+          - now-mobile
+        UIBackgroundModes:
+          - remote-notification
+    entitlements:
+      path: BankApp/BankAppItau.entitlements
+      properties:
+        com.apple.developer.associated-domains:
+          - applinks:m.itau.com.br
+          - applinks:m-staging.itau.com.br
+        keychain-access-groups:
+          - $(AppIdentifierPrefix)com.itau.mobile.shared
+        com.apple.security.application-groups:
+          - group.com.itau.mobile.shared
+        aps-environment: $(APS_ENVIRONMENT)
+    dependencies:
+      - package: AppAuth
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1"
+        PRODUCT_BUNDLE_IDENTIFIER: com.itau.mobile.app.dev
+        BUNDLE_DISPLAY_NAME: Itaú
+        URL_SCHEME: itau-app
+        SERVICENOW_INSTANCE_URL: https:/$()/dev-itau.service-now.com
+        SERVICENOW_PINNED_HOST: dev-itau.service-now.com
+        SERVICENOW_OIDC_CLIENT_ID: REPLACE_ITAU_DEV_CLIENT_ID
+        SERVICENOW_OIDC_REDIRECT_URI: itau-app:/oauth/callback
+        ENABLE_BITCODE: NO
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: $(DEVELOPMENT_TEAM)
+        CODE_SIGN_IDENTITY: "Apple Development"
+        PROVISIONING_PROFILE_SPECIFIER: $(PROVISIONING_PROFILE_SPECIFIER)
+    scheme:
+      gatherCoverageData: false
+      environmentVariables:
+        - variable: OS_ACTIVITY_MODE
+          value: disable
+          isEnabled: true
+      commandLineArguments:
+        "-FIRDebugDisabled YES": true
+      preActions:
+        - script: |
+            echo "Building Itaú env: $(SERVICENOW_ENV)"
+          name: "Print env"
+          settingsTarget: BankAppItau
+
+  BankAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - BankAppTests
+    dependencies:
+      - target: BankApp
+      - package: SwiftSnapshotTesting
+        product: SnapshotTesting
+    settings:
+      base:
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/BankApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BankApp"
+
+  BankAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - BankAppUITests
+    dependencies:
+      - target: BankApp
+
+  # Future: NowAssist Widget extension, Push Notification Service Extension etc.
+  # Adicionar com ADR.
+
+schemes:
+  BankApp-Dev:
+    build:
+      targets:
+        BankApp: all
+    run:
+      config: Debug
+      environmentVariables:
+        - variable: APP_BRAND
+          value: bradesco
+        - variable: SERVICENOW_ENV
+          value: dev
+      commandLineArguments:
+        "-com.apple.CoreData.SQLDebug 1": false
+    test:
+      config: Debug
+      gatherCoverageData: true
+      coverageTargets:
+        - BankApp
+      targets:
+        - name: BankAppTests
+          parallelizable: true
+        - name: BankAppUITests
+          parallelizable: false
+    archive:
+      config: Release
+
+  BankApp-Bradesco-Dev:
+    build:
+      targets:
+        BankApp: all
+    run:
+      config: Debug
+      environmentVariables:
+        - variable: APP_BRAND
+          value: bradesco
+        - variable: SERVICENOW_ENV
+          value: dev
+    test:
+      config: Debug
+      gatherCoverageData: true
+      coverageTargets:
+        - BankApp
+      targets:
+        - name: BankAppTests
+          parallelizable: true
+        - name: BankAppUITests
+          parallelizable: false
+    archive:
+      config: Release
+
+  BankApp-Itau-Dev:
+    build:
+      targets:
+        BankAppItau: all
+    run:
+      config: Debug
+      environmentVariables:
+        - variable: APP_BRAND
+          value: itau
+        - variable: SERVICENOW_ENV
+          value: dev
+    archive:
+      config: Release
+
+  BankApp-Staging:
+    build:
+      targets:
+        BankApp: all
+    run:
+      config: Release
+      environmentVariables:
+        - variable: SERVICENOW_ENV
+          value: staging
+    test:
+      config: Release
+      targets:
+        - BankAppTests
+    archive:
+      config: Release
+
+  BankApp-Prod:
+    build:
+      targets:
+        BankApp: all
+    run:
+      config: Release
+      environmentVariables:
+        - variable: SERVICENOW_ENV
+          value: prod
+    archive:
+      config: Release
+    profile:
+      config: Release
+
+  BankApp-Demo:
+    build:
+      targets:
+        BankApp: all
+    run:
+      config: Release
+      environmentVariables:
+        - variable: SERVICENOW_ENV
+          value: demo
+    archive:
+      config: Release
