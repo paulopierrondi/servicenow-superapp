@@ -18,6 +18,24 @@ private struct BradescoShortcut: Identifiable {
   let targetTab: AppTab
 }
 
+private struct ExecutiveMetric: Identifiable {
+  let id: String
+  let value: String
+  let title: String
+  let detail: String
+  let symbolName: String
+  let color: Color
+}
+
+private struct DailyAgendaItem: Identifiable {
+  let id: String
+  let time: String
+  let title: String
+  let detail: String
+  let symbolName: String
+  let color: Color
+}
+
 private struct CommandSignal: Identifiable {
   let id: String
   let title: String
@@ -62,6 +80,12 @@ struct HomeView: View {
   @EnvironmentObject private var viewModel: HomeViewModel
 
   @Binding var selectedTab: AppTab
+  @State private var changeApproved = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
+  @State private var incidentOwned = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
+  @State private var requestReleased = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
 
   private let columns = [
     GridItem(.flexible(), spacing: BankTheme.Spacing.md),
@@ -75,6 +99,94 @@ struct HomeView: View {
   private var itauDaySummary: String {
     "Bom dia, \(authSession.user.firstName). "
       + "Seu mordomo Now Assist já cruzou P0, CMDB, CSM e aprovações críticas."
+  }
+
+  private var isItau: Bool {
+    AppBrand.current == .itau
+  }
+
+  private var criticalSeverity: String {
+    isItau ? "P0" : "P1"
+  }
+
+  private var criticalIncidentTitle: String {
+    isItau
+      ? "Core Pix Personnalité com indisponibilidade intermitente"
+      : "Pix Prime com latência no mobile gateway"
+  }
+
+  private var executiveMetrics: [ExecutiveMetric] {
+    [
+      ExecutiveMetric(
+        id: "incident",
+        value: criticalSeverity,
+        title: isItau ? "Ponte aberta" : "War room",
+        detail: isItau ? "Core Pix, antifraude e app" : "Gateway Pix, Prime e CSM",
+        symbolName: isItau ? "flame.fill" : "exclamationmark.triangle.fill",
+        color: BankTheme.Palette.warning
+      ),
+      ExecutiveMetric(
+        id: "approvals",
+        value: changeApproved && requestReleased ? "0" : "2",
+        title: "Aprovações",
+        detail: "CAB, SPM e risco prontos para decisão",
+        symbolName: "checkmark.seal.fill",
+        color: BankTheme.Palette.brandAction
+      ),
+      ExecutiveMetric(
+        id: "cmdb",
+        value: "91",
+        title: "CMDB Health",
+        detail: "18 CIs stale e 7 relações órfãs",
+        symbolName: "point.3.connected.trianglepath.dotted",
+        color: BankTheme.Palette.success
+      ),
+      ExecutiveMetric(
+        id: "csm",
+        value: isItau ? "R$8,4M" : "42",
+        title: isItau ? "Valor em risco" : "Cases Prime",
+        detail: isItau ? "SPM calcula fix estrutural" : "CSM com comunicação preventiva",
+        symbolName: isItau ? "chart.line.uptrend.xyaxis" : "person.2.fill",
+        color: BankTheme.Palette.attention
+      ),
+    ]
+  }
+
+  private var dailyAgendaItems: [DailyAgendaItem] {
+    [
+      DailyAgendaItem(
+        id: "start",
+        time: "08:40",
+        title: "Resumo do dia com Now Assist",
+        detail: "Incidente \(criticalSeverity), mudanças, pedidos, cases e agenda executiva.",
+        symbolName: "sparkles",
+        color: BankTheme.Palette.brandAction
+      ),
+      DailyAgendaItem(
+        id: "cab",
+        time: "09:05",
+        title: isItau ? "CAB emergencial Pix Personnalité" : "CAB digital Pix Prime",
+        detail: "Aprovar mudança com rollback, impacto CMDB e evidências LGPD.",
+        symbolName: "arrow.triangle.2.circlepath.circle.fill",
+        color: BankTheme.Palette.warning
+      ),
+      DailyAgendaItem(
+        id: "customer",
+        time: "10:20",
+        title: isItau ? "CSM preventivo alta renda" : "CSM Prime e Ouvidoria",
+        detail: "Now Assist sugere mensagem por segmento e responsável de atendimento.",
+        symbolName: "person.crop.circle.badge.exclamationmark.fill",
+        color: BankTheme.Palette.attention
+      ),
+      DailyAgendaItem(
+        id: "spm",
+        time: "14:30",
+        title: "Comitê SPM e risco",
+        detail: "Priorizar fix estrutural, valor protegido e dependências do Service Graph.",
+        symbolName: "chart.bar.doc.horizontal.fill",
+        color: BankTheme.Palette.success
+      ),
+    ]
   }
 
   private var modules: [ServiceNowModule] {
@@ -224,11 +336,15 @@ struct HomeView: View {
             itauHero
 
             VStack(spacing: BankTheme.Spacing.xl) {
+              executiveCockpit
+              dailyAgenda
+              decisionQueue
               CMDBHealthPanel(
                 title: "CMDB Health Itaú",
                 subtitle:
                   "Pix, cartões, app Personnalité, Open Finance e canais digitais em Service Graph."
               )
+              serviceGraphPanel
               commandHero
               commandMetrics
               moduleGrid
@@ -257,11 +373,15 @@ struct HomeView: View {
             bradescoHero
 
             VStack(alignment: .leading, spacing: BankTheme.Spacing.xl) {
+              executiveCockpit
+              dailyAgenda
+              decisionQueue
               bradescoShortcutsGrid
               CMDBHealthPanel(
                 title: "CMDB Health Bradesco",
                 subtitle: "Pix, mobile gateway, antifraude e atendimento mapeados no Service Graph."
               )
+              serviceGraphPanel
               bradescoOperationalCards
               signals
             }
@@ -529,6 +649,200 @@ struct HomeView: View {
     }
   }
 
+  private var executiveCockpit: some View {
+    let fill = isItau ? Color(bankHex: 0x2A1608) : BankTheme.Palette.graphite
+    let trendValues =
+      isItau
+      ? [0.52, 0.48, 0.62, 0.84, 0.74, 0.91]
+      : [0.44, 0.58, 0.66, 0.72, 0.69, 0.86]
+    let columns = [
+      GridItem(.flexible(), spacing: BankTheme.Spacing.sm),
+      GridItem(.flexible(), spacing: BankTheme.Spacing.sm),
+    ]
+
+    return VisualCard(fill: fill) {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            Text(isItau ? "Command center Personnalité" : "Command center Bradesco Prime")
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(.white.opacity(0.7))
+
+            Text("Seu dia, riscos e decisões em um só lugar")
+              .font(BankTheme.Typography.section)
+              .foregroundColor(.white)
+              .fixedSize(horizontal: false, vertical: true)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          StatusBadge(
+            title: isItau ? "Executivo" : "Prime",
+            color: isItau ? BankTheme.Palette.brandSecondary : BankTheme.Palette.brandAction,
+            symbolName: "person.crop.circle.badge.checkmark"
+          )
+        }
+
+        ExecutiveTrendGraph(
+          values: trendValues,
+          color: isItau ? BankTheme.Palette.brandSecondary : BankTheme.Palette.brandAction
+        )
+        .frame(height: 92)
+
+        LazyVGrid(columns: columns, spacing: BankTheme.Spacing.sm) {
+          ForEach(executiveMetrics) { metric in
+            ExecutiveMetricTile(metric: metric)
+          }
+        }
+      }
+    }
+  }
+
+  private var dailyAgenda: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+      SectionHeader("Meu dia operacional", actionKey: "Abrir mordomo") {
+        selectedTab = .support
+      }
+
+      VisualCard {
+        VStack(spacing: BankTheme.Spacing.md) {
+          ForEach(Array(dailyAgendaItems.enumerated()), id: \.element.id) { index, item in
+            DailyAgendaRow(item: item)
+
+            if index < dailyAgendaItems.count - 1 {
+              Divider()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private var decisionQueue: some View {
+    let changeBadge = isItau ? "CHG004102 • P0" : "CHG003871 • P1"
+    let changeTitle =
+      isItau
+      ? "Aprovar fix emergencial no Core Pix"
+      : "Aprovar mudança no gateway Pix"
+    let changeDetail =
+      isItau
+      ? "Rollback em 4 min, Service Graph com 6 CIs e comunicação executiva pronta."
+      : "Rollback testado, janela de baixo risco e cases Prime relacionados por CSM."
+    let incidentBadge = isItau ? "INC009441 • P0" : "INC008912 • P1"
+    let incidentDetail =
+      isItau
+      ? "Ponte com app, Pix, antifraude, SRE e atendimento. Now Assist resumiu a causa provável."
+      : "War room com mobile gateway, antifraude, CSM Prime e comunicação preventiva."
+    let requestTitle =
+      isItau
+      ? "Liberar pacote de atendimento Personnalité"
+      : "Liberar playbook Prime para agências"
+
+    return VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+      SectionHeader("Fila de decisão", actionKey: "Ver Work") {
+        selectedTab = .now
+      }
+
+      DecisionCommandCard(
+        badge: changeBadge,
+        title: changeTitle,
+        detail: changeDetail,
+        context: isItau ? "Risco residual 11%" : "SLA em 18 min",
+        actionLabel: "Aprovar mudança",
+        doneLabel: "Mudança aprovada",
+        secondaryLabel: "Perguntar ao Now Assist",
+        symbolName: "arrow.triangle.2.circlepath.circle.fill",
+        color: BankTheme.Palette.warning,
+        isDone: changeApproved,
+        action: {
+          withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+            changeApproved.toggle()
+          }
+        },
+        secondaryAction: {
+          selectedTab = .support
+        }
+      )
+
+      DecisionCommandCard(
+        badge: incidentBadge,
+        title: criticalIncidentTitle,
+        detail: incidentDetail,
+        context: isItau ? "1,8M tentativas afetadas" : "42 cases Prime",
+        actionLabel: "Assumir incidente",
+        doneLabel: "Incidente assumido",
+        secondaryLabel: "Abrir ponte",
+        symbolName: "dot.radiowaves.left.and.right",
+        color: BankTheme.Palette.brandAction,
+        isDone: incidentOwned,
+        action: {
+          withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+            incidentOwned.toggle()
+          }
+        },
+        secondaryAction: {
+          selectedTab = .now
+        }
+      )
+
+      DecisionCommandCard(
+        badge: "RITM009812 • Pedido",
+        title: requestTitle,
+        detail:
+          "Pedido combina catálogo, CRM, CSM e base de conhecimento para atendimento digital.",
+        context: requestReleased ? "Fulfillment iniciado" : "Aguardando executivo",
+        actionLabel: "Liberar pedido",
+        doneLabel: "Pedido liberado",
+        secondaryLabel: "Ver catálogo",
+        symbolName: "shippingbox.fill",
+        color: BankTheme.Palette.attention,
+        isDone: requestReleased,
+        action: {
+          withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+            requestReleased.toggle()
+          }
+        },
+        secondaryAction: {
+          selectedTab = .payments
+        }
+      )
+    }
+  }
+
+  private var serviceGraphPanel: some View {
+    VisualCard {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            Text("Service Graph vivo")
+              .font(BankTheme.Typography.section)
+              .foregroundColor(BankTheme.Palette.ink)
+
+            Text(
+              isItau
+                ? "App Personnalité, Core Pix, antifraude, mensageria, atendimento e SPM conectados por CMDB."
+                : "Mobile Prime, gateway Pix, antifraude, agência, CSM e mudanças conectados por CMDB."
+            )
+            .font(BankTheme.Typography.body)
+            .foregroundColor(BankTheme.Palette.secondaryInk)
+            .fixedSize(horizontal: false, vertical: true)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          StatusBadge(
+            title: "91 health",
+            color: BankTheme.Palette.success,
+            symbolName: "checkmark.seal.fill"
+          )
+        }
+
+        ServiceGraphMap(isItau: isItau)
+          .frame(height: 168)
+      }
+    }
+  }
+
   private var header: some View {
     HStack(alignment: .center, spacing: BankTheme.Spacing.md) {
       VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
@@ -691,6 +1005,288 @@ struct HomeView: View {
         }
       }
     }
+  }
+}
+
+private struct ExecutiveMetricTile: View {
+  let metric: ExecutiveMetric
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+      HStack(alignment: .center, spacing: BankTheme.Spacing.xs) {
+        Image(systemName: metric.symbolName)
+          .font(BankTheme.Typography.callout)
+          .foregroundColor(metric.color)
+
+        Text(metric.value)
+          .font(BankTheme.Typography.metric)
+          .foregroundColor(.white)
+          .lineLimit(1)
+          .minimumScaleFactor(0.82)
+      }
+
+      Text(metric.title)
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(.white.opacity(0.88))
+        .lineLimit(1)
+        .minimumScaleFactor(0.86)
+
+      Text(metric.detail)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(.white.opacity(0.62))
+        .lineLimit(2)
+        .minimumScaleFactor(0.86)
+    }
+    .frame(maxWidth: .infinity, minHeight: 92, alignment: .leading)
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(Color.white.opacity(0.08))
+    )
+  }
+}
+
+private struct ExecutiveTrendGraph: View {
+  let values: [Double]
+  let color: Color
+
+  var body: some View {
+    GeometryReader { proxy in
+      let width = max(proxy.size.width, 1)
+      let height = max(proxy.size.height, 1)
+      let step = width / CGFloat(max(values.count - 1, 1))
+
+      ZStack(alignment: .bottomLeading) {
+        ForEach(0..<4, id: \.self) { index in
+          Path { path in
+            let y = height * CGFloat(index + 1) / 5
+            path.move(to: CGPoint(x: 0, y: y))
+            path.addLine(to: CGPoint(x: width, y: y))
+          }
+          .stroke(Color.white.opacity(0.08), lineWidth: 1)
+        }
+
+        Path { path in
+          for (index, value) in values.enumerated() {
+            let point = CGPoint(
+              x: CGFloat(index) * step,
+              y: height - CGFloat(min(max(value, 0), 1)) * height
+            )
+            if index == 0 {
+              path.move(to: point)
+            } else {
+              path.addLine(to: point)
+            }
+          }
+        }
+        .stroke(color, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
+
+        ForEach(Array(values.enumerated()), id: \.offset) { index, value in
+          Circle()
+            .fill(color)
+            .frame(
+              width: index == values.count - 1 ? 11 : 7,
+              height: index == values.count - 1 ? 11 : 7
+            )
+            .position(
+              x: CGFloat(index) * step,
+              y: height - CGFloat(min(max(value, 0), 1)) * height
+            )
+        }
+      }
+    }
+    .accessibilityHidden(true)
+  }
+}
+
+private struct DailyAgendaRow: View {
+  let item: DailyAgendaItem
+
+  var body: some View {
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      VStack(spacing: BankTheme.Spacing.xxs) {
+        Text(item.time)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(item.color)
+
+        Circle()
+          .fill(item.color)
+          .frame(width: 8, height: 8)
+      }
+      .frame(width: 52)
+
+      IconBubble(
+        symbolName: item.symbolName,
+        color: item.color,
+        size: BankTheme.Size.compactIconBubble
+      )
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+        Text(item.title)
+          .font(BankTheme.Typography.headline)
+          .foregroundColor(BankTheme.Palette.ink)
+          .fixedSize(horizontal: false, vertical: true)
+
+        Text(item.detail)
+          .font(BankTheme.Typography.callout)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+
+      Spacer(minLength: 0)
+    }
+    .accessibilityElement(children: .combine)
+  }
+}
+
+private struct DecisionCommandCard: View {
+  let badge: String
+  let title: String
+  let detail: String
+  let context: String
+  let actionLabel: String
+  let doneLabel: String
+  let secondaryLabel: String
+  let symbolName: String
+  let color: Color
+  let isDone: Bool
+  let action: () -> Void
+  let secondaryAction: () -> Void
+
+  var body: some View {
+    VisualCard {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+          IconBubble(
+            symbolName: isDone ? "checkmark.seal.fill" : symbolName,
+            color: isDone ? BankTheme.Palette.success : color,
+            size: BankTheme.Size.compactIconBubble
+          )
+
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+            Text(badge)
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(isDone ? BankTheme.Palette.success : color)
+
+            Text(title)
+              .font(BankTheme.Typography.headline)
+              .foregroundColor(BankTheme.Palette.ink)
+              .fixedSize(horizontal: false, vertical: true)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          StatusBadge(
+            title: isDone ? "OK" : context,
+            color: isDone ? BankTheme.Palette.success : color,
+            symbolName: isDone ? "checkmark.circle.fill" : "flag.fill"
+          )
+        }
+
+        Text(detail)
+          .font(BankTheme.Typography.body)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
+
+        HStack(spacing: BankTheme.Spacing.sm) {
+          if isDone {
+            Button(action: action) {
+              Label(doneLabel, systemImage: "checkmark.circle.fill")
+            }
+            .buttonStyle(.bankSecondary)
+          } else {
+            Button(action: action) {
+              Label(actionLabel, systemImage: "hand.tap.fill")
+            }
+            .buttonStyle(.bankPrimary)
+          }
+
+          Button(action: secondaryAction) {
+            Text(secondaryLabel)
+          }
+          .buttonStyle(.bankSecondary)
+          .frame(maxWidth: 148)
+        }
+      }
+    }
+  }
+}
+
+private struct ServiceGraphMap: View {
+  let isItau: Bool
+
+  private var nodes: [(title: String, symbol: String, color: Color, x: CGFloat, y: CGFloat)] {
+    if isItau {
+      return [
+        ("App", "iphone", BankTheme.Palette.brandRed, 0.12, 0.18),
+        ("Core Pix", "bolt.fill", BankTheme.Palette.warning, 0.48, 0.18),
+        ("Fraude", "shield.lefthalf.filled", BankTheme.Palette.attention, 0.82, 0.24),
+        ("CSM", "person.2.fill", BankTheme.Palette.brandSecondary, 0.20, 0.74),
+        ("CMDB", "point.3.connected.trianglepath.dotted", BankTheme.Palette.success, 0.50, 0.58),
+        ("SPM", "chart.line.uptrend.xyaxis", BankTheme.Palette.brandRed, 0.82, 0.72),
+      ]
+    }
+
+    return [
+      ("Mobile", "iphone", BankTheme.Palette.brandChrome, 0.12, 0.22),
+      ("Gateway", "bolt.horizontal.fill", BankTheme.Palette.warning, 0.44, 0.16),
+      ("Fraude", "shield.lefthalf.filled", BankTheme.Palette.brandAction, 0.78, 0.26),
+      ("BIA", "sparkles", BankTheme.Palette.brandAction, 0.18, 0.76),
+      ("CMDB", "point.3.connected.trianglepath.dotted", BankTheme.Palette.success, 0.52, 0.58),
+      ("CSM", "person.2.fill", BankTheme.Palette.attention, 0.84, 0.74),
+    ]
+  }
+
+  var body: some View {
+    GeometryReader { proxy in
+      let width = max(proxy.size.width, 1)
+      let height = max(proxy.size.height, 1)
+      let resolved = nodes.map {
+        (
+          title: $0.title,
+          symbol: $0.symbol,
+          color: $0.color,
+          point: CGPoint(x: width * $0.x, y: height * $0.y)
+        )
+      }
+
+      ZStack {
+        ForEach(0..<(resolved.count - 1), id: \.self) { index in
+          Path { path in
+            path.move(to: resolved[index].point)
+            path.addLine(to: resolved[index + 1].point)
+          }
+          .stroke(
+            BankTheme.Palette.divider.opacity(0.72),
+            style: StrokeStyle(lineWidth: 2, dash: [6, 6])
+          )
+        }
+
+        ForEach(Array(resolved.enumerated()), id: \.offset) { _, node in
+          VStack(spacing: BankTheme.Spacing.xxs) {
+            Image(systemName: node.symbol)
+              .font(.system(size: 17, weight: .semibold, design: .default))
+              .foregroundColor(node.color)
+              .frame(width: 46, height: 46)
+              .background(
+                Circle()
+                  .fill(node.color.opacity(0.13))
+                  .overlay(Circle().stroke(node.color.opacity(0.28), lineWidth: 1))
+              )
+
+            Text(node.title)
+              .font(BankTheme.Typography.micro)
+              .foregroundColor(BankTheme.Palette.secondaryInk)
+              .lineLimit(1)
+              .minimumScaleFactor(0.82)
+          }
+          .position(node.point)
+        }
+      }
+    }
+    .padding(.vertical, BankTheme.Spacing.xs)
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel(Text("Mapa de Service Graph com serviços, CIs e fluxos relacionados"))
   }
 }
 

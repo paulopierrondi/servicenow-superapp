@@ -45,13 +45,15 @@ struct NowAssistMessage: Identifiable, Equatable {
     if brand == .itau {
       userText = "Mordomo, resumo meu dia e o P0 do Itaú."
       assistantText =
-        "Seu dia tem P0 no Core Pix, CMDB Health 91, 2 aprovações críticas, "
-        + "CSM preventivo e SPM pronto para priorizar o fix estrutural."
+        "Seu dia tem P0 no Core Pix, CMDB Health 91, CAB emergencial CHG004102, "
+        + "CSM preventivo para Personnalité e SPM pronto para priorizar o fix estrutural. "
+        + "Posso aprovar a mudança, abrir a ponte e preparar a comunicação executiva."
     } else {
       userText = "Mordomo, resumo meu dia e o P1 do Bradesco."
       assistantText =
-        "Seu dia tem P1 de latência Pix, CMDB Health 91, cases Prime em risco, "
-        + "mudança mobile pendente e CAB digital preparado."
+        "Seu dia tem P1 de latência Pix, CMDB Health 91, 42 cases Prime em risco, "
+        + "mudança mobile pendente e CAB digital preparado. Posso assumir a war room, "
+        + "liberar o playbook de agência e acionar CSM com contexto."
     }
 
     return [
@@ -97,7 +99,7 @@ final class NowAssistClient {
       || text.localizedCaseInsensitiveContains("mordomo")
     {
       reply =
-        "Seu dia: 1 incidente crítico, 2 aprovações, CMDB com relações órfãs, 3 cases CSM em risco e uma demanda SPM pronta para priorização."
+        "Seu dia: 1 incidente crítico, 2 aprovações, CMDB com relações órfãs, 3 cases CSM em risco, 1 pedido executivo no catálogo e uma demanda SPM pronta para priorização."
     } else if text.localizedCaseInsensitiveContains("pix") {
       reply =
         "Vou tratar Pix como jornada operacional: CSM para impacto ao cliente, ITSM para degradação, CRM para comunicação e SPM se virar demanda."

@@ -31,6 +31,12 @@ struct NowOperationsView: View {
   @State private var voiceModeEnabled = false
   @State private var offlineQueueEnabled = true
   @State private var activeTwinIndex = 0
+  @State private var emergencyChangeApproved = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
+  @State private var incidentBridgeOpened = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
+  @State private var executiveRequestReleased = ProcessInfo.processInfo.arguments.contains(
+    "-BankAppDemoApproved")
 
   private var workItems: [NowWorkItem] {
     switch workspace {
@@ -43,12 +49,25 @@ struct NowOperationsView: View {
     CustomerExperienceItem.bankingDemo()
   }
 
+  private var isItau: Bool {
+    AppBrand.current == .itau
+  }
+
+  private var criticalSeverity: String {
+    isItau ? "P0" : "P1"
+  }
+
+  private var criticalServiceName: String {
+    isItau ? "Core Pix Personnalité" : "Pix Prime mobile"
+  }
+
   var body: some View {
     NavigationView {
       AppBackground {
         ScrollView(showsIndicators: false) {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
+            executiveDecisionCenter
             journeyTwin
             CMDBHealthPanel(
               title: "CMDB Health do dia",
@@ -115,6 +134,99 @@ struct NowOperationsView: View {
       .accessibilityLabel(Text("brand.switch"))
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private var executiveDecisionCenter: some View {
+    VStack(spacing: BankTheme.Spacing.md) {
+      SectionHeader("Mesa executiva ServiceNow", actionKey: "Perguntar ao Assist") {
+        selectedTab = .support
+      }
+
+      VisualCard(fill: BankTheme.Palette.graphite) {
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+          HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+            VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+              Text("\(criticalSeverity) • \(criticalServiceName)")
+                .font(BankTheme.Typography.caption)
+                .foregroundColor(BankTheme.Palette.warning)
+
+              Text("Decisões que movem ITSM, CSM, CRM e SPM")
+                .font(BankTheme.Typography.section)
+                .foregroundColor(.white)
+                .fixedSize(horizontal: false, vertical: true)
+
+              Text(
+                "Aprovação, ponte técnica e pedido executivo compartilham CMDB, SLA, cliente afetado, rollback e trilha de auditoria."
+              )
+              .font(BankTheme.Typography.callout)
+              .foregroundColor(.white.opacity(0.76))
+              .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: BankTheme.Spacing.sm)
+
+            ExecutivePulseRing(
+              value: emergencyChangeApproved && incidentBridgeOpened ? 0.92 : 0.64,
+              color: emergencyChangeApproved && incidentBridgeOpened
+                ? BankTheme.Palette.success : BankTheme.Palette.warning
+            )
+            .frame(width: 82, height: 82)
+          }
+
+          VStack(spacing: BankTheme.Spacing.sm) {
+            NowDecisionActionRow(
+              title: isItau ? "Aprovar CHG004102" : "Aprovar CHG003871",
+              detail: isItau
+                ? "Fix emergencial no Core Pix com rollback e evidências."
+                : "Mudança no gateway Pix Prime com janela assistida.",
+              symbolName: "arrow.triangle.2.circlepath.circle.fill",
+              color: BankTheme.Palette.warning,
+              isDone: emergencyChangeApproved,
+              doneText: "Mudança aprovada"
+            ) {
+              withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+                emergencyChangeApproved.toggle()
+              }
+            }
+
+            NowDecisionActionRow(
+              title: isItau ? "Abrir ponte P0" : "Assumir war room P1",
+              detail: isItau
+                ? "SRE, Pix, antifraude, atendimento e diretoria com contexto."
+                : "Mobile, antifraude, CSM Prime e agência com uma timeline.",
+              symbolName: "dot.radiowaves.left.and.right",
+              color: BankTheme.Palette.attention,
+              isDone: incidentBridgeOpened,
+              doneText: "Ponte ativa"
+            ) {
+              withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+                incidentBridgeOpened.toggle()
+              }
+            }
+
+            NowDecisionActionRow(
+              title: isItau ? "Liberar atendimento alta renda" : "Liberar playbook agência Prime",
+              detail: "Catálogo cria comunicação, tarefas CSM e evidência para auditoria.",
+              symbolName: "shippingbox.fill",
+              color: BankTheme.Palette.brandRed,
+              isDone: executiveRequestReleased,
+              doneText: "Pedido em fulfillment"
+            ) {
+              withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+                executiveRequestReleased.toggle()
+              }
+            }
+          }
+
+          WarRoomSignalBoard(
+            isItau: isItau,
+            changeApproved: emergencyChangeApproved,
+            bridgeOpened: incidentBridgeOpened,
+            requestReleased: executiveRequestReleased
+          )
+        }
+      }
+    }
   }
 
   private var journeyTwin: some View {
@@ -323,6 +435,144 @@ struct NowOperationsView: View {
 
       ForEach(workItems) { item in
         WorkItemCard(item: item)
+      }
+    }
+  }
+}
+
+private struct ExecutivePulseRing: View {
+  let value: Double
+  let color: Color
+
+  private var percent: Int {
+    Int(min(max(value, 0), 1) * 100)
+  }
+
+  var body: some View {
+    ZStack {
+      Circle()
+        .stroke(Color.white.opacity(0.12), lineWidth: 9)
+
+      Circle()
+        .trim(from: 0, to: min(max(value, 0), 1))
+        .stroke(color, style: StrokeStyle(lineWidth: 9, lineCap: .round))
+        .rotationEffect(.degrees(-90))
+
+      VStack(spacing: 0) {
+        Text("\(percent)")
+          .font(BankTheme.Typography.metric)
+          .foregroundColor(.white)
+
+        Text("ready")
+          .font(BankTheme.Typography.micro)
+          .foregroundColor(.white.opacity(0.66))
+      }
+    }
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(Text("Prontidão \(percent)%"))
+  }
+}
+
+private struct NowDecisionActionRow: View {
+  let title: String
+  let detail: String
+  let symbolName: String
+  let color: Color
+  let isDone: Bool
+  let doneText: String
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      HStack(alignment: .center, spacing: BankTheme.Spacing.md) {
+        Image(systemName: isDone ? "checkmark.seal.fill" : symbolName)
+          .font(BankTheme.Typography.headline)
+          .foregroundColor(isDone ? BankTheme.Palette.success : color)
+          .frame(width: 42, height: 42)
+          .background(
+            Circle()
+              .fill((isDone ? BankTheme.Palette.success : color).opacity(0.16))
+          )
+
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+          Text(isDone ? doneText : title)
+            .font(BankTheme.Typography.headline)
+            .foregroundColor(.white)
+            .fixedSize(horizontal: false, vertical: true)
+
+          Text(detail)
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(.white.opacity(0.68))
+            .fixedSize(horizontal: false, vertical: true)
+        }
+
+        Spacer(minLength: BankTheme.Spacing.sm)
+
+        Image(systemName: isDone ? "checkmark.circle.fill" : "chevron.right")
+          .font(BankTheme.Typography.callout)
+          .foregroundColor(isDone ? BankTheme.Palette.success : .white.opacity(0.56))
+      }
+      .padding(BankTheme.Spacing.sm)
+      .background(
+        RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+          .fill(Color.white.opacity(isDone ? 0.11 : 0.07))
+      )
+    }
+    .buttonStyle(.plain)
+  }
+}
+
+private struct WarRoomSignalBoard: View {
+  let isItau: Bool
+  let changeApproved: Bool
+  let bridgeOpened: Bool
+  let requestReleased: Bool
+
+  private var items: [(title: String, value: String, color: Color)] {
+    [
+      ("Change", changeApproved ? "aprovada" : "pendente", BankTheme.Palette.warning),
+      ("Incidente", bridgeOpened ? "ponte ativa" : "aguardando", BankTheme.Palette.attention),
+      ("Pedido", requestReleased ? "fulfillment" : "fila", BankTheme.Palette.brandRed),
+      (
+        "Cliente",
+        isItau ? "Personnalité" : "Prime",
+        isItau ? BankTheme.Palette.brandSecondary : BankTheme.Palette.brandAction
+      ),
+    ]
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+      Text("Sinais da war room")
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(.white.opacity(0.72))
+
+      HStack(spacing: BankTheme.Spacing.sm) {
+        ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+            Circle()
+              .fill(item.color)
+              .frame(width: 8, height: 8)
+
+            Text(item.title)
+              .font(BankTheme.Typography.micro)
+              .foregroundColor(.white.opacity(0.62))
+              .lineLimit(1)
+              .minimumScaleFactor(0.82)
+
+            Text(item.value)
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(.white)
+              .lineLimit(1)
+              .minimumScaleFactor(0.74)
+          }
+          .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
+          .padding(BankTheme.Spacing.sm)
+          .background(
+            RoundedRectangle(cornerRadius: BankTheme.Radius.sm, style: .continuous)
+              .fill(Color.white.opacity(0.07))
+          )
+        }
       }
     }
   }

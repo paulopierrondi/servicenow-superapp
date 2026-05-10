@@ -7,19 +7,21 @@ Queria propor um hackathon curto para explorarmos uma tese pratica: transformar 
 Preparei uma demo funcional em iOS mostrando a arte do possivel:
 
 - entrada multi-tenant com experiencia Itau;
-- NowOS Command Center como primeira tela do dia;
-- simulacao de P0 Itau com CMDB Health, Service Graph e aprovacoes criticas;
+- NowOS Command Center como primeira tela do dia executivo;
+- simulacao de P0 Itau com CMDB Health, Service Graph, CAB emergencial e CSM preventivo;
+- mesa executiva para aprovar mudanca, abrir ponte P0 e liberar pedido operacional;
+- versao Bradesco com P1 Pix Prime, BIA + Now Assist, war room e playbook de agencia;
 - catalogo por intencao, nao por transacao;
 - orquestracao de case CSM, incidente ITSM e demanda SPM;
 - CSM, CRM, ITSM, SPM, Trust, CMDB Health e Now Assist no mesmo fluxo;
-- mordomo Now Assist resumindo o dia e preparando handoff humano;
+- mordomo Now Assist resumindo o dia, recomendando proximos passos e preparando handoff humano;
 - base para evoluir isso com Mobile App Builder, Now Assist e contratos ServiceNow reais.
 
 Sugestao de formato:
 
 1. Duracao: 2 dias.
 2. Squads: ServiceNow, canais digitais, CX/CSM, CRM, ITSM/SPM, seguranca e arquitetura.
-3. Desafio: escolher 2 ou 3 jornadas reais de alto impacto e prototipar ponta a ponta no mobile.
+3. Desafio: escolher 2 ou 3 jornadas reais de alto impacto, como P0/P1, aprovacao de mudanca, pedido executivo, case CSM e comunicacao ao cliente.
 4. Entregaveis: demo navegavel, backlog priorizado, arquitetura alvo, riscos de compliance e plano de MVP.
 5. Criterio de sucesso: reduzir friccao operacional, preservar contexto entre areas e demonstrar uso real de Now Assist.
 
