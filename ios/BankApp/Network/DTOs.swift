@@ -149,6 +149,14 @@ struct HomeCardDTO: Codable, Equatable, Identifiable {
       masked: nil,
       requiresFlag: "enable_autonomous_workforce"
     ),
+    HomeCardDTO(
+      id: "action-fabric",
+      title: "Action Fabric",
+      subtitle: "Tools ServiceNow via MCP",
+      action: "open_action_fabric",
+      masked: nil,
+      requiresFlag: "enable_autonomous_workforce"
+    ),
   ]
 }
 
@@ -661,6 +669,9 @@ struct AutonomousWorkflowResponse: Codable, Equatable {
   let controlPlane: AutonomousControlPlane
   let run: AutonomousWorkflowRun
   let agents: [AutonomousAgent]
+  let platformSignals: [PlatformFabricSignal]
+  let actionPackages: [ActionFabricPackage]
+  let controlMetrics: [AIControlMetric]
   let governance: AutonomousGovernance
   let citations: [AutonomousCitation]
   let compatibility: CompatibilityDTO
@@ -673,6 +684,9 @@ struct AutonomousWorkflowResponse: Codable, Equatable {
       controlPlane: .demo(for: brand),
       run: .demo(for: brand),
       agents: AutonomousAgent.demo(for: brand),
+      platformSignals: PlatformFabricSignal.demo(for: brand),
+      actionPackages: ActionFabricPackage.demo(for: brand),
+      controlMetrics: AIControlMetric.demo(for: brand),
       governance: .demo,
       citations: AutonomousCitation.demo,
       compatibility: CompatibilityDTO(
@@ -821,6 +835,130 @@ struct AutonomousAgent: Codable, Equatable, Identifiable {
         domain: "Security & Risk",
         permissionScope: "Risk evidence + change draft",
         currentWork: "Guardrail, exceção, change e evidências"
+      ),
+    ]
+  }
+}
+
+struct PlatformFabricSignal: Codable, Equatable, Identifiable {
+  let id: String
+  let layer: String
+  let title: String
+  let detail: String
+  let status: String
+  let symbolName: String
+
+  static func demo(for brand: AppBrand) -> [PlatformFabricSignal] {
+    let segment = brand.customerSegment
+    return [
+      PlatformFabricSignal(
+        id: "otto",
+        layer: "Unified AI",
+        title: "Otto entende intenção e estado do trabalho",
+        detail: "Conversa vira plano com contexto, citação e próximos passos rastreáveis.",
+        status: "contexto pronto",
+        symbolName: "sparkles"
+      ),
+      PlatformFabricSignal(
+        id: "action-fabric",
+        layer: "Action Fabric",
+        title: "MCP Server abre ações ServiceNow para agentes",
+        detail: "Incidente, mudança, catálogo, case CSM e CMDB expostos como tools com policy.",
+        status: "4 packages",
+        symbolName: "point.3.connected.trianglepath.dotted"
+      ),
+      PlatformFabricSignal(
+        id: "workflow-data-fabric",
+        layer: "Workflow Data Fabric",
+        title: "Context Engine cruza sinais internos e externos",
+        detail: "CMDB, observabilidade, CRM, atendimento \(segment) e SPM viram contexto único.",
+        status: "sem copiar dados",
+        symbolName: "externaldrive.connected.to.line.below"
+      ),
+      PlatformFabricSignal(
+        id: "control-tower",
+        layer: "AI Control Tower",
+        title: "Governança antes da execução autônoma",
+        detail: "Human-in-the-loop, prompt-shield, escopo mínimo e auditoria por run.",
+        status: "governado",
+        symbolName: "checkmark.shield.fill"
+      ),
+    ]
+  }
+}
+
+struct ActionFabricPackage: Codable, Equatable, Identifiable {
+  let id: String
+  let title: String
+  let tool: String
+  let target: String
+  let guardrail: String
+  let state: String
+
+  static func demo(for brand: AppBrand) -> [ActionFabricPackage] {
+    let isItau = brand == .itau
+    return [
+      ActionFabricPackage(
+        id: "incident-bridge",
+        title: isItau ? "Abrir ponte P0" : "Assumir war room P1",
+        tool: "x_bank.incident.bridge.open",
+        target: isItau ? "INC0018884" : "INC0018885",
+        guardrail: "Somente cria ponte e resumo; não executa rollback.",
+        state: "ready"
+      ),
+      ActionFabricPackage(
+        id: "change-guardrail",
+        title: "Aprovar guardrail CAB",
+        tool: "x_bank.change.guardrail.approve",
+        target: isItau ? "CHG0030005" : "CHG0030004",
+        guardrail: "Exige aprovação humana e plano de retorno.",
+        state: "human gate"
+      ),
+      ActionFabricPackage(
+        id: "csm-draft",
+        title: isItau ? "Draft CSM Personnalité" : "Draft CSM Prime",
+        tool: "x_bank.csm.case.draft",
+        target: "case draft",
+        guardrail: "Rascunho com citação; envio final manual.",
+        state: "draft"
+      ),
+      ActionFabricPackage(
+        id: "cmdb-remediate",
+        title: "Plano CMDB Health",
+        tool: "x_bank.cmdb.health.remediate",
+        target: "18 stale CIs",
+        guardrail: "Cria tarefas; não altera CI crítico sem owner.",
+        state: "planned"
+      ),
+    ]
+  }
+}
+
+struct AIControlMetric: Codable, Equatable, Identifiable {
+  let id: String
+  let title: String
+  let value: String
+  let detail: String
+
+  static func demo(for brand: AppBrand) -> [AIControlMetric] {
+    [
+      AIControlMetric(
+        id: "agent-risk",
+        title: "Agent risk",
+        value: brand == .itau ? "médio" : "baixo",
+        detail: "Escopo limita ação a rascunhos, ponte e aprovação guardada."
+      ),
+      AIControlMetric(
+        id: "policy",
+        title: "Policy pass",
+        value: "97%",
+        detail: "Prompt shield, PII logging off e trilha por correlation_id."
+      ),
+      AIControlMetric(
+        id: "automation",
+        title: "Autonomia liberada",
+        value: "62%",
+        detail: "Demais passos esperam humano por CAB, LGPD ou comunicação."
       ),
     ]
   }

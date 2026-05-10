@@ -102,6 +102,13 @@ final class NowAssistClient {
     {
       reply =
         "Workflow agentic pronto: Sense com AIOps, Decide com L1 Service Desk AI Specialist, Act com CRM Case Management AI Specialist e Govern com AI Control Tower. Guardrails ativos: least privilege, prompt-shield, sem log de PII, citações KB/CMDB/CAB e trilha x_bank_ai_audit_event."
+    } else if text.localizedCaseInsensitiveContains("action fabric")
+      || text.localizedCaseInsensitiveContains("mcp")
+      || text.localizedCaseInsensitiveContains("tool")
+      || text.localizedCaseInsensitiveContains("fabric")
+    {
+      reply =
+        "Action Fabric está expondo tools ServiceNow com política: abrir ponte, aprovar guardrail CAB, criar draft CSM e planejar remediação CMDB. Workflow Data Fabric entrega contexto sem copiar dados, e AI Control Tower mede risco, escopo e auditoria antes da execução."
     } else if text.localizedCaseInsensitiveContains("cmdb") {
       reply =
         "CMDB Health está em 91: completeness 92%, correctness 88%, compliance 95% e relações 84%. Recomendo corrigir CIs stale antes do próximo change."

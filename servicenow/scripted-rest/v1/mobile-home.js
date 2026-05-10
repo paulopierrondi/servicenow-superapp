@@ -73,6 +73,13 @@
                 subtitle: 'AI specialists com governança',
                 action: 'open_agentic_workflow',
                 requires_flag: 'enable_autonomous_workforce'
+            },
+            {
+                id: 'action-fabric',
+                title: 'Action Fabric',
+                subtitle: 'Tools ServiceNow via MCP',
+                action: 'open_action_fabric',
+                requires_flag: 'enable_autonomous_workforce'
             }
         ],
         compatibility: {

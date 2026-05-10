@@ -75,6 +75,7 @@ struct NowOperationsView: View {
         ScrollView(showsIndicators: false) {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
+            platformFabricPanel
             executiveDecisionCenter
             autonomousWorkforcePanel
             journeyTwin
@@ -344,6 +345,62 @@ struct NowOperationsView: View {
           HStack(spacing: BankTheme.Spacing.sm) {
             ForEach(workflow.citations) { citation in
               CitationPill(citation: citation)
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private var platformFabricPanel: some View {
+    let workflow = autonomousWorkflow
+
+    return VStack(spacing: BankTheme.Spacing.md) {
+      SectionHeader("AI Platform Fabric", actionKey: "Ver tools") {
+        searchText = "Action Fabric tools \(workflow.run.id)"
+      }
+
+      VisualCard {
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+          HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+            IconBubble(
+              symbolName: "network",
+              color: BankTheme.Palette.brandAction,
+              size: BankTheme.Size.iconBubble
+            )
+
+            VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+              Text("Otto + Action Fabric + Workflow Data Fabric")
+                .font(BankTheme.Typography.headline)
+                .foregroundColor(BankTheme.Palette.ink)
+                .fixedSize(horizontal: false, vertical: true)
+
+              Text("A demo mostra como agentes recebem contexto, tools e políticas antes de agir.")
+                .font(BankTheme.Typography.callout)
+                .foregroundColor(BankTheme.Palette.secondaryInk)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+          }
+
+          VStack(spacing: BankTheme.Spacing.sm) {
+            ForEach(workflow.platformSignals) { signal in
+              PlatformFabricRow(signal: signal)
+            }
+          }
+
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.sm) {
+            Text("Action Fabric packages")
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(BankTheme.Palette.brandAction)
+
+            ForEach(workflow.actionPackages) { package in
+              ActionFabricPackageRow(package: package)
+            }
+          }
+
+          HStack(spacing: BankTheme.Spacing.sm) {
+            ForEach(workflow.controlMetrics) { metric in
+              AIControlMetricTile(metric: metric)
             }
           }
         }
@@ -750,6 +807,137 @@ private struct AutonomousStepRow: View {
     .background(
       RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
         .fill(Color.white.opacity(0.07))
+    )
+  }
+}
+
+private struct PlatformFabricRow: View {
+  let signal: PlatformFabricSignal
+
+  var body: some View {
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      IconBubble(
+        symbolName: signal.symbolName,
+        color: BankTheme.Palette.brandAction,
+        size: BankTheme.Size.compactIconBubble
+      )
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+        HStack(alignment: .firstTextBaseline, spacing: BankTheme.Spacing.sm) {
+          Text(signal.layer.uppercased())
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(BankTheme.Palette.brandAction)
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          Text(signal.status)
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(BankTheme.Palette.secondaryInk)
+            .lineLimit(1)
+            .minimumScaleFactor(0.82)
+        }
+
+        Text(signal.title)
+          .font(BankTheme.Typography.callout)
+          .foregroundColor(BankTheme.Palette.ink)
+          .fixedSize(horizontal: false, vertical: true)
+
+        Text(signal.detail)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+    }
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(BankTheme.Palette.subtleSurface)
+    )
+  }
+}
+
+private struct ActionFabricPackageRow: View {
+  let package: ActionFabricPackage
+
+  var body: some View {
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      Image(systemName: "wrench.and.screwdriver.fill")
+        .font(BankTheme.Typography.callout)
+        .foregroundColor(BankTheme.Palette.brandAction)
+        .frame(width: BankTheme.Size.compactIconBubble, height: BankTheme.Size.compactIconBubble)
+        .background(
+          Circle()
+            .fill(BankTheme.Palette.brandAction.opacity(0.14))
+        )
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+        HStack(alignment: .firstTextBaseline, spacing: BankTheme.Spacing.sm) {
+          Text(package.title)
+            .font(BankTheme.Typography.callout)
+            .foregroundColor(BankTheme.Palette.ink)
+            .fixedSize(horizontal: false, vertical: true)
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          Text(package.state)
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(BankTheme.Palette.brandAction)
+            .lineLimit(1)
+            .minimumScaleFactor(0.82)
+        }
+
+        Text(package.tool)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.mutedInk)
+          .lineLimit(1)
+          .minimumScaleFactor(0.78)
+
+        Text(package.guardrail)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+    }
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(BankTheme.Palette.surface)
+        .overlay(
+          RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+            .stroke(BankTheme.Palette.divider.opacity(0.54), lineWidth: BankTheme.Stroke.hairline)
+        )
+    )
+  }
+}
+
+private struct AIControlMetricTile: View {
+  let metric: AIControlMetric
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+      Text(metric.value)
+        .font(BankTheme.Typography.metric)
+        .foregroundColor(BankTheme.Palette.ink)
+        .lineLimit(1)
+        .minimumScaleFactor(0.76)
+
+      Text(metric.title)
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(BankTheme.Palette.brandAction)
+        .lineLimit(1)
+        .minimumScaleFactor(0.84)
+
+      Text(metric.detail)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(BankTheme.Palette.secondaryInk)
+        .lineLimit(3)
+        .minimumScaleFactor(0.78)
+    }
+    .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(BankTheme.Palette.subtleSurface)
     )
   }
 }

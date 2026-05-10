@@ -16,6 +16,7 @@ Adicionar o contrato `/api/x_bank/v1/mobile-agentic-workflow` para expor:
 
 - run de Autonomous Workforce por marca;
 - AI specialists por domínio;
+- camada Otto, Action Fabric/MCP Server, Workflow Data Fabric e Context Engine;
 - etapas `Sense`, `Decide`, `Act` e `Govern`;
 - guardrails de human-in-the-loop, least privilege, prompt-shield e sem log de PII;
 - citações KB, Service Graph/CMDB e CAB;

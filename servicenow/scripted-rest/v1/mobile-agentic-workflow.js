@@ -131,6 +131,94 @@
                 currentWork: 'Guardrail, exceção, change e evidências'
             }
         ],
+        platformSignals: [
+            {
+                id: 'otto',
+                layer: 'Unified AI',
+                title: 'Otto entende intenção e estado do trabalho',
+                detail: 'Conversa vira plano com contexto, citação e próximos passos rastreáveis.',
+                status: 'contexto pronto',
+                symbolName: 'sparkles'
+            },
+            {
+                id: 'action-fabric',
+                layer: 'Action Fabric',
+                title: 'MCP Server abre ações ServiceNow para agentes',
+                detail: 'Incidente, mudança, catálogo, case CSM e CMDB expostos como tools com policy.',
+                status: '4 packages',
+                symbolName: 'point.3.connected.trianglepath.dotted'
+            },
+            {
+                id: 'workflow-data-fabric',
+                layer: 'Workflow Data Fabric',
+                title: 'Context Engine cruza sinais internos e externos',
+                detail: 'CMDB, observabilidade, CRM, atendimento ' + segment + ' e SPM viram contexto único.',
+                status: 'sem copiar dados',
+                symbolName: 'externaldrive.connected.to.line.below'
+            },
+            {
+                id: 'control-tower',
+                layer: 'AI Control Tower',
+                title: 'Governança antes da execução autônoma',
+                detail: 'Human-in-the-loop, prompt-shield, escopo mínimo e auditoria por run.',
+                status: 'governado',
+                symbolName: 'checkmark.shield.fill'
+            }
+        ],
+        actionPackages: [
+            {
+                id: 'incident-bridge',
+                title: isItau ? 'Abrir ponte P0' : 'Assumir war room P1',
+                tool: 'x_bank.incident.bridge.open',
+                target: isItau ? 'INC0018884' : 'INC0018885',
+                guardrail: 'Somente cria ponte e resumo; não executa rollback.',
+                state: 'ready'
+            },
+            {
+                id: 'change-guardrail',
+                title: 'Aprovar guardrail CAB',
+                tool: 'x_bank.change.guardrail.approve',
+                target: isItau ? 'CHG0030005' : 'CHG0030004',
+                guardrail: 'Exige aprovação humana e plano de retorno.',
+                state: 'human gate'
+            },
+            {
+                id: 'csm-draft',
+                title: isItau ? 'Draft CSM Personnalité' : 'Draft CSM Prime',
+                tool: 'x_bank.csm.case.draft',
+                target: 'case draft',
+                guardrail: 'Rascunho com citação; envio final manual.',
+                state: 'draft'
+            },
+            {
+                id: 'cmdb-remediate',
+                title: 'Plano CMDB Health',
+                tool: 'x_bank.cmdb.health.remediate',
+                target: '18 stale CIs',
+                guardrail: 'Cria tarefas; não altera CI crítico sem owner.',
+                state: 'planned'
+            }
+        ],
+        controlMetrics: [
+            {
+                id: 'agent-risk',
+                title: 'Agent risk',
+                value: isItau ? 'médio' : 'baixo',
+                detail: 'Escopo limita ação a rascunhos, ponte e aprovação guardada.'
+            },
+            {
+                id: 'policy',
+                title: 'Policy pass',
+                value: '97%',
+                detail: 'Prompt shield, PII logging off e trilha por correlation_id.'
+            },
+            {
+                id: 'automation',
+                title: 'Autonomia liberada',
+                value: '62%',
+                detail: 'Demais passos esperam humano por CAB, LGPD ou comunicação.'
+            }
+        ],
         governance: {
             humanInTheLoop: true,
             leastPrivilege: true,

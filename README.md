@@ -82,6 +82,8 @@ O `Gêmeo Operacional da Jornada` transforma uma intenção bancária em um mapa
 
 O `Autonomous Workforce Run` leva isso para execução governada: AIOps AI Specialist detecta e correlaciona sinais, L1 Service Desk AI Specialist faz triagem, CRM Case Management AI Specialist prepara case/comunicação, e AI Control Tower segura a ação sensível até aprovação humana, com least privilege, prompt-shield, citações KB/CMDB/CAB e trilha de auditoria.
 
+A aba `Work` agora também mostra a camada de plataforma: Otto interpreta intenção, Action Fabric/MCP Server expõe tools ServiceNow com política, Workflow Data Fabric/Context Engine cruza contexto sem copiar dados, e AI Control Tower mede risco, policy pass e autonomia liberada.
+
 ## Cores e UI
 
 O app usa uma base visual nativa iOS, com fundo grouped `#F2F2F7`, superfícies brancas e sem preenchimentos pesados de marca. As cores oficiais entram como acento: Bradesco `#CC092F` e `#900F15`; Itaú `#EC7000` e `#003399`.
