@@ -121,7 +121,7 @@ struct SupportView: View {
                 .frame(width: BankTheme.Size.iconButton, height: BankTheme.Size.iconButton)
                 .background(
                   Circle()
-                    .fill(BankTheme.Palette.brandRed)
+                    .fill(BankTheme.Palette.brandAction)
                 )
                 .foregroundColor(.white)
             }

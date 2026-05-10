@@ -67,7 +67,7 @@ struct ProfileView: View {
       HStack(spacing: BankTheme.Spacing.md) {
         ZStack {
           Circle()
-            .fill(BankTheme.Palette.brandRed)
+            .fill(BankTheme.Palette.brandAction)
 
           Text(String(authSession.user.firstName.prefix(1)))
             .font(BankTheme.Typography.title)
@@ -170,7 +170,7 @@ struct ProfileView: View {
             .fixedSize(horizontal: false, vertical: true)
         }
         .font(BankTheme.Typography.body)
-        .tint(BankTheme.Palette.brandRed)
+        .tint(BankTheme.Palette.brandAction)
       }
     }
   }

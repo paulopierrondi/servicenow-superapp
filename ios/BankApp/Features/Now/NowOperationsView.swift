@@ -124,7 +124,7 @@ struct NowOperationsView: View {
       } label: {
         Image(systemName: "arrow.triangle.2.circlepath")
           .font(BankTheme.Typography.headline)
-          .foregroundColor(BankTheme.Palette.brandRed)
+          .foregroundColor(BankTheme.Palette.brandAction)
           .frame(width: BankTheme.Size.iconButton, height: BankTheme.Size.iconButton)
           .background(
             Circle()
@@ -270,7 +270,7 @@ struct NowOperationsView: View {
 
       Toggle("now.offline.queue", isOn: $offlineQueueEnabled)
         .font(BankTheme.Typography.callout)
-        .tint(BankTheme.Palette.brandRed)
+        .tint(BankTheme.Palette.brandAction)
         .padding(.horizontal, BankTheme.Spacing.xs)
     }
   }
@@ -328,7 +328,7 @@ struct NowOperationsView: View {
       }
     }
     .pickerStyle(.segmented)
-    .tint(BankTheme.Palette.brandRed)
+    .tint(BankTheme.Palette.brandAction)
   }
 
   private var launcher: some View {
@@ -463,7 +463,7 @@ private struct ExecutivePulseRing: View {
           .font(BankTheme.Typography.metric)
           .foregroundColor(.white)
 
-        Text("ready")
+        Text("pronto")
           .font(BankTheme.Typography.micro)
           .foregroundColor(.white.opacity(0.66))
       }

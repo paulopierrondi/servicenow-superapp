@@ -89,7 +89,7 @@ struct RootView: View {
         .tabItem { Label(AppTab.now.titleKey, systemImage: AppTab.now.symbolName) }
         .tag(AppTab.now)
     }
-    .accentColor(BankTheme.Palette.brandRed)
+    .accentColor(BankTheme.Palette.brandAction)
     .environmentObject(authSession)
     .environmentObject(featureFlags)
     .environmentObject(homeViewModel)

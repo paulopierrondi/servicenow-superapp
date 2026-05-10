@@ -66,21 +66,21 @@ enum AppBrand: String, CaseIterable, Equatable {
 
   var primaryDarkColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0x900F15)
-    case .itau: return Color(bankHex: 0xB55400)
+    case .bradesco: return Color(bankHex: 0x970020)
+    case .itau: return Color(bankHex: 0xB34A00)
     }
   }
 
   var accentColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0x900F15)
+    case .bradesco: return Color(bankHex: 0x3F73B8)
     case .itau: return Color(bankHex: 0x003399)
     }
   }
 
   var chromeColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0x3F73B8)
+    case .bradesco: return Color(bankHex: 0x4778BC)
     case .itau: return primaryColor
     }
   }
@@ -88,19 +88,22 @@ enum AppBrand: String, CaseIterable, Equatable {
   var chromeDarkColor: Color {
     switch self {
     case .bradesco: return Color(bankHex: 0x064D93)
-    case .itau: return primaryDarkColor
+    case .itau: return Color(bankHex: 0xD45D00)
     }
   }
 
   var actionColor: Color {
     switch self {
     case .bradesco: return Color(bankHex: 0xCC092F)
-    case .itau: return primaryColor
+    case .itau: return accentColor
     }
   }
 
   var appBackground: Color {
-    Color(bankHex: 0xF2F2F7)
+    switch self {
+    case .bradesco: return Color(bankHex: 0xF4F8FD)
+    case .itau: return Color(bankHex: 0xFFF7EF)
+    }
   }
 
   var surfaceColor: Color {
@@ -109,8 +112,15 @@ enum AppBrand: String, CaseIterable, Equatable {
 
   var subtleSurfaceColor: Color {
     switch self {
-    case .bradesco: return Color(bankHex: 0xFFF1F4)
-    case .itau: return Color(bankHex: 0xFFF4E9)
+    case .bradesco: return Color(bankHex: 0xEDF4FC)
+    case .itau: return Color(bankHex: 0xFFF0E1)
+    }
+  }
+
+  var commandSurfaceColor: Color {
+    switch self {
+    case .bradesco: return Color(bankHex: 0x082E58)
+    case .itau: return Color(bankHex: 0x06235F)
     }
   }
 

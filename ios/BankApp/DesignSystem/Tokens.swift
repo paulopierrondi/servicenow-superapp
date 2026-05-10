@@ -23,7 +23,7 @@ enum BankTheme {
     static let warning = Color(bankHex: 0xFF9500)
     static let attention = Color(bankHex: 0x007AFF)
     static let secure = Color(bankHex: 0x30D158)
-    static let graphite = Color(bankHex: 0x1C1C1E)
+    static var graphite: Color { AppBrand.current.commandSurfaceColor }
   }
 
   enum Spacing {

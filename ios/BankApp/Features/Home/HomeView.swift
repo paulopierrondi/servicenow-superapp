@@ -131,7 +131,7 @@ struct HomeView: View {
         title: "Aprovações",
         detail: "CAB, SPM e risco prontos para decisão",
         symbolName: "checkmark.seal.fill",
-        color: BankTheme.Palette.brandAction
+        color: isItau ? BankTheme.Palette.brandRed : BankTheme.Palette.brandAction
       ),
       ExecutiveMetric(
         id: "cmdb",
@@ -354,7 +354,7 @@ struct HomeView: View {
             .padding(.top, BankTheme.Spacing.xl)
             .padding(.bottom, BankTheme.Spacing.xxxl)
             .frame(maxWidth: .infinity)
-            .background(Color(bankHex: 0xFFF7F0))
+            .background(BankTheme.Palette.appBackground)
           }
         }
       }
@@ -403,7 +403,8 @@ struct HomeView: View {
       LinearGradient(
         colors: [
           BankTheme.Palette.brandRed,
-          Color(bankHex: 0xFF8A1F),
+          Color(bankHex: 0xFF7A00),
+          BankTheme.Palette.brandRedDark,
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -493,6 +494,7 @@ struct HomeView: View {
       LinearGradient(
         colors: [
           BankTheme.Palette.brandChrome,
+          Color(bankHex: 0x2F6FB8),
           BankTheme.Palette.brandChromeDark,
         ],
         startPoint: .topLeading,
@@ -650,7 +652,7 @@ struct HomeView: View {
   }
 
   private var executiveCockpit: some View {
-    let fill = isItau ? Color(bankHex: 0x2A1608) : BankTheme.Palette.graphite
+    let fill = BankTheme.Palette.graphite
     let trendValues =
       isItau
       ? [0.52, 0.48, 0.62, 0.84, 0.74, 0.91]
@@ -678,14 +680,14 @@ struct HomeView: View {
 
           StatusBadge(
             title: isItau ? "Executivo" : "Prime",
-            color: isItau ? BankTheme.Palette.brandSecondary : BankTheme.Palette.brandAction,
+            color: isItau ? .white : BankTheme.Palette.brandAction,
             symbolName: "person.crop.circle.badge.checkmark"
           )
         }
 
         ExecutiveTrendGraph(
           values: trendValues,
-          color: isItau ? BankTheme.Palette.brandSecondary : BankTheme.Palette.brandAction
+          color: isItau ? BankTheme.Palette.brandRed : BankTheme.Palette.brandAction
         )
         .frame(height: 92)
 

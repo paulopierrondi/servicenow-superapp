@@ -32,9 +32,13 @@ struct VisualCard<Content: View>: View {
           .fill(fill)
           .overlay(
             RoundedRectangle(cornerRadius: BankTheme.Radius.lg, style: .continuous)
-              .stroke(BankTheme.Palette.divider.opacity(0.72), lineWidth: BankTheme.Stroke.hairline)
+              .stroke(
+                BankTheme.Palette.divider.opacity(0.54),
+                lineWidth: BankTheme.Stroke.hairline
+              )
           )
       )
+      .shadow(color: Color.black.opacity(0.055), radius: 18, x: 0, y: 9)
   }
 }
 
@@ -67,7 +71,7 @@ struct SectionHeader: View {
             .font(BankTheme.Typography.callout)
         }
         .buttonStyle(.plain)
-        .foregroundColor(BankTheme.Palette.brandRed)
+        .foregroundColor(BankTheme.Palette.brandAction)
       }
     }
     .accessibilityElement(children: .combine)
@@ -389,7 +393,7 @@ struct BankPrimaryButtonStyle: ButtonStyle {
       .padding(.vertical, BankTheme.Spacing.md)
       .background(
         RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
-          .fill(BankTheme.Palette.brandRed)
+          .fill(BankTheme.Palette.brandAction)
           .opacity(configuration.isPressed ? 0.72 : 1)
       )
   }
@@ -399,12 +403,12 @@ struct BankSecondaryButtonStyle: ButtonStyle {
   func makeBody(configuration: Configuration) -> some View {
     configuration.label
       .font(BankTheme.Typography.headline)
-      .foregroundColor(BankTheme.Palette.brandRed)
+      .foregroundColor(BankTheme.Palette.brandAction)
       .frame(maxWidth: .infinity)
       .padding(.vertical, BankTheme.Spacing.md)
       .background(
         RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
-          .fill(BankTheme.Palette.brandRed.opacity(configuration.isPressed ? 0.18 : 0.10))
+          .fill(BankTheme.Palette.brandAction.opacity(configuration.isPressed ? 0.18 : 0.10))
       )
   }
 }

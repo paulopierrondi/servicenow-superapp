@@ -185,7 +185,7 @@ struct PaymentsView: View {
           }
         }
         .font(BankTheme.Typography.body)
-        .tint(BankTheme.Palette.brandRed)
+        .tint(BankTheme.Palette.brandAction)
 
         Button {
           requestText = ""

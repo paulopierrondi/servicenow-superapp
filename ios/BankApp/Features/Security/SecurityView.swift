@@ -197,7 +197,7 @@ struct SecurityView: View {
 
           Toggle("security.compliance.alerts", isOn: $consentAlertsEnabled)
             .font(BankTheme.Typography.body)
-            .tint(BankTheme.Palette.brandRed)
+            .tint(BankTheme.Palette.brandAction)
         }
       }
     }
@@ -270,6 +270,6 @@ private struct ToggleRow: View {
         }
       }
     }
-    .tint(BankTheme.Palette.brandRed)
+    .tint(BankTheme.Palette.brandAction)
   }
 }
