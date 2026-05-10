@@ -400,6 +400,133 @@ struct NowKnowledgeAnswer: Identifiable, Equatable {
   )
 }
 
+struct NowJourneyTwin: Equatable {
+  let title: String
+  let hypothesis: String
+  let minutesSaved: String
+  let riskDelta: String
+  let auditId: String
+  let nodes: [NowJourneyNode]
+  let pulses: [NowJourneyPulse]
+
+  static var demo: NowJourneyTwin {
+    NowJourneyTwin(
+      title: "Pix contestado sem abrir chamado manual",
+      hypothesis:
+        "O app calcula o impacto antes de executar: cliente, consentimento, antifraude, ITSM, SPM e auditoria ficam no mesmo mapa.",
+      minutesSaved: "42 min",
+      riskDelta: "-31%",
+      auditId: "JTW-2026-0510",
+      nodes: [
+        NowJourneyNode(
+          id: "customer",
+          title: "Cliente",
+          subtitle: "Intenção capturada",
+          symbolName: "person.crop.circle.fill",
+          owner: AppBrand.current.displayName,
+          confidence: 0.98,
+          isCritical: false
+        ),
+        NowJourneyNode(
+          id: "consent",
+          title: "Consentimento",
+          subtitle: "Base legal checada",
+          symbolName: "hand.raised.fill",
+          owner: "LGPD",
+          confidence: 0.91,
+          isCritical: false
+        ),
+        NowJourneyNode(
+          id: "risk",
+          title: "Risco",
+          subtitle: "Score recalculado",
+          symbolName: "shield.lefthalf.filled",
+          owner: "ZTA",
+          confidence: 0.87,
+          isCritical: true
+        ),
+        NowJourneyNode(
+          id: "assist",
+          title: "Now Assist",
+          subtitle: "Resumo e próximos passos",
+          symbolName: "sparkles",
+          owner: "AI",
+          confidence: 0.94,
+          isCritical: false
+        ),
+        NowJourneyNode(
+          id: "itsm",
+          title: "ITSM",
+          subtitle: "Incidente correlacionado",
+          symbolName: "wrench.and.screwdriver.fill",
+          owner: "SRE",
+          confidence: 0.83,
+          isCritical: true
+        ),
+        NowJourneyNode(
+          id: "spm",
+          title: "SPM",
+          subtitle: "Demanda conectada",
+          symbolName: "chart.line.uptrend.xyaxis",
+          owner: "Portfólio",
+          confidence: 0.79,
+          isCritical: false
+        ),
+        NowJourneyNode(
+          id: "audit",
+          title: "Auditoria",
+          subtitle: "Trilha imutável",
+          symbolName: "lock.doc.fill",
+          owner: "GRC",
+          confidence: 1,
+          isCritical: false
+        ),
+      ],
+      pulses: [
+        NowJourneyPulse(
+          id: "client",
+          title: "Impacto cliente",
+          metric: "1 toque",
+          detail: "Sem descobrir qual área resolve",
+          symbolName: "hand.tap.fill"
+        ),
+        NowJourneyPulse(
+          id: "operation",
+          title: "Impacto operação",
+          metric: "6 áreas",
+          detail: "Orquestradas por contrato único",
+          symbolName: "point.3.connected.trianglepath.dotted"
+        ),
+        NowJourneyPulse(
+          id: "audit",
+          title: "Impacto compliance",
+          metric: "100%",
+          detail: "Contexto pronto para revisão",
+          symbolName: "checkmark.seal.fill"
+        ),
+      ]
+    )
+  }
+}
+
+struct NowJourneyNode: Identifiable, Equatable {
+  let id: String
+  let title: String
+  let subtitle: String
+  let symbolName: String
+  let owner: String
+  let confidence: Double
+  let isCritical: Bool
+}
+
+struct NowJourneyPulse: Identifiable, Equatable {
+  let id: String
+  let title: String
+  let metric: String
+  let detail: String
+  let symbolName: String
+}
+
 struct ScheduledPayment: Identifiable, Equatable {
   let id: UUID
   let title: String

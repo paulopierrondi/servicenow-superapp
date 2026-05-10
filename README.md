@@ -76,9 +76,13 @@ Cliente → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 
 A aba `Now` segue a lógica operacional do Now Mobile, mas adaptada para banco e multi-marca: busca universal com voz, catálogo por departamento, aprovações, fila offline, respostas com citação, ITSM, SPM e Now Assist no mesmo fluxo.
 
+## Feature Assinatura
+
+O `Gêmeo Operacional da Jornada` transforma uma intenção bancária em um mapa vivo antes da execução: cliente, consentimento, risco, Now Assist, ITSM, SPM e auditoria aparecem conectados em uma trilha interativa. A ideia é mostrar o impacto operacional de um Pix contestado, aprovação ou mudança antes de abrir chamados manuais.
+
 ## ServiceNow e Railway
 
-O endpoint `mobile-work` expõe o contrato v1 para ITSM, SPM, launcher, action items e respostas sintetizadas, usado pela aba `Now`. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
+O endpoint `mobile-work` expõe o contrato v1 para ITSM, SPM, launcher, action items, respostas sintetizadas e o `journeyTwin`, usado pela aba `Now`. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
 
 ## Compliance
 

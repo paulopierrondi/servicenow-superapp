@@ -87,6 +87,26 @@
             citation: 'KB001928',
             requiresHumanReview: true
         },
+        journeyTwin: {
+            id: 'JTW-2026-0510',
+            title: 'Pix contestado sem abrir chamado manual',
+            minutesSaved: '42 min',
+            riskDelta: '-31%',
+            nodes: [
+                { id: 'customer', label: 'Cliente', owner: brand },
+                { id: 'consent', label: 'Consentimento', owner: 'LGPD' },
+                { id: 'risk', label: 'Risco', owner: 'ZTA' },
+                { id: 'assist', label: 'Now Assist', owner: 'AI' },
+                { id: 'itsm', label: 'ITSM', owner: 'SRE' },
+                { id: 'spm', label: 'SPM', owner: 'Portfólio' },
+                { id: 'audit', label: 'Auditoria', owner: 'GRC' }
+            ],
+            policy: {
+                requiresHumanReview: true,
+                piiLoggingAllowed: false,
+                immutableAuditTrail: true
+            }
+        },
         workspaces: {
             itsm: [
                 {

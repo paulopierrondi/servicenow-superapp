@@ -40,11 +40,15 @@ enum AppTab: Hashable {
 }
 
 struct RootView: View {
+  private static var initialTab: AppTab {
+    ProcessInfo.processInfo.arguments.contains("-BankAppStartNow") ? .now : .home
+  }
+
   @StateObject private var authSession = AuthSession()
   @StateObject private var featureFlags = FeatureFlagStore()
   @StateObject private var homeViewModel = HomeViewModel()
 
-  @State private var selectedTab: AppTab = .home
+  @State private var selectedTab: AppTab = RootView.initialTab
 
   private let deepLinkRouter = DeepLinkRouter()
 

@@ -28,6 +28,7 @@ struct NowOperationsView: View {
   @State private var searchText = ""
   @State private var voiceModeEnabled = false
   @State private var offlineQueueEnabled = true
+  @State private var activeTwinIndex = 0
 
   private var workItems: [NowWorkItem] {
     switch workspace {
@@ -42,6 +43,7 @@ struct NowOperationsView: View {
         ScrollView(showsIndicators: false) {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
+            journeyTwin
             universalSearch
             assistantPanel
             launcher
@@ -82,6 +84,16 @@ struct NowOperationsView: View {
         .fixedSize(horizontal: false, vertical: true)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private var journeyTwin: some View {
+    JourneyTwinCard(
+      twin: .demo,
+      activeIndex: $activeTwinIndex
+    ) {
+      searchText = NowJourneyTwin.demo.title
+      selectedTab = .support
+    }
   }
 
   private var universalSearch: some View {
@@ -264,6 +276,291 @@ struct NowOperationsView: View {
         WorkItemCard(item: item)
       }
     }
+  }
+}
+
+private struct JourneyTwinCard: View {
+  let twin: NowJourneyTwin
+  @Binding var activeIndex: Int
+  let action: () -> Void
+
+  private var activeNode: NowJourneyNode {
+    twin.nodes[min(activeIndex, twin.nodes.count - 1)]
+  }
+
+  private var compactAuditId: String {
+    twin.auditId.replacingOccurrences(of: "2026-", with: "")
+  }
+
+  var body: some View {
+    VisualCard(fill: BankTheme.Palette.graphite) {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            Text("now.twin.eyebrow")
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(BankTheme.Palette.brandRed)
+
+            Text(twin.title)
+              .font(BankTheme.Typography.section)
+              .foregroundColor(.white)
+              .fixedSize(horizontal: false, vertical: true)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          Label {
+            Text(compactAuditId)
+              .lineLimit(1)
+              .minimumScaleFactor(0.72)
+          } icon: {
+            Image(systemName: "waveform.path.ecg")
+          }
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.brandRed)
+          .padding(.horizontal, BankTheme.Spacing.sm)
+          .padding(.vertical, BankTheme.Spacing.xs)
+          .background(
+            Capsule(style: .continuous)
+              .fill(BankTheme.Palette.brandRed.opacity(0.16))
+          )
+        }
+
+        Text(twin.hypothesis)
+          .font(BankTheme.Typography.body)
+          .foregroundColor(.white.opacity(0.74))
+          .fixedSize(horizontal: false, vertical: true)
+
+        JourneyRail(nodes: twin.nodes, activeIndex: activeIndex)
+          .frame(height: 122)
+
+        HStack(spacing: BankTheme.Spacing.md) {
+          JourneyMetric(
+            value: twin.minutesSaved,
+            titleKey: "now.twin.metric.time",
+            symbolName: "bolt.fill",
+            color: BankTheme.Palette.gold
+          )
+
+          JourneyMetric(
+            value: twin.riskDelta,
+            titleKey: "now.twin.metric.risk",
+            symbolName: "arrow.down.forward.circle.fill",
+            color: BankTheme.Palette.success
+          )
+        }
+
+        ActiveNodePanel(node: activeNode)
+
+        HStack(spacing: BankTheme.Spacing.sm) {
+          Button {
+            withAnimation(.spring(response: 0.42, dampingFraction: 0.82)) {
+              activeIndex = activeIndex >= twin.nodes.count - 1 ? 0 : activeIndex + 1
+            }
+          } label: {
+            Label("now.twin.advance", systemImage: "forward.frame.fill")
+          }
+          .buttonStyle(.bankSecondary)
+
+          Button(action: action) {
+            Label("now.twin.action", systemImage: "sparkles")
+          }
+          .buttonStyle(.bankPrimary)
+        }
+
+        HStack(spacing: BankTheme.Spacing.sm) {
+          ForEach(twin.pulses) { pulse in
+            JourneyPulsePill(pulse: pulse)
+          }
+        }
+      }
+    }
+  }
+}
+
+private struct JourneyRail: View {
+  let nodes: [NowJourneyNode]
+  let activeIndex: Int
+
+  var body: some View {
+    GeometryReader { proxy in
+      let railY = proxy.size.height * 0.42
+      let horizontalInset: CGFloat = 28
+      let usableWidth = max(proxy.size.width - horizontalInset * 2, 1)
+      let step = usableWidth / CGFloat(max(nodes.count - 1, 1))
+
+      ZStack(alignment: .topLeading) {
+        Path { path in
+          path.move(to: CGPoint(x: horizontalInset, y: railY))
+          path.addLine(to: CGPoint(x: proxy.size.width - horizontalInset, y: railY))
+        }
+        .stroke(Color.white.opacity(0.16), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+
+        Path { path in
+          path.move(to: CGPoint(x: horizontalInset, y: railY))
+          path.addLine(to: CGPoint(x: horizontalInset + step * CGFloat(activeIndex), y: railY))
+        }
+        .stroke(
+          BankTheme.Palette.brandRed,
+          style: StrokeStyle(lineWidth: 4, lineCap: .round)
+        )
+
+        ForEach(Array(nodes.enumerated()), id: \.element.id) { index, node in
+          let isActive = index == activeIndex
+          let isComplete = index <= activeIndex
+          JourneyNodeDot(node: node, isActive: isActive, isComplete: isComplete)
+            .position(x: horizontalInset + step * CGFloat(index), y: railY)
+        }
+      }
+    }
+  }
+}
+
+private struct JourneyNodeDot: View {
+  let node: NowJourneyNode
+  let isActive: Bool
+  let isComplete: Bool
+
+  private var color: Color {
+    if node.isCritical { return BankTheme.Palette.warning }
+    return isComplete ? BankTheme.Palette.brandRed : Color.white.opacity(0.42)
+  }
+
+  var body: some View {
+    VStack(spacing: BankTheme.Spacing.xs) {
+      ZStack {
+        Circle()
+          .fill(isComplete ? color.opacity(0.22) : Color.white.opacity(0.10))
+          .frame(width: isActive ? 52 : 42, height: isActive ? 52 : 42)
+
+        Circle()
+          .stroke(color, lineWidth: isActive ? 3 : 1)
+          .frame(width: isActive ? 42 : 32, height: isActive ? 42 : 32)
+
+        Image(systemName: node.symbolName)
+          .font(.system(size: isActive ? 18 : 14, weight: .semibold, design: .rounded))
+          .foregroundColor(isComplete ? color : .white.opacity(0.58))
+      }
+
+      Text(node.title)
+        .font(.system(size: 9, weight: .semibold, design: .rounded))
+        .foregroundColor(isActive ? .white : .white.opacity(0.56))
+        .lineLimit(1)
+        .minimumScaleFactor(0.62)
+        .frame(width: 58)
+    }
+  }
+}
+
+private struct JourneyMetric: View {
+  let value: String
+  let titleKey: LocalizedStringKey
+  let symbolName: String
+  let color: Color
+
+  var body: some View {
+    HStack(spacing: BankTheme.Spacing.sm) {
+      Image(systemName: symbolName)
+        .foregroundColor(color)
+        .frame(width: BankTheme.Size.compactIconBubble, height: BankTheme.Size.compactIconBubble)
+        .background(Circle().fill(color.opacity(0.16)))
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+        Text(value)
+          .font(BankTheme.Typography.metric)
+          .foregroundColor(.white)
+          .lineLimit(1)
+          .minimumScaleFactor(0.72)
+
+        Text(titleKey)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(.white.opacity(0.62))
+      }
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(BankTheme.Spacing.md)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(Color.white.opacity(0.08))
+    )
+  }
+}
+
+private struct ActiveNodePanel: View {
+  let node: NowJourneyNode
+
+  private var confidenceText: String {
+    "\(Int(node.confidence * 100))%"
+  }
+
+  var body: some View {
+    HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+      IconBubble(
+        symbolName: node.symbolName,
+        color: node.isCritical ? BankTheme.Palette.warning : BankTheme.Palette.gold,
+        size: BankTheme.Size.compactIconBubble
+      )
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+        HStack(alignment: .firstTextBaseline) {
+          Text(node.title)
+            .font(BankTheme.Typography.headline)
+            .foregroundColor(.white)
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          Text(confidenceText)
+            .font(BankTheme.Typography.caption)
+            .foregroundColor(BankTheme.Palette.gold)
+        }
+
+        Text(node.subtitle)
+          .font(BankTheme.Typography.body)
+          .foregroundColor(.white.opacity(0.72))
+          .fixedSize(horizontal: false, vertical: true)
+
+        Text(node.owner)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(.white.opacity(0.52))
+      }
+    }
+    .padding(BankTheme.Spacing.md)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(Color.white.opacity(0.08))
+    )
+  }
+}
+
+private struct JourneyPulsePill: View {
+  let pulse: NowJourneyPulse
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+      Label {
+        Text(pulse.metric)
+          .lineLimit(1)
+          .minimumScaleFactor(0.72)
+      } icon: {
+        Image(systemName: pulse.symbolName)
+      }
+      .font(BankTheme.Typography.caption)
+      .foregroundColor(.white)
+
+      Text(pulse.title)
+        .font(.system(size: 10, weight: .semibold, design: .rounded))
+        .foregroundColor(.white.opacity(0.62))
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+    }
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.sm, style: .continuous)
+        .fill(Color.white.opacity(0.07))
+    )
+    .accessibilityElement(children: .combine)
+    .accessibilityHint(Text(pulse.detail))
   }
 }
 

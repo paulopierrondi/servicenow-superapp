@@ -47,6 +47,12 @@ final class NowAssistClient {
     } else if text.localizedCaseInsensitiveContains("aprovar") {
       reply =
         "Encontrei aprovações pendentes. Posso resumir impacto, risco, SLA e evidências antes da decisão."
+    } else if text.localizedCaseInsensitiveContains("gêmeo")
+      || text.localizedCaseInsensitiveContains("gemeo")
+      || text.localizedCaseInsensitiveContains("jornada")
+    {
+      reply =
+        "Montei o gêmeo operacional: intenção do cliente, consentimento, risco, ITSM, SPM e auditoria ficam conectados antes da execução."
     } else if text.localizedCaseInsensitiveContains("notebook")
       || text.localizedCaseInsensitiveContains("sala")
     {

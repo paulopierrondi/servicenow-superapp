@@ -60,6 +60,16 @@ final class BankAppTests: XCTestCase {
     XCTAssertEqual(NowKnowledgeAnswer.demo.citation, "KB001928 • Política digital")
   }
 
+  func testJourneyTwinConnectsBankingIntentToOperationalControls() {
+    let twin = NowJourneyTwin.demo
+
+    XCTAssertEqual(twin.auditId, "JTW-2026-0510")
+    XCTAssertEqual(twin.nodes.first?.id, "customer")
+    XCTAssertTrue(twin.nodes.contains { $0.id == "itsm" && $0.isCritical })
+    XCTAssertTrue(twin.nodes.contains { $0.id == "spm" })
+    XCTAssertTrue(twin.pulses.contains { $0.id == "audit" })
+  }
+
   @MainActor
   func testHomeViewModelFallsBackToDemoOnClientFailure() async {
     let viewModel = HomeViewModel(serviceNowClient: FailingHomeClient())
