@@ -223,44 +223,52 @@ struct NowWorkItem: Identifiable, Codable, Equatable {
   let due: String
   let signal: String
 
-  static let demoITSM = [
-    NowWorkItem(
-      id: "INC0012487",
-      domain: .itsm,
-      category: "Incidente",
-      title: "Alta latência no Pix",
-      summary: "Correlação entre gateway mobile, provedor antifraude e filas de callback.",
-      owner: "SRE Mobile",
-      status: "Em contenção",
-      priority: "P1",
-      due: "SLA 18 min",
-      signal: "Now Assist preparou causa provável e próximos passos"
-    ),
-    NowWorkItem(
-      id: "RITM009812",
-      domain: .itsm,
-      category: "Requisição",
-      title: "Cartão virtual corporativo",
-      summary: "Solicitação aprovada aguardando emissão com validação de perfil.",
-      owner: "Operações cartões",
-      status: "Aguardando automação",
-      priority: "P3",
-      due: "Hoje",
-      signal: "Pronto para fulfill via Flow Designer"
-    ),
-    NowWorkItem(
-      id: "CHG004102",
-      domain: .itsm,
-      category: "Mudança",
-      title: "Janela mobile backend",
-      summary: "Troca progressiva de feature flags com rollback por cohort.",
-      owner: "CAB Digital",
-      status: "Aprovada",
-      priority: "P2",
-      due: "12 mai",
-      signal: "Risco baixo, plano de reversão validado"
-    ),
-  ]
+  static var demoITSM: [NowWorkItem] {
+    let isItau = AppBrand.current == .itau
+
+    return [
+      NowWorkItem(
+        id: isItau ? "INC-P0-ITAU-042" : "INC-P1-BRAD-2487",
+        domain: .itsm,
+        category: "Incidente",
+        title: isItau ? "P0 Core Pix Personnalité" : "P1 Latência Pix Prime",
+        summary: isItau
+          ? "Indisponibilidade em cohort crítico conectada a gateway, antifraude e mensageria."
+          : "Correlação entre gateway mobile, provedor antifraude e filas de callback.",
+        owner: "SRE Mobile",
+        status: isItau ? "War room ativa" : "Em contenção",
+        priority: isItau ? "P0" : "P1",
+        due: isItau ? "Agora" : "SLA 18 min",
+        signal: isItau
+          ? "Now Assist preparou briefing executivo, CMDB e próximos passos"
+          : "Now Assist preparou causa provável e próximos passos"
+      ),
+      NowWorkItem(
+        id: "RITM009812",
+        domain: .itsm,
+        category: "Requisição",
+        title: "Cartão virtual corporativo",
+        summary: "Solicitação aprovada aguardando emissão com validação de perfil.",
+        owner: "Operações cartões",
+        status: "Aguardando automação",
+        priority: "P3",
+        due: "Hoje",
+        signal: "Pronto para fulfill via Flow Designer"
+      ),
+      NowWorkItem(
+        id: "CHG004102",
+        domain: .itsm,
+        category: "Mudança",
+        title: "Janela mobile backend",
+        summary: "Troca progressiva de feature flags com rollback por cohort.",
+        owner: "CAB Digital",
+        status: "Aprovada",
+        priority: "P2",
+        due: "12 mai",
+        signal: "Risco baixo, plano de reversão validado"
+      ),
+    ]
+  }
 
   static let demoSPM = [
     NowWorkItem(

@@ -13,13 +13,62 @@ struct NowAssistMessage: Identifiable, Equatable {
   let timestamp: Date
 
   static var welcome: NowAssistMessage {
-    NowAssistMessage(
+    let incident: String
+    if AppBrand.current == .itau {
+      incident = "P0 no Core Pix Personnalité"
+    } else {
+      incident = "P1 de latência Pix Prime"
+    }
+
+    return NowAssistMessage(
       id: UUID(uuidString: "BDE8CDB2-52BE-4DDE-9F9E-5F75F8CC4001")!,
       role: .assistant,
       text:
-        "Oi, sou o NowAssist do tenant \(AppBrand.current.displayName). Posso analisar incidentes, cases, demandas, consentimentos, ITSM, SPM, CSM, CRM e acionar especialistas com contexto.",
+        "Oi, sou seu mordomo Now Assist no tenant \(AppBrand.current.displayName). Já li o \(incident), CMDB Health, ITSM, SPM, CSM, CRM, aprovações e evidências. Posso resumir seu dia e acionar especialistas com contexto.",
       timestamp: Date()
     )
+  }
+
+  static var initialMessages: [NowAssistMessage] {
+    if ProcessInfo.processInfo.arguments.contains("-BankAppDemoConversation") {
+      return demoConversation
+    }
+
+    return [.welcome]
+  }
+
+  static var demoConversation: [NowAssistMessage] {
+    let brand = AppBrand.current
+    let userText: String
+    let assistantText: String
+
+    if brand == .itau {
+      userText = "Mordomo, resumo meu dia e o P0 do Itaú."
+      assistantText =
+        "Seu dia tem P0 no Core Pix, CMDB Health 91, 2 aprovações críticas, "
+        + "CSM preventivo e SPM pronto para priorizar o fix estrutural."
+    } else {
+      userText = "Mordomo, resumo meu dia e o P1 do Bradesco."
+      assistantText =
+        "Seu dia tem P1 de latência Pix, CMDB Health 91, cases Prime em risco, "
+        + "mudança mobile pendente e CAB digital preparado."
+    }
+
+    return [
+      .welcome,
+      NowAssistMessage(
+        id: UUID(uuidString: "BDE8CDB2-52BE-4DDE-9F9E-5F75F8CC4002")!,
+        role: .user,
+        text: userText,
+        timestamp: Date()
+      ),
+      NowAssistMessage(
+        id: UUID(uuidString: "BDE8CDB2-52BE-4DDE-9F9E-5F75F8CC4003")!,
+        role: .assistant,
+        text: assistantText,
+        timestamp: Date()
+      ),
+    ]
   }
 }
 
@@ -35,7 +84,21 @@ final class NowAssistClient {
     try? await Task.sleep(nanoseconds: 350_000_000)
 
     let reply: String
-    if text.localizedCaseInsensitiveContains("pix") {
+    if text.localizedCaseInsensitiveContains("p0") {
+      reply =
+        "P0 priorizado: core Pix degradado para cohort crítico. CMDB mostra dependência entre app, gateway, antifraude e mensageria. Próximo passo: ponte ITSM, CSM preventivo e comunicação executiva."
+    } else if text.localizedCaseInsensitiveContains("p1") {
+      reply =
+        "P1 priorizado: latência Pix com impacto Prime. Já relacionei incidente, cases CSM, CIs stale e plano de contenção para o CAB digital."
+    } else if text.localizedCaseInsensitiveContains("cmdb") {
+      reply =
+        "CMDB Health está em 91: completeness 92%, correctness 88%, compliance 95% e relações 84%. Recomendo corrigir CIs stale antes do próximo change."
+    } else if text.localizedCaseInsensitiveContains("dia")
+      || text.localizedCaseInsensitiveContains("mordomo")
+    {
+      reply =
+        "Seu dia: 1 incidente crítico, 2 aprovações, CMDB com relações órfãs, 3 cases CSM em risco e uma demanda SPM pronta para priorização."
+    } else if text.localizedCaseInsensitiveContains("pix") {
       reply =
         "Vou tratar Pix como jornada operacional: CSM para impacto ao cliente, ITSM para degradação, CRM para comunicação e SPM se virar demanda."
     } else if text.localizedCaseInsensitiveContains("itsm") {

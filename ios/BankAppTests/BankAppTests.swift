@@ -62,6 +62,27 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(NowWorkItem.demoSPM.contains { $0.category == "Projeto" })
   }
 
+  func testCriticalIncidentAdaptsToSelectedBank() {
+    let previous = UserDefaults.standard.string(forKey: AppBrand.selectionDefaultsKey)
+    defer {
+      if let previous {
+        UserDefaults.standard.set(previous, forKey: AppBrand.selectionDefaultsKey)
+      } else {
+        UserDefaults.standard.removeObject(forKey: AppBrand.selectionDefaultsKey)
+      }
+    }
+
+    UserDefaults.standard.set(AppBrand.bradesco.rawValue, forKey: AppBrand.selectionDefaultsKey)
+    XCTAssertTrue(
+      NowWorkItem.demoITSM.contains { $0.priority == "P1" && $0.title.contains("Prime") }
+    )
+
+    UserDefaults.standard.set(AppBrand.itau.rawValue, forKey: AppBrand.selectionDefaultsKey)
+    XCTAssertTrue(
+      NowWorkItem.demoITSM.contains { $0.priority == "P0" && $0.title.contains("Personnalité") }
+    )
+  }
+
   func testBrandSelectionOverridesEnvironmentDefault() throws {
     let suiteName = "BrandSelectionTests-\(UUID().uuidString)"
     let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
@@ -97,6 +118,15 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(message.contains("CSM"))
     XCTAssertTrue(message.contains("CRM"))
     XCTAssertFalse(message.contains("Saldo"))
+  }
+
+  func testNowAssistDemoConversationActsAsOperationalButler() {
+    let messages = NowAssistMessage.demoConversation.map(\.text).joined(separator: " ")
+
+    XCTAssertTrue(messages.contains("Mordomo"))
+    XCTAssertTrue(messages.contains("CMDB Health"))
+    XCTAssertTrue(messages.contains("SPM"))
+    XCTAssertFalse(messages.contains("Saldo"))
   }
 
   func testJourneyTwinConnectsBankingIntentToOperationalControls() {

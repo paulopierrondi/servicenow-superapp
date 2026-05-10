@@ -41,7 +41,22 @@ enum AppTab: Hashable {
 
 struct RootView: View {
   private static var initialTab: AppTab {
-    ProcessInfo.processInfo.arguments.contains("-BankAppStartNow") ? .now : .home
+    let arguments = ProcessInfo.processInfo.arguments
+
+    if arguments.contains("-BankAppStartCatalog") {
+      return .payments
+    }
+    if arguments.contains("-BankAppStartTrust") {
+      return .security
+    }
+    if arguments.contains("-BankAppStartAssist") {
+      return .support
+    }
+    if arguments.contains("-BankAppStartNow") {
+      return .now
+    }
+
+    return .home
   }
 
   @StateObject private var authSession = AuthSession()

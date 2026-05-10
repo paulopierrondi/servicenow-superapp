@@ -78,6 +78,27 @@ enum AppBrand: String, CaseIterable, Equatable {
     }
   }
 
+  var chromeColor: Color {
+    switch self {
+    case .bradesco: return Color(bankHex: 0x3F73B8)
+    case .itau: return primaryColor
+    }
+  }
+
+  var chromeDarkColor: Color {
+    switch self {
+    case .bradesco: return Color(bankHex: 0x064D93)
+    case .itau: return primaryDarkColor
+    }
+  }
+
+  var actionColor: Color {
+    switch self {
+    case .bradesco: return Color(bankHex: 0xCC092F)
+    case .itau: return primaryColor
+    }
+  }
+
   var appBackground: Color {
     Color(bankHex: 0xF2F2F7)
   }

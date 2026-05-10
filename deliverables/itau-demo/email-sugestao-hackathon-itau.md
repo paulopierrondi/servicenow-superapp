@@ -7,10 +7,12 @@ Queria propor um hackathon curto para explorarmos uma tese pratica: transformar 
 Preparei uma demo funcional em iOS mostrando a arte do possivel:
 
 - entrada multi-tenant com experiencia Itau;
-- NowOS Command Center como primeira tela;
+- NowOS Command Center como primeira tela do dia;
+- simulacao de P0 Itau com CMDB Health, Service Graph e aprovacoes criticas;
 - catalogo por intencao, nao por transacao;
 - orquestracao de case CSM, incidente ITSM e demanda SPM;
-- CSM, CRM, ITSM, SPM, Trust e Now Assist no mesmo fluxo;
+- CSM, CRM, ITSM, SPM, Trust, CMDB Health e Now Assist no mesmo fluxo;
+- mordomo Now Assist resumindo o dia e preparando handoff humano;
 - base para evoluir isso com Mobile App Builder, Now Assist e contratos ServiceNow reais.
 
 Sugestao de formato:
@@ -23,8 +25,10 @@ Sugestao de formato:
 
 A ideia nao e criar mais um app bancario. E mostrar como a plataforma ServiceNow pode virar o tecido operacional por tras de uma experiencia mobile unica, com o banco apenas como contexto de marca, politica e relacionamento.
 
-Segue anexo o video demo:
+Seguem anexos os videos demo:
 `itau-servicenow-superapp-demo-final.mp4`
+`itau-servicenow-superapp-p0-demo.mp4`
+`bradesco-servicenow-superapp-p1-demo.mp4`
 
 Se fizer sentido, posso organizar uma agenda de 30 minutos para apresentar a demo e fechar o escopo do hackathon.
 

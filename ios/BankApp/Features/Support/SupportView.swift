@@ -3,12 +3,16 @@ import SwiftUI
 struct SupportView: View {
   @EnvironmentObject private var authSession: AuthSession
 
-  @State private var messages: [NowAssistMessage] = [.welcome]
+  @State private var messages: [NowAssistMessage] = NowAssistMessage.initialMessages
   @State private var draft = ""
   @State private var isSending = false
   @State private var managerHandoffPrepared = false
 
   private let nowAssistClient = NowAssistClient()
+
+  private var isDemoConversation: Bool {
+    ProcessInfo.processInfo.arguments.contains("-BankAppDemoConversation")
+  }
 
   var body: some View {
     NavigationView {
@@ -16,8 +20,13 @@ struct SupportView: View {
         ScrollView(showsIndicators: false) {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
-            assistantStatus
-            chat
+            if isDemoConversation {
+              chat
+              assistantStatus
+            } else {
+              assistantStatus
+              chat
+            }
             managerHandoff
           }
           .padding(.horizontal, BankTheme.Spacing.lg)
@@ -63,7 +72,7 @@ struct SupportView: View {
 
             Text("support.nowassist.detail")
               .font(BankTheme.Typography.body)
-              .foregroundColor(.white.opacity(0.72))
+              .foregroundColor(.white.opacity(0.84))
               .fixedSize(horizontal: false, vertical: true)
           }
         }
@@ -98,6 +107,7 @@ struct SupportView: View {
           HStack(spacing: BankTheme.Spacing.sm) {
             TextField("support.chat.placeholder", text: $draft)
               .textInputAutocapitalization(.sentences)
+              .font(BankTheme.Typography.body)
               .padding(BankTheme.Spacing.md)
               .background(
                 RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)

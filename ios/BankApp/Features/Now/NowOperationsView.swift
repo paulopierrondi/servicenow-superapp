@@ -50,6 +50,10 @@ struct NowOperationsView: View {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
             journeyTwin
+            CMDBHealthPanel(
+              title: "CMDB Health do dia",
+              subtitle: "Saúde por serviço, CIs, dependências e relações antes de qualquer decisão."
+            )
             universalSearch
             assistantPanel
             launcher
@@ -176,7 +180,7 @@ struct NowOperationsView: View {
 
             Text("now.assist.detail")
               .font(BankTheme.Typography.body)
-              .foregroundColor(.white.opacity(0.72))
+              .foregroundColor(.white.opacity(0.84))
               .fixedSize(horizontal: false, vertical: true)
           }
         }
@@ -357,7 +361,7 @@ private struct JourneyTwinCard: View {
           Label {
             Text(compactAuditId)
               .lineLimit(1)
-              .minimumScaleFactor(0.72)
+              .minimumScaleFactor(0.86)
           } icon: {
             Image(systemName: "waveform.path.ecg")
           }
@@ -373,7 +377,7 @@ private struct JourneyTwinCard: View {
 
         Text(twin.hypothesis)
           .font(BankTheme.Typography.body)
-          .foregroundColor(.white.opacity(0.74))
+          .foregroundColor(.white.opacity(0.84))
           .fixedSize(horizontal: false, vertical: true)
 
         JourneyRail(nodes: twin.nodes, activeIndex: activeIndex)
@@ -428,35 +432,18 @@ private struct JourneyRail: View {
   let activeIndex: Int
 
   var body: some View {
-    GeometryReader { proxy in
-      let railY = proxy.size.height * 0.42
-      let horizontalInset: CGFloat = 28
-      let usableWidth = max(proxy.size.width - horizontalInset * 2, 1)
-      let step = usableWidth / CGFloat(max(nodes.count - 1, 1))
-
-      ZStack(alignment: .topLeading) {
-        Path { path in
-          path.move(to: CGPoint(x: horizontalInset, y: railY))
-          path.addLine(to: CGPoint(x: proxy.size.width - horizontalInset, y: railY))
-        }
-        .stroke(Color.white.opacity(0.16), style: StrokeStyle(lineWidth: 4, lineCap: .round))
-
-        Path { path in
-          path.move(to: CGPoint(x: horizontalInset, y: railY))
-          path.addLine(to: CGPoint(x: horizontalInset + step * CGFloat(activeIndex), y: railY))
-        }
-        .stroke(
-          BankTheme.Palette.brandRed,
-          style: StrokeStyle(lineWidth: 4, lineCap: .round)
-        )
-
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack(alignment: .top, spacing: BankTheme.Spacing.sm) {
         ForEach(Array(nodes.enumerated()), id: \.element.id) { index, node in
           let isActive = index == activeIndex
           let isComplete = index <= activeIndex
+
           JourneyNodeDot(node: node, isActive: isActive, isComplete: isComplete)
-            .position(x: horizontalInset + step * CGFloat(index), y: railY)
+            .frame(width: 82)
         }
       }
+      .padding(.horizontal, BankTheme.Spacing.xs)
+      .padding(.vertical, BankTheme.Spacing.xs)
     }
   }
 }
@@ -483,16 +470,17 @@ private struct JourneyNodeDot: View {
           .frame(width: isActive ? 42 : 32, height: isActive ? 42 : 32)
 
         Image(systemName: node.symbolName)
-          .font(.system(size: isActive ? 18 : 14, weight: .semibold, design: .rounded))
+          .font(.system(size: isActive ? 18 : 14, weight: .semibold, design: .default))
           .foregroundColor(isComplete ? color : .white.opacity(0.58))
       }
 
       Text(node.title)
-        .font(.system(size: 9, weight: .semibold, design: .rounded))
-        .foregroundColor(isActive ? .white : .white.opacity(0.56))
-        .lineLimit(1)
-        .minimumScaleFactor(0.62)
-        .frame(width: 58)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(isActive ? .white : .white.opacity(0.7))
+        .lineLimit(2)
+        .multilineTextAlignment(.center)
+        .minimumScaleFactor(0.9)
+        .frame(width: 82)
     }
   }
 }
@@ -515,11 +503,11 @@ private struct JourneyMetric: View {
           .font(BankTheme.Typography.metric)
           .foregroundColor(.white)
           .lineLimit(1)
-          .minimumScaleFactor(0.72)
+          .minimumScaleFactor(0.86)
 
         Text(titleKey)
           .font(BankTheme.Typography.caption)
-          .foregroundColor(.white.opacity(0.62))
+          .foregroundColor(.white.opacity(0.76))
       }
     }
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -561,12 +549,12 @@ private struct ActiveNodePanel: View {
 
         Text(node.subtitle)
           .font(BankTheme.Typography.body)
-          .foregroundColor(.white.opacity(0.72))
+          .foregroundColor(.white.opacity(0.84))
           .fixedSize(horizontal: false, vertical: true)
 
         Text(node.owner)
           .font(BankTheme.Typography.caption)
-          .foregroundColor(.white.opacity(0.52))
+          .foregroundColor(.white.opacity(0.7))
       }
     }
     .padding(BankTheme.Spacing.md)
@@ -585,7 +573,7 @@ private struct JourneyPulsePill: View {
       Label {
         Text(pulse.metric)
           .lineLimit(1)
-          .minimumScaleFactor(0.72)
+          .minimumScaleFactor(0.9)
       } icon: {
         Image(systemName: pulse.symbolName)
       }
@@ -593,10 +581,10 @@ private struct JourneyPulsePill: View {
       .foregroundColor(.white)
 
       Text(pulse.title)
-        .font(.system(size: 10, weight: .semibold, design: .rounded))
-        .foregroundColor(.white.opacity(0.62))
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(.white.opacity(0.78))
         .lineLimit(1)
-        .minimumScaleFactor(0.7)
+        .minimumScaleFactor(0.9)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(BankTheme.Spacing.sm)
@@ -644,7 +632,7 @@ private struct LauncherTile: View {
           .minimumScaleFactor(0.84)
 
         Text(item.subtitle)
-          .font(BankTheme.Typography.caption)
+          .font(BankTheme.Typography.callout)
           .foregroundColor(BankTheme.Palette.secondaryInk)
           .lineLimit(2)
           .multilineTextAlignment(.leading)
@@ -784,7 +772,7 @@ private struct WorkItemCard: View {
   private var accentColor: Color {
     switch item.domain {
     case .itsm:
-      if item.priority == "P1" { return BankTheme.Palette.warning }
+      if item.priority == "P0" || item.priority == "P1" { return BankTheme.Palette.warning }
       return BankTheme.Palette.attention
     case .spm:
       if item.category == "Risco" { return BankTheme.Palette.warning }
@@ -879,7 +867,7 @@ private struct WorkItemMeta: View {
     Label {
       Text(title)
         .lineLimit(1)
-        .minimumScaleFactor(0.72)
+        .minimumScaleFactor(0.86)
     } icon: {
       Image(systemName: symbolName)
     }

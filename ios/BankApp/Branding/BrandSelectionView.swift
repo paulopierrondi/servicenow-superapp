@@ -87,7 +87,7 @@ private struct BrandChoiceButton: View {
             .fill(brand.primaryColor)
 
           Text(brand == .bradesco ? "B" : "I")
-            .font(.system(size: 28, weight: .black, design: .rounded))
+            .font(.system(size: 28, weight: .heavy, design: .default))
             .foregroundColor(.white)
         }
         .frame(width: 62, height: 62)
@@ -98,7 +98,7 @@ private struct BrandChoiceButton: View {
             .foregroundColor(BankTheme.Palette.ink)
 
           Text(detailKey)
-            .font(BankTheme.Typography.caption)
+            .font(BankTheme.Typography.callout)
             .foregroundColor(BankTheme.Palette.secondaryInk)
             .fixedSize(horizontal: false, vertical: true)
 
@@ -133,7 +133,7 @@ private struct ExperiencePill: View {
       .font(BankTheme.Typography.caption)
       .foregroundColor(BankTheme.Palette.secondaryInk)
       .lineLimit(1)
-      .minimumScaleFactor(0.72)
+      .minimumScaleFactor(0.88)
       .frame(maxWidth: .infinity)
       .padding(.vertical, BankTheme.Spacing.sm)
       .background(

@@ -137,7 +137,7 @@ struct PaymentsView: View {
               .foregroundColor(BankTheme.Palette.ink)
 
             Text("catalog.composer.detail")
-              .font(BankTheme.Typography.caption)
+              .font(BankTheme.Typography.callout)
               .foregroundColor(BankTheme.Palette.secondaryInk)
           }
         }
@@ -151,6 +151,7 @@ struct PaymentsView: View {
             EmptyView()
           }
           .textInputAutocapitalization(.sentences)
+          .font(BankTheme.Typography.body)
           .foregroundColor(BankTheme.Palette.ink)
           .padding(BankTheme.Spacing.md)
           .background(inputBackground)
@@ -163,6 +164,7 @@ struct PaymentsView: View {
             EmptyView()
           }
           .textInputAutocapitalization(.sentences)
+          .font(BankTheme.Typography.body)
           .foregroundColor(BankTheme.Palette.ink)
           .padding(BankTheme.Spacing.md)
           .background(inputBackground)
@@ -219,7 +221,7 @@ struct PaymentsView: View {
                   .foregroundColor(BankTheme.Palette.ink)
 
                 Text(flow.detail)
-                  .font(BankTheme.Typography.caption)
+                  .font(BankTheme.Typography.callout)
                   .foregroundColor(BankTheme.Palette.secondaryInk)
                   .fixedSize(horizontal: false, vertical: true)
               }

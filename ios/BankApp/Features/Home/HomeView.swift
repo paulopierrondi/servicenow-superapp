@@ -9,6 +9,15 @@ private struct ServiceNowModule: Identifiable {
   let targetTab: AppTab
 }
 
+private struct BradescoShortcut: Identifiable {
+  let id: String
+  let title: String
+  let subtitle: String
+  let symbolName: String
+  let color: Color
+  let targetTab: AppTab
+}
+
 private struct CommandSignal: Identifiable {
   let id: String
   let title: String
@@ -49,6 +58,7 @@ private struct CommandSignal: Identifiable {
 
 struct HomeView: View {
   @EnvironmentObject private var authSession: AuthSession
+  @EnvironmentObject private var brandStore: BrandStore
   @EnvironmentObject private var viewModel: HomeViewModel
 
   @Binding var selectedTab: AppTab
@@ -57,6 +67,15 @@ struct HomeView: View {
     GridItem(.flexible(), spacing: BankTheme.Spacing.md),
     GridItem(.flexible(), spacing: BankTheme.Spacing.md),
   ]
+
+  private var bradescoGridColumns: [GridItem] {
+    Array(repeating: GridItem(.flexible(), spacing: BankTheme.Spacing.md), count: 4)
+  }
+
+  private var itauDaySummary: String {
+    "Bom dia, \(authSession.user.firstName). "
+      + "Seu mordomo Now Assist já cruzou P0, CMDB, CSM e aprovações críticas."
+  }
 
   private var modules: [ServiceNowModule] {
     [
@@ -95,7 +114,86 @@ struct HomeView: View {
     ]
   }
 
+  private var bradescoShortcuts: [BradescoShortcut] {
+    [
+      BradescoShortcut(
+        id: "itsm",
+        title: "ITSM",
+        subtitle: "Incidentes e mudanças",
+        symbolName: "wrench.and.screwdriver.fill",
+        color: BankTheme.Palette.brandAction,
+        targetTab: .now
+      ),
+      BradescoShortcut(
+        id: "approvals",
+        title: "Aprovações",
+        subtitle: "CAB, risco e SPM",
+        symbolName: "checkmark.seal.fill",
+        color: BankTheme.Palette.brandAction,
+        targetTab: .now
+      ),
+      BradescoShortcut(
+        id: "catalog",
+        title: "Catálogo",
+        subtitle: "Pedido vira fluxo",
+        symbolName: "square.grid.2x2.fill",
+        color: BankTheme.Palette.brandAction,
+        targetTab: .payments
+      ),
+      BradescoShortcut(
+        id: "assist",
+        title: "Now Assist",
+        subtitle: "BIA com contexto Now",
+        symbolName: "sparkles",
+        color: BankTheme.Palette.attention,
+        targetTab: .support
+      ),
+      BradescoShortcut(
+        id: "spm",
+        title: "SPM",
+        subtitle: "Valor, risco e demanda",
+        symbolName: "chart.line.uptrend.xyaxis",
+        color: BankTheme.Palette.brandAction,
+        targetTab: .now
+      ),
+      BradescoShortcut(
+        id: "cmdb",
+        title: "CMDB",
+        subtitle: "Health e Service Graph",
+        symbolName: "point.3.connected.trianglepath.dotted",
+        color: BankTheme.Palette.brandChrome,
+        targetTab: .now
+      ),
+      BradescoShortcut(
+        id: "csm",
+        title: "CSM",
+        subtitle: "Cases com SLA",
+        symbolName: "person.2.fill",
+        color: BankTheme.Palette.brandAction,
+        targetTab: .now
+      ),
+      BradescoShortcut(
+        id: "trust",
+        title: "Trust",
+        subtitle: "LGPD e auditoria",
+        symbolName: "shield.checkered",
+        color: BankTheme.Palette.attention,
+        targetTab: .security
+      ),
+    ]
+  }
+
   var body: some View {
+    if AppBrand.current == .bradesco {
+      bradescoBody
+    } else if AppBrand.current == .itau {
+      itauBody
+    } else {
+      standardBody
+    }
+  }
+
+  private var standardBody: some View {
     NavigationView {
       AppBackground {
         ScrollView(showsIndicators: false) {
@@ -103,6 +201,7 @@ struct HomeView: View {
             header
             commandHero
             commandMetrics
+            CMDBHealthPanel()
             moduleGrid
             signals
           }
@@ -113,6 +212,321 @@ struct HomeView: View {
       .navigationBarHidden(true)
     }
     .navigationViewStyle(.stack)
+  }
+
+  private var itauBody: some View {
+    NavigationView {
+      ZStack {
+        BankTheme.Palette.brandRed.ignoresSafeArea()
+
+        ScrollView(showsIndicators: false) {
+          VStack(spacing: 0) {
+            itauHero
+
+            VStack(spacing: BankTheme.Spacing.xl) {
+              CMDBHealthPanel(
+                title: "CMDB Health Itaú",
+                subtitle:
+                  "Pix, cartões, app Personnalité, Open Finance e canais digitais em Service Graph."
+              )
+              commandHero
+              commandMetrics
+              moduleGrid
+              signals
+            }
+            .padding(.horizontal, BankTheme.Spacing.lg)
+            .padding(.top, BankTheme.Spacing.xl)
+            .padding(.bottom, BankTheme.Spacing.xxxl)
+            .frame(maxWidth: .infinity)
+            .background(Color(bankHex: 0xFFF7F0))
+          }
+        }
+      }
+      .navigationBarHidden(true)
+    }
+    .navigationViewStyle(.stack)
+  }
+
+  private var bradescoBody: some View {
+    NavigationView {
+      ZStack {
+        BankTheme.Palette.brandChrome.ignoresSafeArea()
+
+        ScrollView(showsIndicators: false) {
+          VStack(spacing: 0) {
+            bradescoHero
+
+            VStack(alignment: .leading, spacing: BankTheme.Spacing.xl) {
+              bradescoShortcutsGrid
+              CMDBHealthPanel(
+                title: "CMDB Health Bradesco",
+                subtitle: "Pix, mobile gateway, antifraude e atendimento mapeados no Service Graph."
+              )
+              bradescoOperationalCards
+              signals
+            }
+            .padding(.horizontal, BankTheme.Spacing.lg)
+            .padding(.top, BankTheme.Spacing.xl)
+            .padding(.bottom, BankTheme.Spacing.xxxl)
+            .frame(maxWidth: .infinity)
+            .background(Color.white)
+          }
+        }
+      }
+      .navigationBarHidden(true)
+    }
+    .navigationViewStyle(.stack)
+  }
+
+  private var itauHero: some View {
+    ZStack(alignment: .bottomLeading) {
+      LinearGradient(
+        colors: [
+          BankTheme.Palette.brandRed,
+          Color(bankHex: 0xFF8A1F),
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+      )
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+        HStack(alignment: .center) {
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xxs) {
+            Text("SERVICENOW SUPER APP • ITAÚ")
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(.white.opacity(0.9))
+
+            Text("NowOS Command Center")
+              .font(BankTheme.Typography.title)
+              .foregroundColor(.white)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.md)
+
+          Text("itaú")
+            .font(BankTheme.Typography.section)
+            .foregroundColor(BankTheme.Palette.brandSecondary)
+            .padding(.horizontal, BankTheme.Spacing.md)
+            .padding(.vertical, BankTheme.Spacing.sm)
+            .background(
+              RoundedRectangle(cornerRadius: BankTheme.Radius.lg, style: .continuous)
+                .fill(Color.white)
+            )
+        }
+
+        Text(itauDaySummary)
+          .font(BankTheme.Typography.callout)
+          .foregroundColor(.white.opacity(0.92))
+          .fixedSize(horizontal: false, vertical: true)
+
+        HStack(spacing: BankTheme.Spacing.md) {
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            StatusBadge(
+              title: "P0 aberto",
+              color: BankTheme.Palette.brandSecondary,
+              symbolName: "flame.fill"
+            )
+
+            Text("Core Pix indisponível para cohort Personnalité")
+              .font(BankTheme.Typography.headline)
+              .foregroundColor(.white)
+              .fixedSize(horizontal: false, vertical: true)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.md)
+
+          Button {
+            selectedTab = .support
+          } label: {
+            Image(systemName: "sparkles")
+              .font(BankTheme.Typography.title)
+              .foregroundColor(BankTheme.Palette.brandSecondary)
+              .frame(width: 54, height: 54)
+              .background(Circle().fill(Color.white))
+          }
+          .accessibilityLabel(Text("Abrir mordomo Now Assist"))
+        }
+
+        Button {
+          selectedTab = .support
+        } label: {
+          Label("Ver meu dia com Now Assist", systemImage: "arrow.up.right.circle.fill")
+            .font(BankTheme.Typography.headline)
+            .foregroundColor(BankTheme.Palette.brandSecondary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, BankTheme.Spacing.md)
+            .background(
+              RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+                .fill(Color.white)
+            )
+        }
+        .buttonStyle(.plain)
+      }
+      .padding(.horizontal, BankTheme.Spacing.lg)
+      .padding(.top, BankTheme.Spacing.xxxl)
+      .padding(.bottom, BankTheme.Spacing.xxl)
+    }
+  }
+
+  private var bradescoHero: some View {
+    ZStack(alignment: .bottom) {
+      LinearGradient(
+        colors: [
+          BankTheme.Palette.brandChrome,
+          BankTheme.Palette.brandChromeDark,
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+      )
+
+      BradescoWave()
+        .fill(Color.white.opacity(0.34))
+        .frame(height: 74)
+
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+        HStack(alignment: .center) {
+          Text("Olá, \(authSession.user.firstName) CENTRAL")
+            .font(BankTheme.Typography.section)
+            .foregroundColor(.white)
+
+          Spacer(minLength: BankTheme.Spacing.sm)
+
+          Button {
+            selectedTab = .support
+          } label: {
+            Image(systemName: "bell.badge.fill")
+              .font(BankTheme.Typography.title)
+              .foregroundColor(.white)
+          }
+          .accessibilityLabel(Text("Notificações ServiceNow"))
+
+          Button {
+            withAnimation(.spring(response: 0.42, dampingFraction: 0.84)) {
+              brandStore.resetSelection()
+            }
+          } label: {
+            Image(systemName: "arrow.right.square")
+              .font(BankTheme.Typography.title)
+              .foregroundColor(.white)
+          }
+          .accessibilityLabel(Text("brand.switch"))
+        }
+
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+          Text("NowOS Command Center")
+            .font(BankTheme.Typography.title)
+            .foregroundColor(.white)
+
+          Text("Seu dia operacional, riscos do CMDB e próximos passos em uma visão Bradesco Prime.")
+            .font(BankTheme.Typography.callout)
+            .foregroundColor(.white.opacity(0.9))
+            .fixedSize(horizontal: false, vertical: true)
+        }
+
+        HStack(alignment: .center, spacing: BankTheme.Spacing.md) {
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            Text("P1 em andamento")
+              .font(BankTheme.Typography.callout)
+              .foregroundColor(.white.opacity(0.86))
+
+            Text("Pix com latência")
+              .font(BankTheme.Typography.section)
+              .foregroundColor(.white)
+          }
+
+          Spacer(minLength: BankTheme.Spacing.md)
+
+          Button {
+            selectedTab = .now
+          } label: {
+            Label("Ver extrato Now", systemImage: "chevron.right")
+              .font(BankTheme.Typography.callout)
+              .foregroundColor(.white)
+          }
+          .buttonStyle(.plain)
+        }
+
+        Button {
+          selectedTab = .support
+        } label: {
+          HStack(spacing: BankTheme.Spacing.sm) {
+            Text("BIA")
+              .font(BankTheme.Typography.caption)
+              .foregroundColor(BankTheme.Palette.brandAction)
+              .frame(width: 44, height: 44)
+              .background(Circle().fill(Color.white))
+
+            Text("BIA + Now Assist: P1, CMDB e CSM lidos.")
+              .font(BankTheme.Typography.callout)
+              .foregroundColor(.white)
+              .lineLimit(2)
+
+            Spacer(minLength: BankTheme.Spacing.sm)
+
+            Image(systemName: "magnifyingglass")
+              .font(BankTheme.Typography.section)
+              .foregroundColor(.white)
+          }
+          .padding(BankTheme.Spacing.sm)
+          .background(
+            Capsule(style: .continuous)
+              .fill(BankTheme.Palette.brandChromeDark.opacity(0.72))
+          )
+        }
+        .buttonStyle(.plain)
+      }
+      .padding(.horizontal, BankTheme.Spacing.lg)
+      .padding(.top, BankTheme.Spacing.xxxl)
+      .padding(.bottom, BankTheme.Spacing.xxl)
+    }
+  }
+
+  private var bradescoShortcutsGrid: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+      Text("Favoritos operacionais")
+        .font(BankTheme.Typography.section)
+        .foregroundColor(BankTheme.Palette.ink)
+
+      LazyVGrid(columns: bradescoGridColumns, spacing: BankTheme.Spacing.lg) {
+        ForEach(bradescoShortcuts) { shortcut in
+          BradescoShortcutTile(shortcut: shortcut) {
+            selectedTab = shortcut.targetTab
+          }
+        }
+      }
+    }
+  }
+
+  private var bradescoOperationalCards: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+      Text("Jornadas ServiceNow")
+        .font(BankTheme.Typography.section)
+        .foregroundColor(BankTheme.Palette.ink)
+
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: BankTheme.Spacing.md) {
+          BradescoOperationalCard(
+            title: "P1 Pix contestado",
+            detail: "Now Assist correlaciona cliente, gateway, antifraude, CSM e incidente.",
+            symbolName: "exclamationmark.triangle.fill",
+            color: BankTheme.Palette.brandChrome
+          ) {
+            selectedTab = .now
+          }
+
+          BradescoOperationalCard(
+            title: "Mordomo operacional",
+            detail: "Resumo do dia, aprovações, riscos e próximos passos para o gerente.",
+            symbolName: "sparkles",
+            color: BankTheme.Palette.brandAction
+          ) {
+            selectedTab = .support
+          }
+        }
+        .padding(.horizontal, BankTheme.Spacing.xs)
+      }
+      .padding(.horizontal, -BankTheme.Spacing.xs)
+    }
   }
 
   private var header: some View {
@@ -173,7 +587,7 @@ struct HomeView: View {
 
         Text("command.hero.detail")
           .font(BankTheme.Typography.body)
-          .foregroundColor(.white.opacity(0.74))
+          .foregroundColor(.white.opacity(0.84))
           .fixedSize(horizontal: false, vertical: true)
 
         ProcessGraph()
@@ -280,6 +694,107 @@ struct HomeView: View {
   }
 }
 
+private struct BradescoShortcutTile: View {
+  let shortcut: BradescoShortcut
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      VStack(spacing: BankTheme.Spacing.xs) {
+        Image(systemName: shortcut.symbolName)
+          .font(.system(size: 24, weight: .semibold, design: .default))
+          .foregroundColor(shortcut.color)
+          .frame(width: 58, height: 58)
+          .background(
+            RoundedRectangle(cornerRadius: BankTheme.Radius.lg, style: .continuous)
+              .fill(Color.white)
+              .shadow(color: Color.black.opacity(0.08), radius: 14, x: 0, y: 6)
+          )
+
+        Text(shortcut.title)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .lineLimit(2)
+          .multilineTextAlignment(.center)
+          .minimumScaleFactor(0.9)
+          .frame(height: 34, alignment: .top)
+      }
+      .frame(maxWidth: .infinity)
+    }
+    .buttonStyle(.plain)
+    .accessibilityLabel(Text(shortcut.title))
+    .accessibilityHint(Text(shortcut.subtitle))
+  }
+}
+
+private struct BradescoOperationalCard: View {
+  let title: String
+  let detail: String
+  let symbolName: String
+  let color: Color
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      HStack(spacing: BankTheme.Spacing.md) {
+        IconBubble(
+          symbolName: symbolName,
+          color: color,
+          size: BankTheme.Size.iconBubble
+        )
+
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+          Text(title)
+            .font(BankTheme.Typography.headline)
+            .foregroundColor(BankTheme.Palette.ink)
+
+          Text(detail)
+            .font(BankTheme.Typography.callout)
+            .foregroundColor(BankTheme.Palette.secondaryInk)
+            .lineLimit(3)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+
+        Spacer(minLength: BankTheme.Spacing.sm)
+
+        Image(systemName: "chevron.right")
+          .font(BankTheme.Typography.callout)
+          .foregroundColor(color)
+      }
+      .frame(width: 304, alignment: .leading)
+      .frame(minHeight: 126, alignment: .leading)
+      .padding(BankTheme.Spacing.md)
+      .background(
+        RoundedRectangle(cornerRadius: BankTheme.Radius.lg, style: .continuous)
+          .fill(Color.white)
+          .shadow(color: Color.black.opacity(0.09), radius: 18, x: 0, y: 8)
+      )
+    }
+    .buttonStyle(.plain)
+  }
+}
+
+private struct BradescoWave: Shape {
+  func path(in rect: CGRect) -> Path {
+    var path = Path()
+    path.move(to: CGPoint(x: 0, y: rect.height * 0.58))
+    path.addCurve(
+      to: CGPoint(x: rect.width * 0.5, y: rect.height * 0.54),
+      control1: CGPoint(x: rect.width * 0.18, y: rect.height * 0.18),
+      control2: CGPoint(x: rect.width * 0.32, y: rect.height * 0.92)
+    )
+    path.addCurve(
+      to: CGPoint(x: rect.width, y: rect.height * 0.46),
+      control1: CGPoint(x: rect.width * 0.7, y: rect.height * 0.16),
+      control2: CGPoint(x: rect.width * 0.84, y: rect.height * 0.84)
+    )
+    path.addLine(to: CGPoint(x: rect.width, y: rect.height))
+    path.addLine(to: CGPoint(x: 0, y: rect.height))
+    path.closeSubpath()
+    return path
+  }
+}
+
 private struct ProcessGraph: View {
   private let nodes: [(id: String, title: String, symbol: String, color: Color)] = [
     ("intent", "Intenção", "person.crop.circle.fill", BankTheme.Palette.brandRed),
@@ -320,16 +835,17 @@ private struct ProcessGraph: View {
                 .frame(width: 46, height: 46)
 
               Image(systemName: node.symbol)
-                .font(.system(size: 17, weight: .semibold, design: .rounded))
+                .font(.system(size: 17, weight: .semibold, design: .default))
                 .foregroundColor(node.color)
             }
 
             Text(node.title)
-              .font(.system(size: 10, weight: .semibold, design: .rounded))
-              .foregroundColor(.white.opacity(0.72))
-              .lineLimit(1)
-              .minimumScaleFactor(0.68)
-              .frame(width: 62)
+              .font(BankTheme.Typography.micro)
+              .foregroundColor(.white.opacity(0.82))
+              .lineLimit(2)
+              .multilineTextAlignment(.center)
+              .minimumScaleFactor(0.9)
+              .frame(width: 74)
           }
           .position(x: horizontalInset + step * CGFloat(index), y: y + 24)
         }

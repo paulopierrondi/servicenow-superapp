@@ -95,7 +95,7 @@ struct IconBubble: View {
         .fill(color.opacity(0.14))
 
       Image(systemName: symbolName)
-        .font(.system(size: size * 0.38, weight: .semibold, design: .rounded))
+        .font(.system(size: size * 0.38, weight: .semibold, design: .default))
         .foregroundColor(color)
     }
     .frame(width: size, height: size)
@@ -123,6 +123,8 @@ struct StatusBadge: View {
     Label {
       title
         .font(BankTheme.Typography.caption)
+        .lineLimit(1)
+        .minimumScaleFactor(0.9)
     } icon: {
       Image(systemName: symbolName)
         .font(BankTheme.Typography.caption)
@@ -155,7 +157,8 @@ struct MetricPill: View {
         Text(value)
           .font(BankTheme.Typography.metric)
           .foregroundColor(BankTheme.Palette.ink)
-          .minimumScaleFactor(0.72)
+          .lineLimit(1)
+          .minimumScaleFactor(0.86)
 
         Text(titleKey)
           .font(BankTheme.Typography.caption)
@@ -169,6 +172,162 @@ struct MetricPill: View {
         .fill(BankTheme.Palette.elevatedSurface)
         .shadow(color: Color.black.opacity(0.04), radius: 12, x: 0, y: 4)
     )
+  }
+}
+
+struct CMDBHealthPanel: View {
+  private let metrics = [
+    CMDBHealthMetric(title: "Completeness", value: "92%", color: BankTheme.Palette.success),
+    CMDBHealthMetric(title: "Correctness", value: "88%", color: BankTheme.Palette.warning),
+    CMDBHealthMetric(title: "Compliance", value: "95%", color: BankTheme.Palette.attention),
+    CMDBHealthMetric(title: "Relations", value: "84%", color: BankTheme.Palette.brandSecondary),
+  ]
+
+  let title: String
+  let subtitle: String
+  let score: Int
+
+  init(
+    title: String = "CMDB Health",
+    subtitle: String = "Serviços, CIs e dependências críticas conectados ao fluxo mobile.",
+    score: Int = 91
+  ) {
+    self.title = title
+    self.subtitle = subtitle
+    self.score = score
+  }
+
+  var body: some View {
+    let columns = Array(
+      repeating: GridItem(.flexible(), spacing: BankTheme.Spacing.sm),
+      count: 2
+    )
+
+    VisualCard {
+      VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
+        HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
+          CMDBHealthScoreRing(score: score)
+
+          VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+            Text(title)
+              .font(BankTheme.Typography.section)
+              .foregroundColor(BankTheme.Palette.ink)
+
+            Text(subtitle)
+              .font(BankTheme.Typography.callout)
+              .foregroundColor(BankTheme.Palette.secondaryInk)
+              .fixedSize(horizontal: false, vertical: true)
+
+            StatusBadge(
+              title: "Service Graph ativo",
+              color: BankTheme.Palette.brandAction,
+              symbolName: "point.3.connected.trianglepath.dotted"
+            )
+          }
+        }
+
+        LazyVGrid(columns: columns, spacing: BankTheme.Spacing.sm) {
+          ForEach(metrics) { metric in
+            CMDBHealthMetricTile(metric: metric)
+          }
+        }
+
+        HStack(spacing: BankTheme.Spacing.sm) {
+          CMDBRemediationPill(title: "18 CIs stale", symbolName: "clock.badge.exclamationmark")
+          CMDBRemediationPill(title: "7 relações órfãs", symbolName: "link.badge.plus")
+        }
+      }
+    }
+  }
+}
+
+private struct CMDBHealthMetric: Identifiable {
+  let id = UUID()
+  let title: String
+  let value: String
+  let color: Color
+}
+
+private struct CMDBHealthScoreRing: View {
+  let score: Int
+
+  private var progress: Double {
+    min(max(Double(score) / 100, 0), 1)
+  }
+
+  var body: some View {
+    ZStack {
+      Circle()
+        .stroke(BankTheme.Palette.divider.opacity(0.7), lineWidth: 8)
+
+      Circle()
+        .trim(from: 0, to: progress)
+        .stroke(
+          BankTheme.Palette.brandAction,
+          style: StrokeStyle(lineWidth: 8, lineCap: .round)
+        )
+        .rotationEffect(.degrees(-90))
+
+      VStack(spacing: 0) {
+        Text("\(score)")
+          .font(BankTheme.Typography.metric)
+          .foregroundColor(BankTheme.Palette.ink)
+
+        Text("score")
+          .font(BankTheme.Typography.micro)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+      }
+    }
+    .frame(width: 88, height: 88)
+    .accessibilityElement(children: .combine)
+  }
+}
+
+private struct CMDBHealthMetricTile: View {
+  let metric: CMDBHealthMetric
+
+  var body: some View {
+    HStack(spacing: BankTheme.Spacing.sm) {
+      Circle()
+        .fill(metric.color)
+        .frame(width: 10, height: 10)
+
+      VStack(alignment: .leading, spacing: 0) {
+        Text(metric.value)
+          .font(BankTheme.Typography.headline)
+          .foregroundColor(BankTheme.Palette.ink)
+
+        Text(metric.title)
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+      }
+
+      Spacer(minLength: 0)
+    }
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(BankTheme.Palette.subtleSurface)
+    )
+  }
+}
+
+private struct CMDBRemediationPill: View {
+  let title: String
+  let symbolName: String
+
+  var body: some View {
+    Label(title, systemImage: symbolName)
+      .font(BankTheme.Typography.caption)
+      .foregroundColor(BankTheme.Palette.secondaryInk)
+      .lineLimit(1)
+      .minimumScaleFactor(0.9)
+      .frame(maxWidth: .infinity)
+      .padding(.vertical, BankTheme.Spacing.sm)
+      .background(
+        Capsule(style: .continuous)
+          .fill(BankTheme.Palette.appBackground)
+      )
   }
 }
 
@@ -198,7 +357,7 @@ struct ActionTile: View {
           .minimumScaleFactor(0.84)
 
         Text(subtitle)
-          .font(BankTheme.Typography.caption)
+          .font(BankTheme.Typography.callout)
           .foregroundColor(BankTheme.Palette.secondaryInk)
           .lineLimit(2)
           .multilineTextAlignment(.leading)

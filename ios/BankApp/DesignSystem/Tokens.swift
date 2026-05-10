@@ -12,6 +12,9 @@ enum BankTheme {
     static var brandRedDark: Color { brandPrimaryDark }
     static var brandSecondary: Color { AppBrand.current.accentColor }
     static var brandAccent: Color { brandSecondary }
+    static var brandChrome: Color { AppBrand.current.chromeColor }
+    static var brandChromeDark: Color { AppBrand.current.chromeDarkColor }
+    static var brandAction: Color { AppBrand.current.actionColor }
     static let ink = Color(bankHex: 0x1C1C1E)
     static let secondaryInk = Color(bankHex: 0x636366)
     static let mutedInk = Color(bankHex: 0x8E8E93)
@@ -57,15 +60,16 @@ enum BankTheme {
   }
 
   enum Typography {
-    static let display = Font.system(size: 34, weight: .bold, design: .rounded)
-    static let title = Font.system(size: 24, weight: .bold, design: .rounded)
-    static let section = Font.system(size: 18, weight: .semibold, design: .rounded)
-    static let headline = Font.system(size: 16, weight: .semibold, design: .rounded)
-    static let body = Font.system(size: 15, weight: .regular, design: .rounded)
-    static let callout = Font.system(size: 14, weight: .medium, design: .rounded)
-    static let caption = Font.system(size: 12, weight: .medium, design: .rounded)
-    static let amount = Font.system(size: 32, weight: .bold, design: .rounded)
-    static let metric = Font.system(size: 20, weight: .bold, design: .rounded)
+    static let display = Font.largeTitle.weight(.bold)
+    static let title = Font.title2.weight(.bold)
+    static let section = Font.title3.weight(.semibold)
+    static let headline = Font.headline.weight(.semibold)
+    static let body = Font.body
+    static let callout = Font.callout.weight(.medium)
+    static let caption = Font.footnote.weight(.semibold)
+    static let micro = Font.caption.weight(.semibold)
+    static let amount = Font.title.weight(.bold)
+    static let metric = Font.title3.weight(.bold)
   }
 }
 

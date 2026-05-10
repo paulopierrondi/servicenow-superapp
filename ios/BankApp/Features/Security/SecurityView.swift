@@ -155,7 +155,7 @@ struct SecurityView: View {
                   .foregroundColor(BankTheme.Palette.ink)
 
                 Text(device.detail)
-                  .font(BankTheme.Typography.caption)
+                  .font(BankTheme.Typography.callout)
                   .foregroundColor(BankTheme.Palette.secondaryInk)
               }
 
@@ -265,7 +265,7 @@ private struct ToggleRow: View {
             .foregroundColor(BankTheme.Palette.ink)
 
           Text(detailKey)
-            .font(BankTheme.Typography.caption)
+            .font(BankTheme.Typography.callout)
             .foregroundColor(BankTheme.Palette.secondaryInk)
         }
       }

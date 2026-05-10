@@ -138,7 +138,7 @@ struct ProfileView: View {
                   .foregroundColor(BankTheme.Palette.ink)
 
                 Text(item.detailKey)
-                  .font(BankTheme.Typography.caption)
+                  .font(BankTheme.Typography.callout)
                   .foregroundColor(BankTheme.Palette.secondaryInk)
               }
 
@@ -165,7 +165,7 @@ struct ProfileView: View {
           Toggle("profile.consent.marketing", isOn: $marketingOptIn)
 
           Text("profile.consent.note")
-            .font(BankTheme.Typography.caption)
+            .font(BankTheme.Typography.callout)
             .foregroundColor(BankTheme.Palette.secondaryInk)
             .fixedSize(horizontal: false, vertical: true)
         }

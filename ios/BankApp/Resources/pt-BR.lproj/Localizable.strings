@@ -12,7 +12,7 @@
 "brand.selection.eyebrow" = "SUPER APP";
 "brand.selection.title" = "Escolha sua experiência";
 "brand.selection.subtitle" = "Escolha o tenant visual. A experiência principal é ServiceNow: trabalho, AI, CSM, CRM, ITSM e SPM.";
-"brand.selection.bradesco.detail" = "Tenant Bradesco com vermelho oficial, Prime, gerente e políticas operacionais.";
+"brand.selection.bradesco.detail" = "Tenant Bradesco com azul Prime, acentos vermelhos, BIA e políticas operacionais.";
 "brand.selection.itau.detail" = "Tenant Itaú com laranja oficial, Personnalité, gerente e políticas operacionais.";
 "brand.selection.continue.format" = "Entrar no %@";
 "brand.switch" = "Trocar banco";
