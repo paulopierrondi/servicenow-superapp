@@ -54,6 +54,7 @@ Usuário → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 | `ios/` | App SwiftUI nativo, XcodeGen, targets Bradesco/Itaú e configs por ambiente |
 | `servicenow/` | Scoped app `x_bank`, Scripted REST versionado, ATF tests, update sets |
 | `railway/services/` | Mock harness, BFF flags, OTel collector, agent orchestrator |
+| `deliverables/apps/` | Apps demo compilados para iOS Simulator |
 | `docs/adr/` | Architecture Decision Records (PT-BR) |
 | `docs/runbooks/` | Incident, rollback, refresh metadata (PT-BR) |
 | `docs/diagrams/` | Diagramas Mermaid |
@@ -66,11 +67,12 @@ Usuário → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 
 | Env | iOS scheme | Bundle ID | ServiceNow | Railway |
 |---|---|---|---|---|
-| Bradesco Dev | `BankApp-Bradesco-Dev` / `BankApp-Dev` | `com.bradesco.mobile.app.dev` | dev-bradesco.service-now.com | `servicenow-superapp` |
-| Itaú Dev | `BankApp-Itau-Dev` | `com.itau.mobile.app.dev` | dev-itau.service-now.com | `servicenow-superapp` |
+| Bradesco Dev | `BankApp-Bradesco-Dev` / `BankApp-Dev` | `com.bradesco.mobile.app.dev` | demoalectriallwfzbblp136802.service-now.com | `servicenow-superapp` |
+| Itaú Dev | `BankApp-Itau-Dev` | `com.itau.mobile.app.demo` | demoalectriallwfzbblp136802.service-now.com | `servicenow-superapp` |
 | Staging | `BankApp-Staging` | `com.bradesco.mobile.app.staging` | staging-bradesco.service-now.com | `*-staging.up.railway.app` |
 | Prod | `BankApp-Prod` | `com.bradesco.mobile.app` | bradesco.service-now.com | `*.up.railway.app` |
-| Demo | `BankApp-Demo` | `com.bradesco.mobile.app.demo` | demoalectriallwfzbblp136802.service-now.com | `*-demo.up.railway.app` |
+| Bradesco Demo | `BankApp-Bradesco-Demo` / `BankApp-Demo` | `com.bradesco.mobile.app.demo` | demoalectriallwfzbblp136802.service-now.com | `*-demo.up.railway.app` |
+| Itaú Demo | `BankApp-Itau-Demo` | `com.itau.mobile.app.demo` | demoalectriallwfzbblp136802.service-now.com | `*-demo.up.railway.app` |
 
 ## Evolução Now Mobile
 
@@ -106,6 +108,19 @@ Saídas:
 - `deliverables/bradesco-demo/bradesco-servicenow-superapp-complete-demo.mp4`
 
 Runbook: `docs/runbooks/replicar-demo-completa.md`.
+
+## Apps demo compilados
+
+```bash
+make demo-apps
+```
+
+Saídas:
+
+- `deliverables/apps/bradesco-servicenow-superapp-demo-simulator.zip`
+- `deliverables/apps/itau-servicenow-superapp-demo-simulator.zip`
+
+Os artefatos são builds de iOS Simulator sem assinatura de App Store. Para dispositivo físico/TestFlight, configurar `DEVELOPMENT_TEAM`, certificados e provisioning profiles reais.
 
 Para expor o demo em uma instância sem gravar credenciais no repo:
 

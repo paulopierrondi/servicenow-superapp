@@ -44,10 +44,11 @@ APS_ENVIRONMENT = development
 PROVISIONING_PROFILE_SPECIFIER =
 
 // --- ServiceNow integration ---
-// Override por env: Dev/Staging/Prod/Demo
-SERVICENOW_INSTANCE_URL =
-SERVICENOW_PINNED_HOST =
-SERVICENOW_OIDC_CLIENT_ID =
+// Default local/demo instance. Override em Staging/Prod antes de distribuição real.
+SERVICENOW_INSTANCE_URL = https:/$()/demoalectriallwfzbblp136802.service-now.com
+// Demo usa certificado público ServiceNow; produção deve configurar SPKI real.
+SERVICENOW_PINNED_HOST = service-now-demo-pin-disabled.local
+SERVICENOW_OIDC_CLIENT_ID = REPLACE_DEMO_CLIENT_ID
 SERVICENOW_OIDC_REDIRECT_URI = $(URL_SCHEME):/oauth/callback
 
 // --- Railway aux services ---

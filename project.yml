@@ -24,8 +24,14 @@ settings:
     DEAD_CODE_STRIPPING: YES
     OTHER_SWIFT_FLAGS: "-warnings-as-errors"
 
+configs:
+  Debug: debug
+  Demo: release
+  Release: release
+
 configFiles:
   Debug: Configs/Debug.xcconfig
+  Demo: Configs/Demo.xcconfig
   Release: Configs/Release.xcconfig
 
 # Dependências externas
@@ -195,13 +201,13 @@ targets:
     settings:
       base:
         TARGETED_DEVICE_FAMILY: "1"
-        PRODUCT_BUNDLE_IDENTIFIER: com.itau.mobile.app.dev
-        BUNDLE_DISPLAY_NAME: Itaú
-        URL_SCHEME: itau-app
-        SERVICENOW_INSTANCE_URL: https:/$()/dev-itau.service-now.com
-        SERVICENOW_PINNED_HOST: dev-itau.service-now.com
-        SERVICENOW_OIDC_CLIENT_ID: REPLACE_ITAU_DEV_CLIENT_ID
-        SERVICENOW_OIDC_REDIRECT_URI: itau-app:/oauth/callback
+        PRODUCT_BUNDLE_IDENTIFIER: com.itau.mobile.app.demo
+        BUNDLE_DISPLAY_NAME: Itaú Demo
+        URL_SCHEME: itau-app-demo
+        SERVICENOW_INSTANCE_URL: https:/$()/demoalectriallwfzbblp136802.service-now.com
+        SERVICENOW_PINNED_HOST: service-now-demo-pin-disabled.local
+        SERVICENOW_OIDC_CLIENT_ID: REPLACE_DEMO_CLIENT_ID
+        SERVICENOW_OIDC_REDIRECT_URI: itau-app-demo:/oauth/callback
         ENABLE_BITCODE: NO
         CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: $(DEVELOPMENT_TEAM)
@@ -346,9 +352,39 @@ schemes:
       targets:
         BankApp: all
     run:
-      config: Release
+      config: Demo
       environmentVariables:
+        - variable: APP_BRAND
+          value: bradesco
         - variable: SERVICENOW_ENV
           value: demo
     archive:
-      config: Release
+      config: Demo
+
+  BankApp-Bradesco-Demo:
+    build:
+      targets:
+        BankApp: all
+    run:
+      config: Demo
+      environmentVariables:
+        - variable: APP_BRAND
+          value: bradesco
+        - variable: SERVICENOW_ENV
+          value: demo
+    archive:
+      config: Demo
+
+  BankApp-Itau-Demo:
+    build:
+      targets:
+        BankAppItau: all
+    run:
+      config: Demo
+      environmentVariables:
+        - variable: APP_BRAND
+          value: itau
+        - variable: SERVICENOW_ENV
+          value: demo
+    archive:
+      config: Demo

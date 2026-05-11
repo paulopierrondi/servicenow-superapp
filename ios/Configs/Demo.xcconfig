@@ -1,5 +1,6 @@
 // Demo.xcconfig
 // Ambiente de demos comerciais — instância demo SN com dados seed
+#include "Base.xcconfig"
 
 PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app.demo
 BUNDLE_DISPLAY_NAME = Bradesco Demo

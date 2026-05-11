@@ -1,5 +1,5 @@
 // Dev.xcconfig
-// Ambiente de desenvolvimento local — aponta para Railway mock harness e instância dev SN
+// Ambiente de desenvolvimento local — por padrão aponta para a instância demo do trabalho
 
 PRODUCT_BUNDLE_IDENTIFIER = com.bradesco.mobile.app.dev
 BUNDLE_DISPLAY_NAME = Bradesco Dev
@@ -7,10 +7,10 @@ URL_SCHEME = bradesco-app-dev
 
 APS_ENVIRONMENT = development
 
-// ServiceNow dev
-SERVICENOW_INSTANCE_URL = https:/$()/dev-bradesco.service-now.com
-SERVICENOW_PINNED_HOST = dev-bradesco.service-now.com
-SERVICENOW_OIDC_CLIENT_ID = REPLACE_DEV_CLIENT_ID
+// ServiceNow demo default
+SERVICENOW_INSTANCE_URL = https:/$()/demoalectriallwfzbblp136802.service-now.com
+SERVICENOW_PINNED_HOST = service-now-demo-pin-disabled.local
+SERVICENOW_OIDC_CLIENT_ID = REPLACE_DEMO_CLIENT_ID
 
 // Railway aux services (dev environment)
 RAILWAY_BFF_FLAGS_URL = https:/$()/bff-flags-dev.up.railway.app

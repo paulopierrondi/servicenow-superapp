@@ -10,7 +10,7 @@
 #   make contract-test   → roda contract tests contra mock harness
 
 .PHONY: help verify xcode ios-build ios-test ios-lint mock-harness-run \
-        mock-harness-stop contract-test diagrams demo-videos clean install-tools
+        mock-harness-stop contract-test diagrams demo-videos demo-apps clean install-tools
 
 IOS_SIMULATOR ?= iPhone 17
 IOS_BUILD_DESTINATION ?= generic/platform=iOS Simulator
@@ -28,6 +28,7 @@ help:
 	@echo "  contract-test       - testes de contrato"
 	@echo "  diagrams            - validar diagramas Mermaid"
 	@echo "  demo-videos         - renderizar demos completas Itaú e Bradesco"
+	@echo "  demo-apps           - compilar e empacotar apps demo Bradesco/Itaú para simulador"
 	@echo "  install-tools       - instalar XcodeGen, SwiftLint, mmdc"
 
 install-tools:
@@ -133,6 +134,34 @@ diagrams:
 
 demo-videos:
 	node scripts/render-complete-demo-videos.mjs
+
+demo-apps: xcode
+	mkdir -p deliverables/apps
+	rm -f deliverables/apps/*-simulator.zip
+	cd ios && xcodebuild \
+		-project BankApp.xcodeproj \
+		-scheme BankApp-Bradesco-Demo \
+		-configuration Demo \
+		-destination 'generic/platform=iOS Simulator' \
+		-derivedDataPath build \
+		-quiet \
+		CODE_SIGNING_ALLOWED=NO \
+		build
+	cd ios && xcodebuild \
+		-project BankApp.xcodeproj \
+		-scheme BankApp-Itau-Demo \
+		-configuration Demo \
+		-destination 'generic/platform=iOS Simulator' \
+		-derivedDataPath build \
+		-quiet \
+		CODE_SIGNING_ALLOWED=NO \
+		build
+	ditto -c -k --sequesterRsrc --keepParent \
+		ios/build/Build/Products/Demo-iphonesimulator/BankApp.app \
+		deliverables/apps/bradesco-servicenow-superapp-demo-simulator.zip
+	ditto -c -k --sequesterRsrc --keepParent \
+		ios/build/Build/Products/Demo-iphonesimulator/BankAppItau.app \
+		deliverables/apps/itau-servicenow-superapp-demo-simulator.zip
 
 verify: ios-lint ios-build ios-test contract-test diagrams
 	@echo ""
