@@ -70,7 +70,7 @@ Usuário → Apps Nativos SwiftUI Bradesco/Itaú + NowSDK ──┐
 | Itaú Dev | `BankApp-Itau-Dev` | `com.itau.mobile.app.dev` | dev-itau.service-now.com | `servicenow-superapp` |
 | Staging | `BankApp-Staging` | `com.bradesco.mobile.app.staging` | staging-bradesco.service-now.com | `*-staging.up.railway.app` |
 | Prod | `BankApp-Prod` | `com.bradesco.mobile.app` | bradesco.service-now.com | `*.up.railway.app` |
-| Demo | `BankApp-Demo` | `com.bradesco.mobile.app.demo` | demo-bradesco.service-now.com | `*-demo.up.railway.app` |
+| Demo | `BankApp-Demo` | `com.bradesco.mobile.app.demo` | demoalectriallwfzbblp136802.service-now.com | `*-demo.up.railway.app` |
 
 ## Evolução Now Mobile
 
@@ -91,6 +91,21 @@ O app usa uma base visual nativa iOS, com fundo grouped `#F2F2F7`, superfícies 
 ## ServiceNow e Railway
 
 Os endpoints `mobile-work` e `mobile-agentic-workflow` expõem os contratos v1 para ITSM, SPM, CSM, CRM, launcher, action items, respostas sintetizadas, `journeyTwin`, AI specialists, guardrails e execução agentic governada, usados pela aba `Now` e pelo mordomo Otto / Now Assist. O projeto Railway criado é `servicenow-superapp`; os ids dos services estão em `railway/project-manifest.json`.
+
+## Demos completas em vídeo
+
+As demos completas mostram duas narrativas por banco: executivo abrindo o dia no app e fulfiller assumindo o trabalho na war room.
+
+```bash
+make demo-videos
+```
+
+Saídas:
+
+- `deliverables/itau-demo/itau-servicenow-superapp-complete-demo.mp4`
+- `deliverables/bradesco-demo/bradesco-servicenow-superapp-complete-demo.mp4`
+
+Runbook: `docs/runbooks/replicar-demo-completa.md`.
 
 Para expor o demo em uma instância sem gravar credenciais no repo:
 

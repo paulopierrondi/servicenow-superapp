@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { box-sizing: border-box; }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        font-family: Inter, Arial, sans-serif;
+        background: #F4F8FD;
+        color: #171717;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 18% 9%, rgba(204, 9, 47, 0.18) 0 170px, transparent 360px),
+          radial-gradient(circle at 85% 8%, rgba(71, 120, 188, 0.14) 0 170px, transparent 380px),
+          linear-gradient(180deg, #F4F8FD 0%, #ffffff 58%, #F4F8FD 100%);
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 28px;
+        padding: 68px 54px 58px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 24px;
+        font-weight: 700;
+        color: #171717;
+        opacity: 0.88;
+      }
+
+      .brand-pill,
+      .role-pill,
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-size: 20px;
+        font-weight: 800;
+        background: rgba(204, 9, 47, 0.12);
+        color: #970020;
+        white-space: nowrap;
+      }
+
+      .role-pill {
+        background: rgba(71, 120, 188, 0.12);
+        color: #4778BC;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .headline {
+        font-size: 82px;
+        line-height: 0.96;
+        letter-spacing: 0;
+        font-weight: 900;
+        max-width: 940px;
+      }
+
+      .subhead {
+        font-size: 34px;
+        line-height: 1.24;
+        font-weight: 650;
+        color: #52525B;
+        max-width: 890px;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 560px 1fr;
+        gap: 30px;
+        align-items: center;
+        min-height: 1280px;
+      }
+
+      .phone {
+        width: 548px;
+        height: 1186px;
+        border-radius: 74px;
+        padding: 18px;
+        background: #111111;
+        box-shadow: 0 36px 90px rgba(17, 24, 39, 0.24);
+      }
+
+      .screen {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 58px;
+        overflow: hidden;
+        background: #F8F8FA;
+      }
+
+      .status {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 74px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 42px;
+        color: #fff;
+        font-size: 22px;
+        font-weight: 800;
+        z-index: 3;
+      }
+
+      .island {
+        position: absolute;
+        top: 18px;
+        left: 50%;
+        width: 176px;
+        height: 40px;
+        transform: translateX(-50%);
+        border-radius: 28px;
+        background: #050505;
+      }
+
+      .app-header {
+        min-height: 328px;
+        padding: 92px 32px 28px;
+        background: #4778BC;
+        color: #fff;
+        position: relative;
+      }
+
+      .app-header::after {
+        content: "";
+        position: absolute;
+        left: -10%;
+        right: -10%;
+        bottom: -42px;
+        height: 112px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.92);
+      }
+
+      .app-title {
+        position: relative;
+        z-index: 1;
+        font-size: 32px;
+        font-weight: 850;
+        line-height: 1.12;
+      }
+
+      .app-caption {
+        position: relative;
+        z-index: 1;
+        margin-top: 14px;
+        font-size: 20px;
+        line-height: 1.2;
+        color: rgba(255,255,255,0.82);
+      }
+
+      .assist-search {
+        position: relative;
+        z-index: 2;
+        margin-top: 26px;
+        min-height: 66px;
+        border-radius: 36px;
+        background: rgba(4, 34, 84, 0.22);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 18px;
+        font-size: 23px;
+        font-weight: 760;
+      }
+
+      .bia {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #fff;
+        color: #CC092F;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      .content {
+        padding: 62px 30px 100px;
+      }
+
+      .section-title {
+        font-size: 27px;
+        font-weight: 900;
+        margin-bottom: 18px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .tile,
+      .work-card,
+      .chat-bubble,
+      .metric-card {
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.09);
+      }
+
+      .tile {
+        min-height: 118px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .tile .icon {
+        font-size: 29px;
+        color: #CC092F;
+      }
+
+      .tile .label {
+        font-size: 20px;
+        line-height: 1.05;
+        font-weight: 840;
+      }
+
+      .alert-card {
+        margin-top: 22px;
+        padding: 22px;
+        border-radius: 28px;
+        color: #fff;
+        background: linear-gradient(135deg, #4778BC, #970020);
+        box-shadow: 0 18px 42px rgba(71, 120, 188, 0.26);
+      }
+
+      .alert-card .severity {
+        font-size: 19px;
+        font-weight: 900;
+        color: #FDE68A;
+      }
+
+      .alert-card .alert-title {
+        margin-top: 6px;
+        font-size: 27px;
+        line-height: 1.06;
+        font-weight: 900;
+      }
+
+      .alert-card .alert-copy {
+        margin-top: 10px;
+        font-size: 18px;
+        line-height: 1.26;
+        color: rgba(255,255,255,0.8);
+      }
+
+      .bottom-nav {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 86px;
+        background: rgba(255,255,255,0.96);
+        border-top: 1px solid rgba(0,0,0,0.07);
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-items: center;
+        text-align: center;
+        color: #52525B;
+        font-size: 17px;
+        font-weight: 780;
+      }
+
+      .bottom-nav .active {
+        color: #CC092F;
+      }
+
+      .story {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .story-card {
+        border-radius: 34px;
+        padding: 30px;
+        background: rgba(255,255,255,0.78);
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 18px 60px rgba(15, 23, 42, 0.09);
+      }
+
+      .story-kicker {
+        font-size: 20px;
+        font-weight: 900;
+        color: #CC092F;
+        text-transform: uppercase;
+      }
+
+      .story-title {
+        margin-top: 10px;
+        font-size: 42px;
+        line-height: 1.02;
+        font-weight: 900;
+      }
+
+      .story-copy {
+        margin-top: 14px;
+        font-size: 24px;
+        line-height: 1.22;
+        color: #52525B;
+        font-weight: 620;
+      }
+
+      .persona-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .persona {
+        min-height: 212px;
+        border-radius: 34px;
+        padding: 26px;
+        color: #fff;
+        background: #4778BC;
+        box-shadow: 0 16px 50px rgba(71, 120, 188, 0.24);
+      }
+
+      .persona:last-child {
+        background: #CC092F;
+        box-shadow: 0 16px 50px rgba(204, 9, 47, 0.24);
+      }
+
+      .persona .persona-label {
+        font-size: 20px;
+        font-weight: 900;
+        opacity: 0.78;
+      }
+
+      .persona .persona-title {
+        margin-top: 10px;
+        font-size: 34px;
+        line-height: 1.02;
+        font-weight: 950;
+      }
+
+      .chat-view {
+        background: #F7F7FA;
+      }
+
+      .chat-header {
+        min-height: 170px;
+        padding: 88px 30px 22px;
+        background: #4778BC;
+        color: #fff;
+      }
+
+      .chat-title {
+        font-size: 31px;
+        font-weight: 900;
+      }
+
+      .chat-body {
+        padding: 32px 26px 108px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .chat-bubble {
+        max-width: 430px;
+        padding: 20px;
+        font-size: 21px;
+        line-height: 1.22;
+        font-weight: 650;
+      }
+
+      .chat-bubble.user {
+        align-self: flex-end;
+        color: #fff;
+        background: #CC092F;
+      }
+
+      .chat-bubble.assist {
+        align-self: flex-start;
+        background: #fff;
+        color: #222;
+      }
+
+      .action-strip {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 4px;
+      }
+
+      .mini-action {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 15px 17px;
+        border-radius: 18px;
+        background: #fff;
+        font-size: 18px;
+        font-weight: 840;
+        box-shadow: 0 8px 20px rgba(15,23,42,0.07);
+      }
+
+      .mini-action span {
+        color: #CC092F;
+        font-size: 17px;
+      }
+
+      .work-header {
+        min-height: 230px;
+        padding: 88px 30px 26px;
+        color: #fff;
+        background: linear-gradient(135deg, #4778BC, #09111F);
+      }
+
+      .work-card {
+        padding: 22px;
+        margin-bottom: 16px;
+      }
+
+      .work-card .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: flex-start;
+      }
+
+      .work-card .tag {
+        font-size: 17px;
+        font-weight: 900;
+        color: #CC092F;
+      }
+
+      .work-card .main {
+        margin-top: 8px;
+        font-size: 24px;
+        line-height: 1.06;
+        font-weight: 900;
+      }
+
+      .work-card .sub {
+        margin-top: 9px;
+        font-size: 18px;
+        line-height: 1.22;
+        color: #6B7280;
+        font-weight: 650;
+      }
+
+      .cmdb-panel {
+        border-radius: 28px;
+        padding: 24px;
+        color: #fff;
+        background: #111827;
+      }
+
+      .ring-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .ring {
+        width: 124px;
+        height: 124px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 32px;
+        font-weight: 950;
+        color: #fff;
+        background:
+          radial-gradient(circle at center, #111827 0 53%, transparent 54%),
+          conic-gradient(#CC092F 0 328deg, rgba(255,255,255,0.18) 328deg 360deg);
+      }
+
+      .graph {
+        margin-top: 24px;
+        height: 232px;
+        position: relative;
+      }
+
+      .node {
+        position: absolute;
+        min-width: 112px;
+        padding: 14px;
+        text-align: center;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 850;
+      }
+
+      .node:nth-child(1) { left: 176px; top: 0; background: #CC092F; }
+      .node:nth-child(2) { left: 18px; top: 92px; }
+      .node:nth-child(3) { left: 226px; top: 116px; }
+      .node:nth-child(4) { right: 16px; top: 64px; }
+
+      .line {
+        position: absolute;
+        height: 3px;
+        background: rgba(255,255,255,0.24);
+        transform-origin: left center;
+      }
+
+      .line.l1 { left: 118px; top: 96px; width: 168px; transform: rotate(-28deg); }
+      .line.l2 { left: 292px; top: 100px; width: 154px; transform: rotate(22deg); }
+      .line.l3 { left: 158px; top: 178px; width: 190px; transform: rotate(8deg); }
+
+      .workflow {
+        display: grid;
+        gap: 13px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 34px 1fr auto;
+        align-items: center;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 28px rgba(15,23,42,0.07);
+      }
+
+      .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #CC092F;
+      }
+
+      .step-title {
+        font-size: 19px;
+        font-weight: 900;
+      }
+
+      .step-state {
+        font-size: 16px;
+        color: #6B7280;
+        font-weight: 780;
+      }
+
+      .result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .metric-card {
+        min-height: 156px;
+        padding: 24px;
+      }
+
+      .metric-card .metric {
+        font-size: 46px;
+        font-weight: 950;
+        color: #CC092F;
+      }
+
+      .metric-card .label {
+        margin-top: 8px;
+        font-size: 20px;
+        line-height: 1.14;
+        font-weight: 760;
+        color: #52525B;
+      }
+
+      .replicate {
+        border-radius: 34px;
+        padding: 28px;
+        background: #111827;
+        color: #fff;
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 22px;
+        line-height: 1.36;
+        box-shadow: 0 20px 70px rgba(17,24,39,0.25);
+      }
+
+      .caption {
+        min-height: 144px;
+        border-radius: 34px;
+        padding: 26px 30px;
+        color: #fff;
+        background: #171717;
+        display: flex;
+        align-items: center;
+        font-size: 29px;
+        line-height: 1.2;
+        font-weight: 780;
+        box-shadow: 0 18px 60px rgba(17, 24, 39, 0.20);
+      }
+
+      .caption strong {
+        color: #CC092F;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="bradesco-complete-demo"
+      data-start="0"
+      data-duration="76"
+      data-width="1080"
+      data-height="1920"
+    >
+      <section id="s1" class="scene">
+        <div class="topbar anim">
+          <span class="brand-pill">BRADESCO • SERVICENOW SUPER APP</span>
+          <span>Demo completa</span>
+        </div>
+        <div class="hero">
+          <div class="headline anim">Uma experiência mobile para executivo e fulfiller.</div>
+          <div class="subhead anim">O banco continua com look and feel de app final, mas a jornada é ServiceNow-first: Now Assist, CMDB, ITSM, CSM, CRM, SPM e governança.</div>
+          <div class="persona-row anim">
+            <div class="persona">
+              <div class="persona-label">USUÁRIO 1</div>
+              <div class="persona-title">Executivo abre o dia e decide.</div>
+            </div>
+            <div class="persona">
+              <div class="persona-label">USUÁRIO 2</div>
+              <div class="persona-title">Fulfiller assume, executa e audita.</div>
+            </div>
+          </div>
+        </div>
+        <div class="caption anim">Narrativa: <strong>P1</strong> em Pix Prime Mobile, com BIA + Now Assist como mordomo operacional.</div>
+      </section>
+
+      <section id="s2" class="scene">
+        <div class="topbar anim">
+          <span class="role-pill">Executivo • app final Prime</span>
+          <span>Bradesco</span>
+        </div>
+        <div class="split">
+          <div class="phone anim">
+    <div class="screen">
+      <div class="status"><span>15:51</span><span>5G  73%</span></div>
+      <div class="island"></div>
+      <div class="app-header">
+        <div class="app-title">Olá, Paulo CENTRAL</div>
+        <div class="app-caption">Saldo oculto • ServiceNow ativo • Prime</div>
+        <div class="assist-search"><span class="bia">BIA</span><span>Como posso ajudar?</span></div>
+      </div>
+      <div class="content">
+        <div class="section-title">Favoritos</div>
+        <div class="grid">
+          <div class="tile"><div class="icon">OK</div><div class="label">Aprovações</div></div>
+          <div class="tile"><div class="icon">CI</div><div class="label">CMDB Health</div></div>
+          <div class="tile"><div class="icon">AI</div><div class="label">Now Assist</div></div>
+          <div class="tile"><div class="icon">WK</div><div class="label">Workspaces</div></div>
+        </div>
+        <div class="alert-card pulse">
+          <div class="severity">P1 • INC0018885</div>
+          <div class="alert-title">Pix Prime Mobile</div>
+          <div class="alert-copy">CMDB Health 91, CHG0030004, 42 cases Prime protegidos.</div>
+        </div>
+      </div>
+      <div class="bottom-nav"><div class="active">Início</div><div>Catálogo</div><div>Assist</div><div>Work</div></div>
+    </div>
+  </div>
+          <div class="story">
+            <div class="story-card anim">
+              <div class="story-kicker">entrada familiar</div>
+              <div class="story-title">A primeira tela parece banco, mas trabalha como ServiceNow.</div>
+              <div class="story-copy">Favoritos, busca e assistente respeitam o estilo Bradesco. O alerta crítico entra como cartão operacional, não como menu técnico.</div>
+            </div>
+            <div class="story-card anim">
+              <div class="story-kicker">evento do dia</div>
+              <div class="story-title">P1 • Pix Prime Mobile</div>
+              <div class="story-copy">INC0018885, CHG0030004, CMDB Health 91 e impacto 42 cases Prime protegidos já aparecem com contexto executivo.</div>
+            </div>
+          </div>
+        </div>
+        <div class="caption anim">O executivo não navega por módulos. Ele pergunta ao mordomo: “o que preciso decidir agora?”</div>
+      </section>
+
+      <section id="s3" class="scene">
+        <div class="topbar anim">
+          <span class="role-pill">Executivo • Now Assist</span>
+          <span>BIA + Now Assist</span>
+        </div>
+        <div class="split">
+          <div class="phone anim">
+    <div class="screen chat-view">
+      <div class="status"><span>15:52</span><span>5G  73%</span></div>
+      <div class="island"></div>
+      <div class="chat-header">
+        <div class="chat-title">BIA + Now Assist</div>
+        <div class="app-caption">instância conectada • sem PII em log</div>
+      </div>
+      <div class="chat-body">
+        <div class="chat-bubble user">Mordomo, resuma meu dia e o P1.</div>
+        <div class="chat-bubble assist pulse">Foco: Pix Prime Mobile. Incidente INC0018885, mudança CHG0030004, CMDB Health 91 e decisão humana pendente.</div>
+        <div class="action-strip">
+          <div class="mini-action">Abrir ponte executiva <span>ITSM</span></div>
+          <div class="mini-action">Aprovar guardrail <span>Change</span></div>
+          <div class="mini-action">Draft CSM / CRM <span>Cliente</span></div>
+          <div class="mini-action">Ver CMDB Health <span>Graph</span></div>
+        </div>
+      </div>
+      <div class="bottom-nav"><div>Início</div><div>Catálogo</div><div class="active">Assist</div><div>Work</div></div>
+    </div>
+  </div>
+          <div class="story">
+            <div class="story-card anim">
+              <div class="story-kicker">mordomo conectado</div>
+              <div class="story-title">Resposta com incidente, CMDB, change e ação.</div>
+              <div class="story-copy">O app chama <strong>/api/x_bank/v1/mobile-assist</strong> na instância. Quando Virtual Agent API + Now Assist estiverem ativos, o mesmo contrato troca para o canal nativo.</div>
+            </div>
+            <div class="story-card anim">
+              <div class="story-kicker">decisão humana</div>
+              <div class="story-title">Aprovar contenção no gateway e playbook Prime</div>
+              <div class="story-copy">A ação sensível fica parada no AI Control Tower até aprovação humana, com evidência de CMDB, CAB e CSM.</div>
+            </div>
+          </div>
+        </div>
+        <div class="caption anim">Now Assist vira um concierge operacional: resume, recomenda e prepara a execução sem esconder o guardrail.</div>
+      </section>
+
+      <section id="s4" class="scene">
+        <div class="topbar anim">
+          <span class="role-pill">Fulfiller • fila ServiceNow</span>
+          <span>P1 handoff</span>
+        </div>
+        <div class="split">
+          <div class="phone anim">
+    <div class="screen">
+      <div class="status"><span>15:54</span><span>5G  73%</span></div>
+      <div class="island"></div>
+      <div class="work-header">
+        <div class="app-title">War room P1</div>
+        <div class="app-caption">AWR-BRAD-P1-20260510 • handoff executivo recebido</div>
+      </div>
+      <div class="content">
+        <div class="work-card pulse">
+          <div class="row"><span class="tag">INC0018885</span><span class="tag">P1</span></div>
+          <div class="main">Pix Prime Mobile</div>
+          <div class="sub">AIOps correlacionou app, Pix, antifraude, mensageria e atendimento.</div>
+        </div>
+        <div class="work-card">
+          <div class="row"><span class="tag">CHG0030004</span><span class="tag">human gate</span></div>
+          <div class="main">Mudança governada</div>
+          <div class="sub">Aprovar contenção no gateway e playbook Prime. Rollback e CAB anexados.</div>
+        </div>
+        <div class="work-card">
+          <div class="row"><span class="tag">CSM / CRM</span><span class="tag">draft</span></div>
+          <div class="main">Comunicação Prime</div>
+          <div class="sub">Rascunho pronto, envio final manual e auditável.</div>
+        </div>
+      </div>
+      <div class="bottom-nav"><div>Início</div><div>Catálogo</div><div>Assist</div><div class="active">Work</div></div>
+    </div>
+  </div>
+          <div class="story">
+            <div class="story-card anim">
+              <div class="story-kicker">mesmo contexto</div>
+              <div class="story-title">O fulfiller recebe a decisão, não um print.</div>
+              <div class="story-copy">Assumir war room P1, acionar agência Prime e preparar case CSM. O app preserva o mesmo run AWR-BRAD-P1-20260510, com trilha e citações.</div>
+            </div>
+            <div class="story-card anim">
+              <div class="story-kicker">trabalho conectado</div>
+              <div class="story-title">ITSM, CSM, CRM e SPM no mesmo fluxo.</div>
+              <div class="story-copy">Incidente, change, case preventivo, comunicação e demanda estrutural nascem do mesmo resumo do mordomo.</div>
+            </div>
+          </div>
+        </div>
+        <div class="caption anim">A experiência muda de “app bonito” para “sistema de ação”: cada botão gera trabalho auditável.</div>
+      </section>
+
+      <section id="s5" class="scene">
+        <div class="topbar anim">
+          <span class="role-pill">Fulfiller • CMDB + Autonomous Workflow</span>
+          <span>Run AWR-BRAD-P1-20260510</span>
+        </div>
+        <div class="split">
+          <div class="phone anim">
+    <div class="screen">
+      <div class="status"><span>15:56</span><span>5G  73%</span></div>
+      <div class="island"></div>
+      <div class="work-header">
+        <div class="app-title">CMDB Health + AI Control</div>
+        <div class="app-caption">Service Graph antes da execução autônoma</div>
+      </div>
+      <div class="content">
+        <div class="cmdb-panel">
+          <div class="ring-row">
+            <div class="ring pulse">91</div>
+            <div>
+              <div class="section-title" style="color:#fff;margin-bottom:8px">Saúde do serviço</div>
+              <div style="font-size:18px;line-height:1.25;color:rgba(255,255,255,0.72)">7 relações órfãs, 18 CIs stale, owner validado.</div>
+            </div>
+          </div>
+          <div class="graph">
+            <div class="line l1"></div><div class="line l2"></div><div class="line l3"></div>
+            <div class="node">App</div><div class="node">Gateway</div><div class="node">Pix</div><div class="node">Antifraude</div>
+          </div>
+        </div>
+        <div class="workflow" style="margin-top:18px">
+          <div class="step"><div class="dot"></div><div><div class="step-title">Sense</div><div class="step-state">AIOps concluído</div></div><div>OK</div></div>
+          <div class="step"><div class="dot"></div><div><div class="step-title">Decide</div><div class="step-state">SLA e impacto classificados</div></div><div>OK</div></div>
+          <div class="step"><div class="dot"></div><div><div class="step-title">Act</div><div class="step-state">drafts prontos</div></div><div>...</div></div>
+          <div class="step"><div class="dot"></div><div><div class="step-title">Govern</div><div class="step-state">aguarda humano</div></div><div>HITL</div></div>
+        </div>
+      </div>
+      <div class="bottom-nav"><div>Início</div><div>Catálogo</div><div>Assist</div><div class="active">Work</div></div>
+    </div>
+  </div>
+          <div class="story">
+            <div class="story-card anim">
+              <div class="story-kicker">cmdb health</div>
+              <div class="story-title">Antes de agir, o app mostra o estado do serviço.</div>
+              <div class="story-copy">Completeness 92%, correctness 88%, compliance 95% e relations 84%. O plano CMDB cria tarefas, mas não altera CI crítico sem owner.</div>
+            </div>
+            <div class="story-card anim">
+              <div class="story-kicker">autonomous workforce</div>
+              <div class="story-title">Sense, Decide, Act, Govern.</div>
+              <div class="story-copy">AI specialists executam rascunhos, ponte e classificação. O AI Control Tower mede risco, policy pass e autonomia liberada.</div>
+            </div>
+          </div>
+        </div>
+        <div class="caption anim">A autonomia é visível, limitada e governada. Isso é o que torna a demo crível para banco.</div>
+      </section>
+
+      <section id="s6" class="scene">
+        <div class="topbar anim">
+          <span class="brand-pill">BRADESCO • replicável</span>
+          <span>Arte do possível</span>
+        </div>
+        <div class="hero">
+          <div class="headline anim">Resultado: um super app ServiceNow que parece banco e opera como plataforma.</div>
+          <div class="result-grid anim">
+            <div class="metric-card"><div class="metric">P1</div><div class="label">Pix Prime Mobile controlado por run governado</div></div>
+            <div class="metric-card"><div class="metric">91</div><div class="label">CMDB Health antes da execução</div></div>
+            <div class="metric-card"><div class="metric">4</div><div class="label">ações Action Fabric com guardrails</div></div>
+            <div class="metric-card"><div class="metric">SLA 18 min preservado</div><div class="label">impacto executivo protegido</div></div>
+          </div>
+          <div class="replicate anim">make demo-videos
+node scripts/render-complete-demo-videos.mjs
+SN_INSTANCE_URL=... node servicenow/deploy/deploy-agentic-rest.mjs</div>
+        </div>
+        <div class="caption anim">Entrega: vídeo, roteiro, endpoint ServiceNow, projeto HyperFrames e app iOS prontos para repetir a demo.</div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const scenes = [
+        ["#s1", 0, 10],
+        ["#s2", 10, 13],
+        ["#s3", 23, 14],
+        ["#s4", 37, 13],
+        ["#s5", 50, 14],
+        ["#s6", 64, 12],
+      ];
+
+      gsap.set(".scene", { opacity: 0 });
+      scenes.forEach(([selector, start, duration]) => {
+        tl.set(selector, { opacity: 1 }, start);
+        tl.from(selector + " .anim", {
+          y: 42,
+          opacity: 0,
+          duration: 0.72,
+          stagger: 0.12,
+          ease: "power3.out",
+        }, start + 0.2);
+        const pulseTargets = document.querySelectorAll(selector + " .pulse");
+        if (pulseTargets.length > 0) {
+          tl.to(pulseTargets, {
+            scale: 1.035,
+            duration: 0.62,
+            repeat: Math.max(Math.floor(duration / 1.24) - 1, 0),
+            yoyo: true,
+            ease: "sine.inOut",
+          }, start + 0.6);
+        }
+        tl.to(selector, {
+          opacity: 0,
+          duration: 0.45,
+          ease: "power2.inOut",
+        }, start + duration - 0.45);
+      });
+
+      tl.from(".node", {
+        scale: 0.86,
+        opacity: 0,
+        duration: 0.48,
+        stagger: 0.1,
+        ease: "back.out(1.4)",
+      }, 52.4);
+
+      window.__timelines["bradesco-complete-demo"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "itau-servicenow-superapp-complete-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.5.7 preview",
+    "check": "npx --yes hyperframes@0.5.7 lint",
+    "render": "npx --yes hyperframes@0.5.7 render --output ../../itau-demo/itau-servicenow-superapp-complete-demo.mp4 --quality standard --fps 30 --workers 4"
+  }
+}

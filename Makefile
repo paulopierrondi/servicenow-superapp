@@ -10,7 +10,7 @@
 #   make contract-test   → roda contract tests contra mock harness
 
 .PHONY: help verify xcode ios-build ios-test ios-lint mock-harness-run \
-        mock-harness-stop contract-test diagrams clean install-tools
+        mock-harness-stop contract-test diagrams demo-videos clean install-tools
 
 IOS_SIMULATOR ?= iPhone 17
 IOS_BUILD_DESTINATION ?= generic/platform=iOS Simulator
@@ -27,6 +27,7 @@ help:
 	@echo "  mock-harness-stop   - parar mock harness"
 	@echo "  contract-test       - testes de contrato"
 	@echo "  diagrams            - validar diagramas Mermaid"
+	@echo "  demo-videos         - renderizar demos completas Itaú e Bradesco"
 	@echo "  install-tools       - instalar XcodeGen, SwiftLint, mmdc"
 
 install-tools:
@@ -129,6 +130,9 @@ diagrams:
 		fi; \
 	done
 	@echo "✓ all diagrams valid"
+
+demo-videos:
+	node scripts/render-complete-demo-videos.mjs
 
 verify: ios-lint ios-build ios-test contract-test diagrams
 	@echo ""
