@@ -16,6 +16,10 @@ struct SupportView: View {
     ProcessInfo.processInfo.arguments.contains("-BankAppDemoConversation")
   }
 
+  private var assistEndpointStatus: String {
+    AppEnvironment.serviceNowInstanceURL == nil ? "fallback local" : "instância conectada"
+  }
+
   var body: some View {
     NavigationView {
       AppBackground {
@@ -70,26 +74,28 @@ struct SupportView: View {
           )
 
           VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
-            Text("support.nowassist.title")
+            Text("Mordomo ServiceNow")
               .font(BankTheme.Typography.section)
               .foregroundColor(.white)
 
-            Text("support.nowassist.detail")
-              .font(BankTheme.Typography.body)
-              .foregroundColor(.white.opacity(0.84))
-              .fixedSize(horizontal: false, vertical: true)
+            Text(
+              "O chat tenta usar /api/x_bank/v1/mobile-assist na instância. Quando Virtual Agent API + Now Assist estiverem ativos, este gateway troca para o canal nativo sem mudar o app."
+            )
+            .font(BankTheme.Typography.body)
+            .foregroundColor(.white.opacity(0.84))
+            .fixedSize(horizontal: false, vertical: true)
           }
         }
 
         HStack(spacing: BankTheme.Spacing.sm) {
           StatusBadge(
-            titleKey: "support.badge.context",
+            title: assistEndpointStatus,
             color: BankTheme.Palette.success,
-            symbolName: "checkmark.seal.fill"
+            symbolName: "network"
           )
 
           StatusBadge(
-            titleKey: "support.badge.audit",
+            title: "sem PII em log",
             color: BankTheme.Palette.attention,
             symbolName: "lock.doc.fill"
           )

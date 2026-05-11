@@ -167,6 +167,177 @@ struct CompatibilityDTO: Codable, Equatable {
   let receivedPlatform: String
 }
 
+struct MobileAssistRequest: Codable, Equatable {
+  let message: String
+  let brand: String
+  let sessionId: String
+  let timezone: String
+}
+
+struct MobileAssistResponse: Codable, Equatable {
+  let schemaVersion: String
+  let brand: String
+  let provider: MobileAssistProvider
+  let message: String
+  let operationalContext: MobileAssistOperationalContext
+  let nextActions: [MobileAssistAction]
+  let citations: [MobileAssistCitation]
+  let compatibility: CompatibilityDTO
+
+  static func demo(for text: String, brand: AppBrand = .current) -> MobileAssistResponse {
+    let isItau = brand == .itau
+    let context = MobileAssistOperationalContext(
+      severity: isItau ? "P0" : "P1",
+      service: isItau ? "Core Pix Personnalité" : "Pix Prime Mobile",
+      incident: isItau ? "INC0018884" : "INC0018885",
+      change: isItau ? "CHG0030005" : "CHG0030004",
+      runId: isItau ? "AWR-ITAU-P0-20260510" : "AWR-BRAD-P1-20260510",
+      cmdbHealth: "91",
+      pendingApprovals: "2",
+      customerImpact: isItau
+        ? "Personnalité executive cohort" : "Prime agencies and digital support",
+      nextHumanDecision: isItau
+        ? "Approve emergency change and executive communication"
+        : "Approve gateway containment and Prime agency playbook"
+    )
+
+    return MobileAssistResponse(
+      schemaVersion: "2026-05-assist-v1",
+      brand: brand.rawValue,
+      provider: MobileAssistProvider(
+        displayName: "Otto / Now Assist concierge",
+        mode: "local_demo",
+        channel: "mobile-superapp",
+        connectionState: "fallback",
+        nativeNowAssistPath: "Virtual Agent API + Now Assist deployment channel",
+        fallbackReason: "ServiceNow endpoint unavailable in this client session"
+      ),
+      message: Self.localMessage(for: text, context: context),
+      operationalContext: context,
+      nextActions: MobileAssistAction.demo(for: brand),
+      citations: MobileAssistCitation.demo(for: brand),
+      compatibility: CompatibilityDTO(
+        minClientVersion: "0.1.0",
+        receivedClientVersion: "0.1.0",
+        receivedSchemaHeader: "2026-05-assist-v1",
+        receivedPlatform: "ios"
+      )
+    )
+  }
+
+  private static func localMessage(
+    for text: String,
+    context: MobileAssistOperationalContext
+  ) -> String {
+    let lowercased = text.lowercased()
+
+    if lowercased.contains("cmdb") {
+      return
+        "CMDB Health está em \(context.cmdbHealth). Eu validaria Service Graph, CIs stale, relações órfãs e owner do serviço antes de liberar qualquer automação."
+    }
+
+    if lowercased.contains("aprovar") || lowercased.contains("guardrail") {
+      return
+        "A decisão humana é: \(context.nextHumanDecision). Trago evidências de incidente, mudança, CMDB, rollback e impacto CSM antes da sua aprovação."
+    }
+
+    if lowercased.contains("p0") || lowercased.contains("p1") || lowercased.contains("incidente") {
+      return
+        "Estou tratando \(context.severity) em \(context.service): incidente \(context.incident), mudança \(context.change), CMDB Health \(context.cmdbHealth) e run \(context.runId) aguardando guardrail."
+    }
+
+    return
+      "Seu dia ServiceNow: \(context.severity) em \(context.service), \(context.pendingApprovals) aprovações, CMDB Health \(context.cmdbHealth), run autônomo aguardando você e impacto \(context.customerImpact)."
+  }
+}
+
+struct MobileAssistProvider: Codable, Equatable {
+  let displayName: String
+  let mode: String
+  let channel: String
+  let connectionState: String
+  let nativeNowAssistPath: String
+  let fallbackReason: String
+}
+
+struct MobileAssistOperationalContext: Codable, Equatable {
+  let severity: String
+  let service: String
+  let incident: String
+  let change: String
+  let runId: String
+  let cmdbHealth: String
+  let pendingApprovals: String
+  let customerImpact: String
+  let nextHumanDecision: String
+}
+
+struct MobileAssistAction: Codable, Equatable, Identifiable {
+  let id: String
+  let title: String
+  let detail: String
+  let system: String
+  let requiresApproval: Bool
+  let symbolName: String
+
+  static func demo(for brand: AppBrand) -> [MobileAssistAction] {
+    let isItau = brand == .itau
+    return [
+      MobileAssistAction(
+        id: "open_incident_bridge",
+        title: isItau ? "Abrir ponte P0" : "Assumir war room P1",
+        detail: "Convidar times com contexto ITSM, CSM, CRM e CMDB.",
+        system: "ITSM",
+        requiresApproval: false,
+        symbolName: "dot.radiowaves.left.and.right"
+      ),
+      MobileAssistAction(
+        id: "approve_guardrail",
+        title: "Aprovar guardrail",
+        detail: "Libera somente a etapa governada, com trilha de auditoria.",
+        system: "Change",
+        requiresApproval: true,
+        symbolName: "person.badge.shield.checkmark.fill"
+      ),
+      MobileAssistAction(
+        id: "draft_csm_case",
+        title: isItau ? "Draft CSM Personnalité" : "Draft CSM Prime",
+        detail: "Comunicação de atendimento sem envio automático.",
+        system: "CSM / CRM",
+        requiresApproval: true,
+        symbolName: "rectangle.and.pencil.and.ellipsis"
+      ),
+    ]
+  }
+}
+
+struct MobileAssistCitation: Codable, Equatable, Identifiable {
+  let id: String
+  let label: String
+  let source: String
+
+  static func demo(for brand: AppBrand) -> [MobileAssistCitation] {
+    let isItau = brand == .itau
+    return [
+      MobileAssistCitation(
+        id: "incident",
+        label: isItau ? "INC0018884" : "INC0018885",
+        source: isItau ? "P0 Core Pix Personnalité" : "P1 Pix Prime Mobile"
+      ),
+      MobileAssistCitation(
+        id: "change",
+        label: isItau ? "CHG0030005" : "CHG0030004",
+        source: "CAB, rollback e aprovação humana"
+      ),
+      MobileAssistCitation(
+        id: "cmdb",
+        label: "Service Graph",
+        source: "CMDB Health, CIs e relações críticas"
+      ),
+    ]
+  }
+}
+
 struct BankUser: Equatable {
   let firstName: String
   let segment: String

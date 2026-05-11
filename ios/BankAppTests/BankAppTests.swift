@@ -158,6 +158,17 @@ final class BankAppTests: XCTestCase {
     XCTAssertTrue(workflow.citations.contains { $0.label == "Service Graph" })
   }
 
+  func testMobileAssistDemoResponseActsAsInstanceConcierge() {
+    let response = MobileAssistResponse.demo(for: "mordomo, resumo meu dia e CMDB", brand: .itau)
+
+    XCTAssertEqual(response.schemaVersion, "2026-05-assist-v1")
+    XCTAssertEqual(response.brand, AppBrand.itau.rawValue)
+    XCTAssertTrue(response.provider.nativeNowAssistPath.contains("Virtual Agent API"))
+    XCTAssertTrue(response.message.contains("CMDB Health"))
+    XCTAssertTrue(response.nextActions.contains { $0.id == "approve_guardrail" })
+    XCTAssertTrue(response.citations.contains { $0.label == "Service Graph" })
+  }
+
   @MainActor
   func testHomeViewModelFallsBackToDemoOnClientFailure() async {
     let viewModel = HomeViewModel(serviceNowClient: FailingHomeClient())

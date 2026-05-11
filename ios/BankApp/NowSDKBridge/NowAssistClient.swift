@@ -78,76 +78,86 @@ struct NowAssistMessage: Identifiable, Equatable {
 }
 
 final class NowAssistClient {
+  private let session: URLSession
+  private let baseURL: URL?
   private let telemetry: TelemetryTracking
 
-  init(telemetry: TelemetryTracking = TelemetryClient.shared) {
+  init(
+    session: URLSession = .shared,
+    baseURL: URL? = AppEnvironment.serviceNowInstanceURL,
+    telemetry: TelemetryTracking = TelemetryClient.shared
+  ) {
+    self.session = session
+    self.baseURL = baseURL
     self.telemetry = telemetry
   }
 
   func send(_ text: String) async -> NowAssistMessage {
     telemetry.track(.nowSDKEvent(name: "chat.message.sent"))
-    try? await Task.sleep(nanoseconds: 350_000_000)
 
-    let reply: String
-    if text.localizedCaseInsensitiveContains("p0") {
-      reply =
-        "P0 priorizado: core Pix degradado para cohort crítico. CMDB mostra dependência entre app, gateway, antifraude e mensageria. Já montei o run agentic: AIOps RCA, Service Desk triagem, CRM Case Management CSM e AI Control Tower segurando a mudança até aprovação humana."
-    } else if text.localizedCaseInsensitiveContains("p1") {
-      reply =
-        "P1 priorizado: latência Pix com impacto Prime. Relacionei incidente, cases CSM, CIs stale, rollback e plano de contenção. O autonomous workflow pode abrir ponte, gerar rascunho de comunicação e preparar change sem executar nada sensível sem sua aprovação."
-    } else if text.localizedCaseInsensitiveContains("autonom")
-      || text.localizedCaseInsensitiveContains("agentic")
-      || text.localizedCaseInsensitiveContains("workflow")
-      || text.localizedCaseInsensitiveContains("especialist")
-    {
-      reply =
-        "Workflow agentic pronto: Sense com AIOps, Decide com L1 Service Desk AI Specialist, Act com CRM Case Management AI Specialist e Govern com AI Control Tower. Guardrails ativos: least privilege, prompt-shield, sem log de PII, citações KB/CMDB/CAB e trilha x_bank_ai_audit_event."
-    } else if text.localizedCaseInsensitiveContains("action fabric")
-      || text.localizedCaseInsensitiveContains("mcp")
-      || text.localizedCaseInsensitiveContains("tool")
-      || text.localizedCaseInsensitiveContains("fabric")
-    {
-      reply =
-        "Action Fabric está expondo tools ServiceNow com política: abrir ponte, aprovar guardrail CAB, criar draft CSM e planejar remediação CMDB. Workflow Data Fabric entrega contexto sem copiar dados, e AI Control Tower mede risco, escopo e auditoria antes da execução."
-    } else if text.localizedCaseInsensitiveContains("cmdb") {
-      reply =
-        "CMDB Health está em 91: completeness 92%, correctness 88%, compliance 95% e relações 84%. Recomendo corrigir CIs stale antes do próximo change."
-    } else if text.localizedCaseInsensitiveContains("dia")
-      || text.localizedCaseInsensitiveContains("mordomo")
-    {
-      reply =
-        "Seu dia: 1 incidente crítico, 2 aprovações, CMDB com relações órfãs, 3 cases CSM em risco, 1 pedido executivo no catálogo, uma demanda SPM e um workflow autônomo aguardando sua aprovação."
-    } else if text.localizedCaseInsensitiveContains("pix") {
-      reply =
-        "Vou tratar Pix como jornada operacional: CSM para impacto ao cliente, ITSM para degradação, CRM para comunicação e SPM se virar demanda."
-    } else if text.localizedCaseInsensitiveContains("itsm") {
-      reply =
-        "No ITSM, o incidente de latência Pix está em contenção. Já gerei resumo de causa provável, SLA e plano de comunicação."
-    } else if text.localizedCaseInsensitiveContains("spm") {
-      reply =
-        "No SPM, a demanda de Open Finance está priorizada. Posso resumir valor, riscos regulatórios e dependências para o comitê."
-    } else if text.localizedCaseInsensitiveContains("aprovar") {
-      reply =
-        "Encontrei aprovações pendentes. Posso resumir impacto, risco, SLA e evidências antes da decisão."
-    } else if text.localizedCaseInsensitiveContains("gêmeo")
-      || text.localizedCaseInsensitiveContains("gemeo")
-      || text.localizedCaseInsensitiveContains("jornada")
-    {
-      reply =
-        "Montei o gêmeo operacional: intenção do cliente, consentimento, risco, CSM, CRM, ITSM, SPM e auditoria ficam conectados antes da execução."
-    } else if text.localizedCaseInsensitiveContains("notebook")
-      || text.localizedCaseInsensitiveContains("sala")
-    {
-      reply =
-        "Posso abrir o item de catálogo correto, preencher dados conhecidos e manter a solicitação rastreável na plataforma."
-    } else if text.localizedCaseInsensitiveContains("cart") {
-      reply =
-        "Se envolver cartão, eu separo experiência do cliente, risco, evidência e fluxo operacional antes de qualquer ação transacional."
-    } else {
-      reply =
-        "Vou cruzar os dados da sua conta com os fluxos ServiceNow e trazer uma resposta acionável. Nenhum dado sensível será exposto no chat."
+    if let response = try? await sendToInstance(text, brand: .current) {
+      telemetry.track(.nowSDKEvent(name: "chat.message.instance_reply"))
+      return NowAssistMessage(
+        id: UUID(), role: .assistant, text: response.message, timestamp: Date())
     }
 
-    return NowAssistMessage(id: UUID(), role: .assistant, text: reply, timestamp: Date())
+    telemetry.track(.nowSDKEvent(name: "chat.message.local_fallback"))
+    try? await Task.sleep(nanoseconds: 350_000_000)
+    let response = MobileAssistResponse.demo(for: text)
+    return NowAssistMessage(id: UUID(), role: .assistant, text: response.message, timestamp: Date())
   }
+
+  private func sendToInstance(_ text: String, brand: AppBrand) async throws -> MobileAssistResponse
+  {
+    guard let baseURL else {
+      throw ServiceNowClientError.invalidBaseURL
+    }
+
+    var components = URLComponents(
+      url: baseURL.appendingPathComponent("/api/x_bank/v1/mobile-assist"),
+      resolvingAgainstBaseURL: false
+    )
+    components?.queryItems = [URLQueryItem(name: "brand", value: brand.rawValue)]
+    guard let url = components?.url else {
+      throw ServiceNowClientError.invalidBaseURL
+    }
+
+    let body = MobileAssistRequest(
+      message: text,
+      brand: brand.rawValue,
+      sessionId: UUID().uuidString,
+      timezone: TimeZone.current.identifier
+    )
+
+    let started = Date()
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    request.setValue(AppEnvironment.marketingVersion, forHTTPHeaderField: "X-Client-Version")
+    request.setValue("2026-05-assist-v1", forHTTPHeaderField: "X-Client-Schema-Version")
+    request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+    request.httpBody = try JSONEncoder().encode(body)
+
+    let (data, response) = try await session.data(for: request)
+    guard let httpResponse = response as? HTTPURLResponse else {
+      throw ServiceNowClientError.invalidResponse
+    }
+
+    let latency = Date().timeIntervalSince(started) * 1000
+    telemetry.track(
+      .apiCall(
+        endpoint: "mobile-assist",
+        version: "v1",
+        latency: latency,
+        status: httpResponse.statusCode
+      )
+    )
+
+    guard (200..<300).contains(httpResponse.statusCode) else {
+      throw ServiceNowClientError.httpStatus(httpResponse.statusCode)
+    }
+
+    return try JSONDecoder().decode(MobileAssistResponse.self, from: data)
+  }
+
 }

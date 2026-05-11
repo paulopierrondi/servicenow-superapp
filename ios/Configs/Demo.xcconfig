@@ -7,8 +7,9 @@ URL_SCHEME = bradesco-app-demo
 
 APS_ENVIRONMENT = production
 
-SERVICENOW_INSTANCE_URL = https:/$()/demo-bradesco.service-now.com
-SERVICENOW_PINNED_HOST = demo-bradesco.service-now.com
+SERVICENOW_INSTANCE_URL = https:/$()/demoalectriallwfzbblp136802.service-now.com
+// Demo usa o certificado público da instância ServiceNow. Produção deve configurar SPKI real.
+SERVICENOW_PINNED_HOST = service-now-demo-pin-disabled.local
 SERVICENOW_OIDC_CLIENT_ID = REPLACE_DEMO_CLIENT_ID
 
 RAILWAY_BFF_FLAGS_URL = https:/$()/bff-flags-demo.up.railway.app

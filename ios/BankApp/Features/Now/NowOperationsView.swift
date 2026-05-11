@@ -75,23 +75,23 @@ struct NowOperationsView: View {
         ScrollView(showsIndicators: false) {
           VStack(spacing: BankTheme.Spacing.xl) {
             header
-            platformFabricPanel
+            assistantPanel
             executiveDecisionCenter
-            autonomousWorkforcePanel
-            journeyTwin
             CMDBHealthPanel(
               title: "CMDB Health do dia",
               subtitle: "Saúde por serviço, CIs, dependências e relações antes de qualquer decisão."
             )
+            autonomousWorkforcePanel
             universalSearch
-            assistantPanel
-            launcher
             actionInbox
-            knowledgeAnswer
-            customerExperienceCenter
             workspaceSelector
             commandCenter
             workstream
+            customerExperienceCenter
+            journeyTwin
+            platformFabricPanel
+            knowledgeAnswer
+            launcher
           }
           .padding(.horizontal, BankTheme.Spacing.lg)
           .padding(.vertical, BankTheme.Spacing.xl)
@@ -356,12 +356,13 @@ struct NowOperationsView: View {
     let workflow = autonomousWorkflow
 
     return VStack(spacing: BankTheme.Spacing.md) {
-      SectionHeader("AI Platform Fabric", actionKey: "Ver tools") {
+      SectionHeader("AI Platform Fabric", actionKey: "Perguntar") {
         searchText = "Action Fabric tools \(workflow.run.id)"
+        selectedTab = .support
       }
 
       VisualCard {
-        VStack(alignment: .leading, spacing: BankTheme.Spacing.lg) {
+        VStack(alignment: .leading, spacing: BankTheme.Spacing.md) {
           HStack(alignment: .top, spacing: BankTheme.Spacing.md) {
             IconBubble(
               symbolName: "network",
@@ -370,39 +371,43 @@ struct NowOperationsView: View {
             )
 
             VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
-              Text("Otto + Action Fabric + Workflow Data Fabric")
+              Text("Mordomo com tools governadas")
                 .font(BankTheme.Typography.headline)
                 .foregroundColor(BankTheme.Palette.ink)
                 .fixedSize(horizontal: false, vertical: true)
 
-              Text("A demo mostra como agentes recebem contexto, tools e políticas antes de agir.")
+              Text("Contexto, ações e políticas ficam na plataforma antes de qualquer execução.")
                 .font(BankTheme.Typography.callout)
                 .foregroundColor(BankTheme.Palette.secondaryInk)
                 .fixedSize(horizontal: false, vertical: true)
             }
           }
 
-          VStack(spacing: BankTheme.Spacing.sm) {
+          LazyVGrid(
+            columns: [
+              GridItem(.flexible(), spacing: BankTheme.Spacing.sm),
+              GridItem(.flexible(), spacing: BankTheme.Spacing.sm),
+            ],
+            spacing: BankTheme.Spacing.sm
+          ) {
             ForEach(workflow.platformSignals) { signal in
-              PlatformFabricRow(signal: signal)
-            }
-          }
-
-          VStack(alignment: .leading, spacing: BankTheme.Spacing.sm) {
-            Text("Action Fabric packages")
-              .font(BankTheme.Typography.caption)
-              .foregroundColor(BankTheme.Palette.brandAction)
-
-            ForEach(workflow.actionPackages) { package in
-              ActionFabricPackageRow(package: package)
+              PlatformFabricCompactTile(signal: signal)
             }
           }
 
           HStack(spacing: BankTheme.Spacing.sm) {
-            ForEach(workflow.controlMetrics) { metric in
+            ForEach(Array(workflow.controlMetrics.prefix(2))) { metric in
               AIControlMetricTile(metric: metric)
             }
           }
+
+          Label(
+            "\(workflow.actionPackages.count) Action Fabric packages prontos para o run \(workflow.run.id)",
+            systemImage: "wrench.and.screwdriver.fill"
+          )
+          .font(BankTheme.Typography.caption)
+          .foregroundColor(BankTheme.Palette.secondaryInk)
+          .fixedSize(horizontal: false, vertical: true)
         }
       }
     }
@@ -848,6 +853,47 @@ private struct PlatformFabricRow: View {
           .fixedSize(horizontal: false, vertical: true)
       }
     }
+    .padding(BankTheme.Spacing.sm)
+    .background(
+      RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)
+        .fill(BankTheme.Palette.subtleSurface)
+    )
+  }
+}
+
+private struct PlatformFabricCompactTile: View {
+  let signal: PlatformFabricSignal
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: BankTheme.Spacing.xs) {
+      Image(systemName: signal.symbolName)
+        .font(BankTheme.Typography.callout)
+        .foregroundColor(BankTheme.Palette.brandAction)
+        .frame(width: BankTheme.Size.compactIconBubble, height: BankTheme.Size.compactIconBubble)
+        .background(
+          Circle()
+            .fill(BankTheme.Palette.brandAction.opacity(0.14))
+        )
+
+      Text(signal.layer)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(BankTheme.Palette.brandAction)
+        .lineLimit(1)
+        .minimumScaleFactor(0.82)
+
+      Text(signal.title)
+        .font(BankTheme.Typography.caption)
+        .foregroundColor(BankTheme.Palette.ink)
+        .lineLimit(3)
+        .minimumScaleFactor(0.78)
+
+      Text(signal.status)
+        .font(BankTheme.Typography.micro)
+        .foregroundColor(BankTheme.Palette.secondaryInk)
+        .lineLimit(1)
+        .minimumScaleFactor(0.82)
+    }
+    .frame(maxWidth: .infinity, minHeight: 132, alignment: .topLeading)
     .padding(BankTheme.Spacing.sm)
     .background(
       RoundedRectangle(cornerRadius: BankTheme.Radius.md, style: .continuous)

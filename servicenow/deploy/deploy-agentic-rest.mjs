@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Deploy the mobile agentic workflow Scripted REST resource to a ServiceNow instance.
+// Deploy mobile Scripted REST resources to a ServiceNow instance.
 //
 // Required env:
 //   SN_INSTANCE_URL=https://example.service-now.com
@@ -21,12 +21,26 @@ if (!instanceUrl || !username || !password) {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..', '..');
-const scriptPath = path.join(
-  repoRoot,
-  'servicenow/scripted-rest/v1/mobile-agentic-workflow.js'
-);
-const script = await readFile(scriptPath, 'utf8');
 const auth = Buffer.from(`${username}:${password}`).toString('base64');
+
+const resources = [
+  {
+    name: 'mobile-agentic-workflow',
+    relativePath: '/mobile-agentic-workflow',
+    methods: ['GET', 'POST'],
+    requiresAuthentication: true,
+    shortDescription: 'Autonomous Workforce run for the mobile super app',
+    scriptPath: path.join(repoRoot, 'servicenow/scripted-rest/v1/mobile-agentic-workflow.js'),
+  },
+  {
+    name: 'mobile-assist',
+    relativePath: '/mobile-assist',
+    methods: ['POST'],
+    requiresAuthentication: false,
+    shortDescription: 'Read-only mobile concierge gateway for Now Assist demo',
+    scriptPath: path.join(repoRoot, 'servicenow/scripted-rest/v1/mobile-assist.js'),
+  },
+];
 
 async function table(method, tableName, body, query = '', sysId = '') {
   const url = new URL(`${instanceUrl}/api/now/table/${tableName}${sysId ? `/${sysId}` : ''}`);
@@ -83,32 +97,36 @@ const version = await upsert(
   }
 );
 
-for (const method of ['GET', 'POST']) {
-  await upsert(
-    'sys_ws_operation',
-    `web_service_definition=${api.sys_id}^name=mobile-agentic-workflow ${method}`,
-    {
-      name: `mobile-agentic-workflow ${method}`,
-      web_service_definition: api.sys_id,
-      web_service_version: version.sys_id,
-      http_method: method,
-      relative_path: '/mobile-agentic-workflow',
-      operation_uri: '/mobile-agentic-workflow',
-      active: true,
-      requires_authentication: true,
-      requires_acl_authorization: false,
-      consumes: 'application/json',
-      produces: 'application/json',
-      operation_script: script,
-      short_description: 'Autonomous Workforce run for the mobile super app',
-    }
-  );
+for (const resource of resources) {
+  const script = await readFile(resource.scriptPath, 'utf8');
+
+  for (const method of resource.methods) {
+    await upsert(
+      'sys_ws_operation',
+      `web_service_definition=${api.sys_id}^name=${resource.name} ${method}`,
+      {
+        name: `${resource.name} ${method}`,
+        web_service_definition: api.sys_id,
+        web_service_version: version.sys_id,
+        http_method: method,
+        relative_path: resource.relativePath,
+        operation_uri: resource.relativePath,
+        active: true,
+        requires_authentication: resource.requiresAuthentication,
+        requires_acl_authorization: false,
+        consumes: 'application/json',
+        produces: 'application/json',
+        operation_script: script,
+        short_description: resource.shortDescription,
+      }
+    );
+  }
 }
 
 console.log(
   JSON.stringify({
     api: api.sys_id,
     version: version.sys_id,
-    endpoint: `${instanceUrl}/api/x_bank/v1/mobile-agentic-workflow?brand=itau`,
+    endpoints: resources.map((resource) => `${instanceUrl}/api/x_bank/v1${resource.relativePath}`),
   })
 );

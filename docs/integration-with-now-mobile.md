@@ -95,6 +95,7 @@ Tanto o nativo quanto o branded consomem **a mesma camada de Scripted REST** em 
 | Endpoint | Versão | Quem consome |
 |---|---|---|
 | `/api/x_bank/v1/mobile-home` | v1 | Nativo (autosserviço bancário) |
+| `/api/x_bank/v1/mobile-assist` | v1 | Nativo (mordomo ServiceNow / Now Assist gateway) |
 | `/api/x_bank/v1/mobile-payments` | v1 | Nativo |
 | `/api/x_bank/v1/mobile-feature-flags` | v1 | Nativo + BFF Railway |
 | `/api/x_bank/v1/mobile-consent` | v1 | Nativo |
@@ -195,6 +196,8 @@ Toda a base de conhecimento e treinamento do NowAssist mora na instância. Os do
 - Threads persistidas na instância (ACL por usuário).
 - Continuidade entre canais — o cliente abre chat no nativo, atendente vê histórico no branded com o mesmo `thread_id`.
 - Grounding nas tabelas (CMDB, ITSM, FSI, knowledge base) com permissão respeitada via ACLs.
+
+No demo atual, o app usa `/api/x_bank/v1/mobile-assist` como gateway de mordomo conectado à instância. Esse contrato já devolve resposta, ações, contexto operacional e citações. Quando Virtual Agent API + Now Assist Deployment Channel estiverem habilitados no tenant, o gateway deve trocar o provider interno para o canal nativo sem alterar o app iOS.
 
 ### Modelo de chat unificado
 
